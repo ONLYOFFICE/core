@@ -36,9 +36,6 @@
 #ifndef BASE_H
 #define BASE_H
 
-#include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../OfficeUtils/src/ZipFolder.h"
-
 #include "Document.h"
 #include "Types/Signature.h"
 
@@ -58,7 +55,7 @@ class CDocInfo
 	std::wstring m_wsTitle;
 	std::wstring m_wsAuthor;
 	std::wstring m_wsSubject;
-	std::wstring m_wsAbstact;
+	std::wstring m_wsAbstruct;
 
 	std::wstring m_wsCreationDate;
 	std::wstring m_wsModDate;
@@ -70,10 +67,12 @@ class CDocInfo
 	std::wstring m_wsCreator;
 	std::wstring m_wsCreatorVersion;
 
-	std::vector<std::wstring> m_arCustomData;
+	std::vector<std::pair<std::wstring, std::wstring>> m_arCustomData;
 public:
 	CDocInfo();
 	bool Read(CXmlReader& oLiteReader);
+
+	std::wstring GetInfo() const;
 };
 
 class CDocBody
@@ -83,7 +82,8 @@ class CDocBody
 	// std::wstring m_wsVersions;
 	std::vector<CSignature*> m_arSignatures;
 
-	void ReadSignatures(const std::wstring& wsFilePath, IFolder* pFolder);
+	bool ReadSignatures(const std::wstring& wsFilePath, IFolder* pFolder);
+
 public:
 	CDocBody();
 	~CDocBody();
@@ -94,6 +94,15 @@ public:
 
 	unsigned int GetPageCount() const;
 	bool GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const;
+
+	void UpdateFonts(CFontChecker* pFontChecker);
+
+	std::wstring GetInfo() const;
+
+	#ifdef BUILDING_WASM_MODULE
+	void GetStructure(UINT& unMaxNumberPage, NSWasm::CData& oRes) const;
+	void GetLinks(UINT unPageIndex, NSWasm::CData& oRes) const;
+	#endif
 };
 
 class CBase
@@ -108,6 +117,15 @@ public:
 
 	unsigned int GetPageCount() const;
 	void GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const;
+
+	void UpdateFonts(CFontChecker* pFontChecker);
+
+	std::wstring GetInfo() const;
+
+	#ifdef BUILDING_WASM_MODULE
+	void GetStructure(UINT& unMaxNumberPage, NSWasm::CData& oRes) const;
+	void GetLinks(UINT unPageIndex, NSWasm::CData& oRes) const;
+	#endif
 };
 }
 

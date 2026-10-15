@@ -169,6 +169,7 @@ public:
 		GBool isolated = gFalse, GBool knockout = gFalse,
 		GBool alpha = gFalse, Function *transferFunc = NULL,
 		Object *backdropColorObj = NULL);
+  void doForm(Object *strRef, Object *str);
 
   // Take all of the content stream stack entries from <oldGfx>.  This
   // is useful when creating a new Gfx object to handle a pattern,
@@ -183,6 +184,8 @@ public:
   void endOfPage();
 
   PDFDoc *getDoc() { return doc; }
+
+  void setIgnoreStampOpacity(double d) { dIgnoreStampOpacity = d; }
 
 private:
 
@@ -209,6 +212,7 @@ private:
   Parser *parser;		// parser for page content stream(s)
   GList *contentStreamStack;	// stack of open content streams, used
 				//   for loop-checking
+  double dIgnoreStampOpacity;
 
   GBool				// callback to check for an abort
     (*abortCheckCbk)(void *data);
@@ -336,7 +340,7 @@ private:
   // XObject operators
   void opXObject(Object args[], int numArgs);
   GBool doImage(Object *ref, Stream *str, GBool inlineImg);
-  void doForm(Object *strRef, Object *str);
+
 
   // in-line image operators
   void opBeginImage(Object args[], int numArgs);

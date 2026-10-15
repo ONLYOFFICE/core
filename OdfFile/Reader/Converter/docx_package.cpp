@@ -221,7 +221,7 @@ void word_files::set_notes(notes_context & notesContext)
 }
 void word_files::set_comments(comments_context & commentsContext)
 {
-	if (commentsContext.comments_.size()<1)return;
+	if (commentsContext.content().empty()) return;
 
     comments_elements * elm = new comments_elements(commentsContext); 
     elm->set_main_document( get_main_document() );
@@ -449,47 +449,47 @@ comments_elements::comments_elements(comments_context & commentsContext) : comme
 
 void comments_elements::write(const std::wstring & RootPath)
 {
-    if (comments_context_.comments_.size())
+    if (comments_context_.content().empty()) return;
+
+    std::wstringstream content;
+
+    content << L"<w:comments xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" " <<
+        L"xmlns:w10=\"urn:schemas-microsoft-com:office:word\" " <<
+        L"xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" " <<
+        L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" " <<
+        L"xmlns:o=\"urn:schemas-microsoft-com:office:office\" " <<
+        L">";
+
+    for (auto const& elm : comments_context_.content())
     {
-        std::wstringstream content; 
-        
-        content << L"<w:comments xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" " <<
-                                L"xmlns:w10=\"urn:schemas-microsoft-com:office:word\" " <<
-                                L"xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" " <<
-                                L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" " <<
-                                L"xmlns:o=\"urn:schemas-microsoft-com:office:office\" " <<
-                                L">";
-
-        BOOST_FOREACH(const comments_context::_comment_desc & elm, comments_context_.comments_)
-        {
-            content << L"<w:comment w:id=\"" << elm.id << "\" ";
-			if (elm.author.length()>0)
-				content << L"w:author=\""<< XmlUtils::EncodeXmlString(elm.author) << "\" ";
-			if (elm.date.length()>0)
-				content << L"w:date=\""<< elm.date << "\" ";
-			content<< L">";
-				content << elm.content;
-            content << L"</w:comment>";
-        }
-        content << L"</w:comments>";
-
-        simple_element(L"comments.xml", content.str()).write(RootPath);
-        
-        if (get_main_document())
-            get_main_document()->get_content_types_file().content()->add_override(L"/word/comments.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml");
+        content << L"<w:comment w:id=\"" << elm.second.id << "\" ";
+        if (elm.second.author.length() > 0)
+            content << L"w:author=\"" << XmlUtils::EncodeXmlString(elm.second.author) << "\" ";
+        if (elm.second.date.length() > 0)
+            content << L"w:date=\"" << elm.second.date << "\" ";
+        content << L">";
+        content << elm.second.content;
+        content << L"</w:comment>";
     }
-	if (!comments_context_.get_rels().empty())
-	{
-		rels_files relFiles;
-		rels_file_ptr rels_elem = rels_file::create(L"comments.xml.rels");
-		relFiles.add_rel_file(rels_elem);
-		
-		BOOST_FOREACH(relationship const & r, comments_context_.get_rels().relationships())
-		{
-			relFiles.add(r);
-		} 
-		relFiles.write(RootPath);
-	}
+    content << L"</w:comments>";
+
+    simple_element(L"comments.xml", content.str()).write(RootPath);
+
+    if (get_main_document())
+        get_main_document()->get_content_types_file().content()->add_override(L"/word/comments.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml");
+
+    if (!comments_context_.get_rels().empty())
+    {
+        rels_files relFiles;
+        rels_file_ptr rels_elem = rels_file::create(L"comments.xml.rels");
+        relFiles.add_rel_file(rels_elem);
+
+        for(auto const & r : comments_context_.get_rels().relationships())
+        {
+            relFiles.add(r);
+        }
+        relFiles.write(RootPath);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

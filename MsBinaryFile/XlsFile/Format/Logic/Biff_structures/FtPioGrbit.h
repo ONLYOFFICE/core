@@ -55,7 +55,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void save(CFRecord& record);
 
-	bool fAutoPict = false;
+	bool fAutoPict = true;
 	bool fDde = false;
 	bool fPrintCalc = false;
 	bool fIcon = false;

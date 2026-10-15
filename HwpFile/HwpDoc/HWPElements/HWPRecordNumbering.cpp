@@ -39,8 +39,36 @@
 
 namespace HWP
 {
+ENumberFormat GetNumberFormat(const std::string& sValue, EHanType eType)
+{
+	if (sValue.empty())
+		return ENumberFormat::DIGIT;
+
+	if (GetValueName(EValue::CircledDigit, eType)          == sValue) return ENumberFormat::CIRCLED_DIGIT;
+	if (GetValueName(EValue::RomanCapital, eType)          == sValue) return ENumberFormat::ROMAN_CAPITAL;
+	if (GetValueName(EValue::RomanSmall, eType)            == sValue) return ENumberFormat::ROMAN_SMALL;
+	if (GetValueName(EValue::LatinCapital, eType)          == sValue) return ENumberFormat::LATIN_CAPITAL;
+	if (GetValueName(EValue::LatinSmall, eType)            == sValue) return ENumberFormat::LATIN_SMALL;
+	if (GetValueName(EValue::CircledLatinCapital, eType)   == sValue) return ENumberFormat::CIRCLED_LATIN_CAPITAL;
+	if (GetValueName(EValue::CircledLatinSmall, eType)     == sValue) return ENumberFormat::CIRCLED_LATIN_SMALL;
+	if (GetValueName(EValue::HangulSyllable, eType)        == sValue) return ENumberFormat::HANGUL_SYLLABLE;
+	if (GetValueName(EValue::CircledHangulSyllable, eType) == sValue) return ENumberFormat::CIRCLED_HANGUL_SYLLABLE;
+	if (GetValueName(EValue::HangulJamo, eType)            == sValue) return ENumberFormat::HANGUL_JAMO;
+	if (GetValueName(EValue::CircledHangulJamo, eType)     == sValue) return ENumberFormat::CIRCLED_HANGUL_JAMO;
+	if (GetValueName(EValue::HangulPhonetic, eType)        == sValue) return ENumberFormat::HANGUL_PHONETIC;
+	if (GetValueName(EValue::Ideograph, eType)             == sValue) return ENumberFormat::IDEOGRAPH;
+	if (GetValueName(EValue::CircledIdeograph, eType)      == sValue) return ENumberFormat::CIRCLED_IDEOGRAPH;
+	if (GetValueName(EValue::DecagonCircle, eType)         == sValue) return ENumberFormat::DECAGON_CIRCLE;
+	if (GetValueName(EValue::DecagonCircleHanja, eType)    == sValue) return ENumberFormat::DECAGON_CIRCLE_HANJA;
+	if (GetValueName(EValue::Symbol, eType)                == sValue) return ENumberFormat::SYMBOL;
+	if (GetValueName(EValue::UserChar, eType)              == sValue) return ENumberFormat::USER_CHAR;
+
+	return ENumberFormat::DIGIT;
+}
+
 CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-    : CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
+    : CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo), m_arNumbering{},
+      m_shStart(1), m_arExtLevelStart{}
 {
 	oBuffer.SavePosition();
 
@@ -92,7 +120,8 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 }
 
 CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
-    : CHWPRecord(EHWPTag::HWPTAG_NUMBERING, 0, 0), m_pParent(&oDocInfo)
+    : CHWPRecord(EHWPTag::HWPTAG_NUMBERING, 0, 0), m_pParent(&oDocInfo), m_arNumbering{},
+      m_shStart(1), m_arExtLevelStart{}
 {
 	m_shStart = oReader.GetAttributeInt(GetAttributeName(EAttribute::Start, eType), 1);
 
@@ -104,9 +133,11 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 	{
 		TO_LOWER(sNodeName);
 
-		if (GetNodeName(ENode::ParaHead, eType) != sNodeName &&
-		    (EHanType::HWPX == eType && "parahead" != sNodeName))
+		if ("hh:parahead" != sNodeName && "parahead" != sNodeName)
 			continue;
+
+		sNumFormat.clear();
+		shLevel = 0;
 
 		START_READ_ATTRIBUTES(oReader)
 		{
@@ -149,7 +180,13 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 		}
 		END_READ_ATTRIBUTES(oReader)
 
-		if (GetValueName(EValue::Digit, eType))
+		m_arNumbering[unIndex].m_eNumFormat = ::HWP::GetNumberFormat(sNumFormat, eType);
+
+		const HWP_STRING sLevelFormat{oReader.GetText()};
+
+		if (!sLevelFormat.empty())
+			m_arNumbering[unIndex].m_sNumFormat = sLevelFormat;
+		else if (GetValueName(EValue::Digit, eType))
 		{
 			if (shLevel > 0 && shLevel < 11)
 				m_arNumbering[unIndex].m_sNumFormat = L'^' + std::to_wstring(shLevel) + L'.';
@@ -256,6 +293,14 @@ HWP_STRING CHWPRecordNumbering::GetNumFormat(unsigned short ushIndex) const
 		return HWP_STRING();
 
 	return m_arNumbering[ushIndex].m_sNumFormat;
+}
+
+ENumberFormat CHWPRecordNumbering::GetNumFormatType(unsigned short ushIndex) const
+{
+	if (ushIndex >= 7)
+		return ENumberFormat::DIGIT;
+
+	return m_arNumbering[ushIndex].m_eNumFormat;
 }
 
 HWP_BYTE CHWPRecordNumbering::GetAlign(unsigned short ushIndex) const

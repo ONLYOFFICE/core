@@ -125,7 +125,6 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("x16r2:formatCode16"),	m_oFormatCode16 )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("numFmtId"),		m_oNumFmtId )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("sourceLinked"),	m_oSourceLinked )
-
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Format"),		m_oFormatCode )
 			WritingElement_ReadAttributes_End( oReader )
 		}
@@ -189,6 +188,18 @@ namespace OOX
 					if (m_arrItems.back()->m_oNumFmtId.IsInit())
 					{
 						m_mapNumFmtIndex.insert(std::make_pair(m_arrItems.back()->m_oNumFmtId->GetValue(), m_arrItems.size() - 1));
+					}
+				}
+				else if (L"AlternateContent" == sName)
+				{
+					int nSubDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nSubDepth))
+					{
+						std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+						if (L"Choice" == sSubName)
+						{
+							fromXML(oReader);
+						}
 					}
 				}
 			}

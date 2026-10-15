@@ -801,7 +801,7 @@ namespace ODRAW
 
             return ((Type == pBrush->Type) &&
                 (Color1 == pBrush->Color1) && (Color2 == pBrush->Color2) &&
-                (Alpha1 == pBrush->Alpha1) && (Alpha2 == pBrush->Alpha2) && (LinearAngle == pBrush->LinearAngle) &&
+                (Alpha1 == pBrush->Alpha1) && (Alpha2 == pBrush->Alpha2) && (LinearAngle == pBrush->LinearAngle) && (Focus == pBrush->Focus) &&
                 (TexturePath == pBrush->TexturePath) && (TextureAlpha == pBrush->TextureAlpha) && (TextureMode == pBrush->TextureMode) &&
                 (Rectable == pBrush->Rectable) && (Rect.Equals(pBrush->Rect)));
         }
@@ -854,6 +854,7 @@ namespace ODRAW
             Rect = other.Rect;
 
             LinearAngle = other.LinearAngle;
+            Focus = other.Focus;
 
             ColorsPosition = other.ColorsPosition;
         }
@@ -874,6 +875,7 @@ namespace ODRAW
             Rect = other.Rect;
 
             LinearAngle = other.LinearAngle;
+            Focus = other.Focus;
 
             ColorsPosition = other.ColorsPosition;
             return *this;

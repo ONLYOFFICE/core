@@ -72,7 +72,7 @@ namespace OOX
 			nullable_string displayName;
 			nullable_string userId;
 			nullable_string providerId;
-			nullable_string id;
+			nullable<SimpleTypes::CGuid> id;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> extLst;
 		};
@@ -100,7 +100,6 @@ namespace OOX
 
 			const CPath& GetReadPath();
 
-		public:
 			const nullable<std::unordered_map<std::wstring, CPerson*>> GetPersonList();
 
 		private:

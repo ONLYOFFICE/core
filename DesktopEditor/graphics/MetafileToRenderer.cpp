@@ -282,7 +282,7 @@ std::wstring IMetafileToRenderter::GetImagePath(const std::wstring& sPath)
 				}
 
 				std::wstring wsSvgExt(L".svg");
-				if (0 == sImagePath.compare(sImagePath.length() - wsSvgExt.length(), std::wstring::npos, wsSvgExt))
+				if (sImagePath.length() >= wsSvgExt.length() && 0 == sImagePath.compare(sImagePath.length() - wsSvgExt.length(), std::wstring::npos, wsSvgExt))
 				{
 					std::wstring wsTestPath = sImagePath.substr(0, sImagePath.length() - wsSvgExt.length());
 					if (NSFile::CFileBinary::Exists(wsTestPath + L".emf"))
@@ -1062,12 +1062,14 @@ namespace NSOnlineOfficeBinToPdf
 			case ctPageRotate:
 			case ctHeadings:
 			case ctRedact:
+			case ctRedactMeta:
+			case ctMacros:
 			{
 				IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Undefined;
 				switch (eCommand)
 				{
 				case ctFormField:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::FormField;   break;
-				case ctAnnotField:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Annotaion;   break;
+				case ctAnnotField:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Annotation;  break;
 				case ctAnnotFieldDelete: eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::DeleteAnnot; break;
 				case ctWidgetsInfo:      eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::WidgetsInfo; break;
 				case ctShapeStart:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;  break;
@@ -1076,6 +1078,8 @@ namespace NSOnlineOfficeBinToPdf
 				case ctPageRotate:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageRotate;  break;
 				case ctHeadings:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Headings;    break;
 				case ctRedact:           eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Redact;      break;
+				case ctRedactMeta:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::RedactMeta;  break;
+				case ctMacros:           eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Macros;      break;
 				default:
 					break;
 				}
@@ -1412,8 +1416,12 @@ namespace NSOnlineOfficeBinToPdf
 			case ctWidgetsInfo:
 			case ctShapeStart:
 			case ctShapeEnd:
+			case ctPageClear:
 			case ctPageRotate:
 			case ctHeadings:
+			case ctRedact:
+			case ctRedactMeta:
+			case ctMacros:
 			default:
 			{
 				BYTE* cur = oReader.GetCurrentBuffer();

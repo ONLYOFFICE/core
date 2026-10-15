@@ -38,7 +38,9 @@
 #include "./../Limit/FrameShape.h"
 #include "./../Limit/AlbumLayout.h"
 #include "./../Limit/SlideSize.h"
+#include "./../Limit/Orient.h"
 #include "./../Logic/TextFont.h"
+#include "./../Logic/UniColor.h"
 
 namespace PPTX
 {
@@ -64,7 +66,6 @@ namespace PPTX
 
 			virtual void FillParentPointersForChilds() {}
 		};
-
 		class SectionLst : public WrapperWritingElement
 		{
 		public:
@@ -82,6 +83,51 @@ namespace PPTX
 			virtual void FillParentPointersForChilds() {};
 		};
 
+		class ExtendedGuide : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(ExtendedGuide)
+
+			nullable_uint id;
+			nullable_string name;
+			nullable_limit<Limit::Orient> orient;
+			nullable_int pos;
+			nullable_bool userDrawn;
+
+			PPTX::Logic::UniColor clr;
+			//extLst
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter, unsigned int nDefaultId) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds();
+		};
+
+		class ExtendedGuideList : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(ExtendedGuideList)
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter, const std::wstring& strName) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds();
+
+			std::wstring m_name;
+			std::vector<ExtendedGuide> m_arGuide;
+			//extLst
+		};
+//----------------------------------------------------------------------------------------------------
 		class SldSz : public WrapperWritingElement
 		{
 		public:
@@ -167,7 +213,7 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(EmbeddedFontDataId)
 
-				virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
 			std::wstring rid;

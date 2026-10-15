@@ -950,6 +950,10 @@ namespace NSDocxRenderer
 
 		// responsible for rectangular shape frame dimensions
 		oWriter.WriteString(L"<a:xfrm");
+		if (m_bImgFlipH)
+			oWriter.WriteString(L" flipH=\"1\"");
+		if (m_bImgFlipV)
+			oWriter.WriteString(L" flipV=\"1\"");
 		if (fabs(m_dRotation) > c_dMIN_ROTATION)
 		{
 			oWriter.WriteString(L" rot=\"");
@@ -1139,6 +1143,9 @@ namespace NSDocxRenderer
 			oWriter.WriteBYTE(1); oWriter.AddSInt(static_cast<int>(top * c_dMMToEMU));
 			oWriter.WriteBYTE(2); oWriter.AddSInt(static_cast<int>(width * c_dMMToEMU));
 			oWriter.WriteBYTE(3); oWriter.AddSInt(static_cast<int>(height * c_dMMToEMU));
+
+			oWriter.WriteBYTE(8); oWriter.WriteBool(m_bImgFlipH);
+			oWriter.WriteBYTE(9); oWriter.WriteBool(m_bImgFlipV);
 
 			if (fabs(m_dRotation) > c_dMIN_ROTATION)
 			{

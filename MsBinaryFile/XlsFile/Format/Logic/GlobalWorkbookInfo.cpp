@@ -99,7 +99,7 @@ std::unordered_map<int, std::wstring>				GlobalWorkbookInfo::mapTableNames_stati
 std::unordered_map<int, std::vector<std::wstring>>	GlobalWorkbookInfo::mapTableColumnNames_static;
 std::vector<std::wstring>							GlobalWorkbookInfo::arDefineNames_static;
 std::unordered_map<int, std::vector<int>>			GlobalWorkbookInfo::mapXtiTables_static;
-std::unordered_map<int, std::wstring>				GlobalWorkbookInfo::mapTableRefsStatic;
+std::unordered_map<int, std::tuple<std::wstring, int, int>>				GlobalWorkbookInfo::mapTableRefsStatic;
 
 GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * converter) :	CodePage(code_page), xls_converter(converter)
 {
@@ -400,7 +400,7 @@ _UINT16 GlobalWorkbookInfo::RegisterNumFormat(_UINT16 ifmt, const std::wstring &
 }
 const int GlobalWorkbookInfo::RegistrDxfn(const std::wstring & dxfn)
 {
-	if (dxfn.empty() == true) return -1;
+	if (dxfn.empty() || dxfn == L"<dxf/>") return -1;
 
 	std::map<std::wstring, int>::iterator pFind = mapUserDxfs.find(dxfn);
 

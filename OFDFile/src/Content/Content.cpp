@@ -42,11 +42,11 @@ CContent::CContent()
 
 CContent::~CContent()
 {
-	for (CLayer* pLayer : m_arLayers)
+	for (const CLayer* pLayer : m_arLayers)
 		delete pLayer;
 }
 
-bool CContent::Read(CXmlReader& oLiteReader)
+bool CContent::Read(CXmlReader& oLiteReader, IFolder* pFolder)
 {
 	if (L"ofd:Content" != oLiteReader.GetName())
 		return false;
@@ -59,7 +59,7 @@ bool CContent::Read(CXmlReader& oLiteReader)
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:Layer" == wsNodeName)
-			m_arLayers.push_back(new CLayer(oLiteReader));
+			m_arLayers.push_back(new CLayer(oLiteReader, pFolder));
 	}
 
 	return false;
@@ -73,4 +73,12 @@ void CContent::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageT
 	for (const CLayer* pLayer : m_arLayers)
 		pLayer->Draw(pRenderer, oCommonData, ePageType);
 }
+
+#ifdef BUILDING_WASM_MODULE
+void CContent::GetLinks(NSWasm::CData& oRes) const
+{
+	for (const CLayer* pLayer : m_arLayers)
+		pLayer->GetLinks(oRes);
+}
+#endif
 }

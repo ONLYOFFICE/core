@@ -139,41 +139,6 @@ void number_style_base::oox_convert(oox::num_format_context & Context)
     Context.add_format(L"", num_format);
 
 }
-
-
-//void number_style_base::xlsx_convert(oox::xlsx_conversion_context & Context)
-//{
-//    if (!style_map_.empty())
-//    {
-//        BOOST_FOREACH(const office_element_ptr & elm, style_map_)
-//        {
-//            if (const style_map * styleMap = dynamic_cast<const style_map *>(elm.get()))
-//            {
-//                const std::wstring applyStyleName	= styleMap->style_apply_style_name_.style_name();
-//                const std::wstring condition		= styleMap->style_condition_;
-//
-//                odf_read_context & odfContext = Context.root()->odf_context();
-//                
-//				if (office_element_ptr num_style = odfContext.numberStyles().find_by_style_name(applyStyleName))
-//                {
-//                    if (number_style_base * concrete_num_style = dynamic_cast<number_style_base *>(num_style.get()))
-//                    {
-//                        concrete_num_style->oox_convert_impl(Context.get_num_format_context());
-//
-//                        const std::wstring num_format = Context.get_num_format_context().get_last_format();
-//                        Context.get_num_format_context().add_format(condition, num_format);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//    this->oox_convert_impl(Context);
-//    const std::wstring num_format = Context.get_num_format_context().get_last_format();
-//    Context.get_num_format_context().add_format(L"", num_format);
-//
-//}
-//
 void number_style_base::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     common_data_style_attlist_.add_attributes(Attributes);
@@ -579,22 +544,22 @@ void number_month::oox_convert(oox::num_format_context & Context)
     {
         if (number_style_.get_value_or(L"short") == L"long")
         {
-            strm << L"mm";
+            strm << (Context.get_shield() ? L"MM" : L"mm");
         }
         else
         {
-            strm << L"m";
+            strm << (Context.get_shield() ? L"M" : L"m");
         }
     }
     else
     {
         if (number_style_.get_value_or(L"short") == L"long")
         {
-            strm << L"mmmm";
+            strm << (Context.get_shield() ? L"MMMM" : L"mmmm");
         }
         else
         {
-            strm << L"mmm";
+            strm << (Context.get_shield() ? L"MMM" : L"mmm");
         }
     }
 }

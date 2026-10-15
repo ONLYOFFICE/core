@@ -59,18 +59,16 @@ precompile_header {
     HEADERS += precompiled.h
 }
 
-core_release {
+build_monolith_objects {
 SOURCES += \
 	odf_converter.cpp \
 	odf_datatypes.cpp \
 	odf_reader.cpp \
 	odf_writer.cpp
-}
-
-core_debug {
-SOURCES += \    
-        ../../DataTypes/referenceformat.cpp \
-        ../../DataTypes/mathvariant.cpp \
+} else {
+SOURCES += \
+	../../DataTypes/referenceformat.cpp \
+	../../DataTypes/mathvariant.cpp \
 	../../DataTypes/anchortype.cpp \
 	../../DataTypes/animation_attlists.cpp \
 	../../DataTypes/backgroundcolor.cpp \
@@ -79,8 +77,8 @@ SOURCES += \
 	../../DataTypes/borderstyle.cpp \
 	../../DataTypes/borderwidths.cpp \
 	../../DataTypes/calcext_type.cpp \
-        ../../DataTypes/chartaxistype.cpp \
-        ../../DataTypes/chartdatalabelnumber.cpp \
+	../../DataTypes/chartaxistype.cpp \
+	../../DataTypes/chartdatalabelnumber.cpp \
 	../../DataTypes/charterrorcategory.cpp \
 	../../DataTypes/chartinterpolation.cpp \
 	../../DataTypes/chartlabelarrangement.cpp \
@@ -179,8 +177,8 @@ SOURCES += \
 	../../DataTypes/grandtotal.cpp \
 	../../DataTypes/membertype.cpp \
 	../../DataTypes/tabletype.cpp \
-        ../../DataTypes/tabledatatype.cpp \
-        ../../DataTypes/tableoperator.cpp \
+	../../DataTypes/tabledatatype.cpp \
+	../../DataTypes/tableoperator.cpp \
 	../../DataTypes/tableorientation.cpp \
 	../../DataTypes/tablefunction.cpp \
 	../../DataTypes/tableorder.cpp \
@@ -193,9 +191,9 @@ SOURCES += \
 	../../DataTypes/timeperiod.cpp \
 	../../DataTypes/messagetype.cpp \
 	../../DataTypes/stylecellprotect.cpp \
-        ../../DataTypes/sparklines.cpp \
-        ../../DataTypes/color_mode.cpp \
-        \
+	../../DataTypes/sparklines.cpp \
+	../../DataTypes/color_mode.cpp \
+	\
 	../../Reader/Format/abstract_xml.cpp \
 	../../Reader/Format/anim_elements.cpp \
 	../../Reader/Format/calcs_styles.cpp \
@@ -234,8 +232,8 @@ SOURCES += \
 	../../Reader/Format/office_settings.cpp \
 	../../Reader/Format/office_spreadsheet.cpp \
 	../../Reader/Format/office_text.cpp \
-        ../../Reader/Format/office_drawing.cpp \
-        ../../Reader/Format/office_meta.cpp \
+	../../Reader/Format/office_drawing.cpp \
+	../../Reader/Format/office_meta.cpp \
 	../../Reader/Format/paragraph_elements.cpp \
 	../../Reader/Format/ruby.cpp \
 	../../Reader/Format/search_table_cell.cpp \
@@ -349,6 +347,7 @@ SOURCES += \
 	../../Reader/Converter/xlsx_data_validation.cpp \
 	../../Reader/Converter/xlsx_utils.cpp \
 	../../Reader/Converter/xlsx_xf.cpp \
+	../../Reader/Converter/StarMath2OOXML/shakey.cpp \
 	../../Reader/Converter/StarMath2OOXML/cooxml2odf.cpp \
 	\
 	../../Writer/Format/office_document.cpp \
@@ -389,7 +388,7 @@ SOURCES += \
 	../../Writer/Format/office_elements_create.cpp \
 	../../Writer/Format/office_spreadsheet.cpp \
 	../../Writer/Format/office_text.cpp \
-        ../../Writer/Format/office_meta.cpp \
+	../../Writer/Format/office_meta.cpp \
 	../../Writer/Format/oox_shape_defines.cpp \
 	../../Writer/Format/paragraph_elements.cpp \
 	../../Writer/Format/style_chart_properties.cpp \
@@ -479,8 +478,8 @@ HEADERS += \
 	../../Common/xml/xmlchar.h \
 	../../Common/xml/xmlelement.h \
 	\
-        ../../DataTypes/referenceformat.h \
-        ../../DataTypes/mathvariant.h \
+	../../DataTypes/referenceformat.h \
+	../../DataTypes/mathvariant.h \
 	../../DataTypes/anchortype.h \
 	../../DataTypes/animation_attlists.h \
 	../../DataTypes/backgroundcolor.h \
@@ -593,9 +592,9 @@ HEADERS += \
 	../../DataTypes/timeperiod.h \
 	../../DataTypes/messagetype.h \
 	../../DataTypes/stylecellprotect.h \
-        ../../DataTypes/tabledatatype.h \
-        ../../DataTypes/tableoperator.h \
-        \
+	../../DataTypes/tabledatatype.h \
+	../../DataTypes/tableoperator.h \
+	\
 	../../Formulas/formulasconvert.h \
 	../../Reader/Format/odf_document.h \
 	../../Reader/Format/abstract_xml.h \
@@ -665,7 +664,7 @@ HEADERS += \
 	../../Reader/Format/math_table_elements.h \
 	../../Reader/Format/math_token_elements.h \
 	../../Reader/Format/calcext_elements.h \
-	../../Reader/Format/table_database_ranges.h \		
+	../../Reader/Format/table_database_ranges.h \
 	../../Reader/Converter/docx_content_type.h \
 	../../Reader/Converter/docx_conversion_context.h \
 	../../Reader/Converter/docx_conversion_state.h \
@@ -749,6 +748,7 @@ HEADERS += \
 	../../Reader/Converter/xlsx_xf.h \
 	../../Reader/Converter/conversionelement.h \
 	../../Reader/Converter/ConvertOO2OOX.h \
+	../../Reader/Converter/StarMath2OOXML/shakey.h \
 	../../Reader/Converter/StarMath2OOXML/cooxml2odf.h \
 	\
 	../../Writer/Format/math_elementaries.h \
@@ -770,6 +770,7 @@ HEADERS += \
 	../../Writer/Format/number_style.h \
 	../../Writer/Format/object_package.h \
 	../../Writer/Format/odf_chart_context.h \
+	../../Common/odf_date_time_utils.h \
 	../../Writer/Format/odf_comment_context.h \
 	../../Writer/Format/odf_notes_context.h \
 	../../Writer/Format/odf_conversion_context.h \
@@ -798,7 +799,7 @@ HEADERS += \
 	../../Writer/Format/office_elements_type.h \
 	../../Writer/Format/office_spreadsheet.h \
 	../../Writer/Format/office_text.h \
-        ../../Writer/Format/office_meta.h \
+	../../Writer/Format/office_meta.h \
 	../../Writer/Format/oox_shape_defines.h \
 	../../Writer/Format/paragraph_elements.h \
 	../../Writer/Format/style_chart_properties.h \
@@ -855,5 +856,4 @@ HEADERS += \
 	../../Writer/Converter/Oox2OdfConverter.h \
 	../../Writer/Converter/VmlShapeTypes2Oox.h \
 	../../Writer/Converter/XlsxConverter.h \
-	../../Writer/Converter/PptxConverter.h \
-
+	../../Writer/Converter/PptxConverter.h

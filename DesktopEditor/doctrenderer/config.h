@@ -80,6 +80,7 @@ namespace NSDoctRenderer
 	{
 	public:
 		std::wstring m_strSdkPath;
+		bool m_bIsNotUseConfigSdkPath;
 
 		std::vector<std::wstring> m_arrFiles;
 
@@ -92,7 +93,7 @@ namespace NSDoctRenderer
 		std::wstring m_sErrorsLogFile;
 
 	public:
-		CDoctRendererConfig() : m_bIsNotUseConfigAllFontsDir(false), m_bIsUseCache(true)
+		CDoctRendererConfig() : m_bIsNotUseConfigSdkPath(false), m_bIsNotUseConfigAllFontsDir(false), m_bIsUseCache(true)
 		{
 		}
 
@@ -122,6 +123,12 @@ namespace NSDoctRenderer
 		{
 			m_strAllFonts = private_GetFile(NSFile::GetProcessDirectory() + L"/", sFilePath);
 			m_bIsNotUseConfigAllFontsDir = true;
+		}
+
+		void SetSdkPathExternal(const std::wstring& sSdkPath)
+		{
+			m_strSdkPath = sSdkPath;
+			m_bIsNotUseConfigSdkPath = !sSdkPath.empty();
 		}
 
 		void Parse(const std::wstring& sWorkDir)
@@ -191,11 +198,14 @@ namespace NSDoctRenderer
 				}
 			}
 
-			m_strSdkPath = oNode.ReadNodeText(L"sdkjs");
-			if (!m_strSdkPath.empty())
+			if (!m_bIsNotUseConfigSdkPath)
 			{
-				if (0 == m_strSdkPath.find(L"./") || !NSDirectory::Exists(m_strSdkPath))
-					m_strSdkPath = sConfigDir + m_strSdkPath;
+				m_strSdkPath = oNode.ReadNodeText(L"sdkjs");
+				if (!m_strSdkPath.empty())
+				{
+					if (0 == m_strSdkPath.find(L"./") || !NSDirectory::Exists(m_strSdkPath))
+						m_strSdkPath = sConfigDir + m_strSdkPath;
+				}
 			}
 
 			m_sConsoleLogFile = oNode.ReadNodeText(L"LogFileConsoleLog");

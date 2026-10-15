@@ -34,6 +34,7 @@
  */
 
 #include "SimpleOfficeArtContainers.h"
+#include "OfficeArtBStoreContainer.h"
 
 namespace ODRAW
 {
@@ -58,6 +59,15 @@ void OfficeArtClientTextbox::loadFields(XLS::CFRecord& record)
 	if (rh_own.recLen > 0)
 	{
 	}
+}
+
+void OfficeArtClientTextbox::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0x00;
+	rh_own.recInstance = 0;
+	rh_own.recType = 0xF00D;
+	rh_own.recLen =  0;
+	record << rh_own;
 }
 
 void OfficeArtClientData::loadFields(XLS::CFRecord& record)
@@ -128,6 +138,32 @@ void OfficeArtDggContainer::loadFields(XLS::CFRecord& record)
 	}
 }
 
+void OfficeArtDggContainer::save(XLS::CFRecord& record)
+{
+	rh_own.recVer = 0xF;
+	rh_own.recInstance = 0;
+	rh_own.recType =  0xF000;
+	record << rh_own;
+	auto sizePos = record.getRdPtr();
+
+	if(m_OfficeArtFDGGBlock != nullptr)
+		m_OfficeArtFDGGBlock->save(record);
+	if(m_OfficeArtBStoreContainer != nullptr)
+		m_OfficeArtBStoreContainer->save(record);
+	//calculating size
+	rh_own.recLen = record.getRdPtr() - sizePos;
+	record.RollRdPtrBack(rh_own.recLen + 4);
+	auto recLen = rh_own.recLen;
+	if(m_OfficeArtBStoreContainer != nullptr)
+	{
+		//recLen+=8;//container Header
+		auto bstore = static_cast<ODRAW::OfficeArtBStoreContainer*>(m_OfficeArtBStoreContainer.get());
+		recLen+= bstore->rh_own.recLen;
+	}
+	record << recLen;
+	record.skipNunBytes(rh_own.recLen);
+}
+
 void OfficeArtSpgrContainer::loadFields(XLS::CFRecord& record)
 {
 	OfficeArtContainer::loadFields(record);
@@ -156,10 +192,11 @@ void OfficeArtSpgrContainer::save(XLS::CFRecord& record)
 		i->save(record);
 
 	//calculating size
-	rh_own.recLen = record.getRdPtr() - sizePos;
-	record.RollRdPtrBack(rh_own.recLen + 4);
+	auto recSize = record.getRdPtr() - sizePos;
+	rh_own.recLen += recSize;
+	record.RollRdPtrBack(recSize + 4);
 	record << rh_own.recLen;
-	record.skipNunBytes(rh_own.recLen);
+	record.skipNunBytes(recSize);
 }
 
 void OfficeArtSpContainer::loadFields(XLS::CFRecord& record)
@@ -210,7 +247,8 @@ void OfficeArtSpContainer::save(XLS::CFRecord& record)
 	//calculating size
 	rh_own.recLen = record.getRdPtr() - sizePos;
 	record.RollRdPtrBack(rh_own.recLen + 4);
-	record << rh_own.recLen;
+	_UINT32	fullSize = rh_own.recLen + extraSize;
+	record << fullSize;
 	record.skipNunBytes(rh_own.recLen);
 }
 

@@ -55,7 +55,8 @@ class RenderParameter
 		int		nType;
 		int		nValue;
 		int		RtfType;
-		
+		int		nParaStyleForeColor;	// fore color index of the applied paragraph style (PROP_DEF if none) - to block OOXML color inheritance
+
         std::wstring sValue;
 
 		RenderParameter() : poWriter(NULL), poDocument(NULL), poRels(NULL)
@@ -63,6 +64,7 @@ class RenderParameter
 			nType		= RENDER_TO_OOX_PARAM_UNKNOWN;
 			nValue		= PROP_DEF;
 			RtfType		= RTF_MAX;
+			nParaStyleForeColor = PROP_DEF;
 		}
 };
 

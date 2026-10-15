@@ -365,7 +365,7 @@ CBaseShapePtr CPPTXShape::CreateByType(OOXMLShapes::ShapeType type)
 	case OOXMLShapes::sptCDoubleWave:				return CBaseShapePtr(new OOXMLShapes::CDoubleWave());
 	case OOXMLShapes::sptCDownArrow:				return CBaseShapePtr(new OOXMLShapes::CDownArrow());
 	case OOXMLShapes::sptCDownArrowCallout:			return CBaseShapePtr(new OOXMLShapes::CDownArrowCallout());
-	//case OOXMLShapes::sptCEllipse:					return CBaseShapePtr(new OOXMLShapes::CEllipse());
+	case OOXMLShapes::sptCEllipse:					return CBaseShapePtr(new OOXMLShapes::CEllipse());
 	case OOXMLShapes::sptCEllipseRibbon:			return CBaseShapePtr(new OOXMLShapes::CEllipseRibbon());
 	case OOXMLShapes::sptCEllipseRibbon2:			return CBaseShapePtr(new OOXMLShapes::CEllipseRibbon2());
 	case OOXMLShapes::sptCFlowChartAlternateProcess:return CBaseShapePtr(new OOXMLShapes::CFlowChartAlternateProcess());
@@ -422,7 +422,7 @@ CBaseShapePtr CPPTXShape::CreateByType(OOXMLShapes::ShapeType type)
 	case OOXMLShapes::sptCLeftRightUpArrow:			return CBaseShapePtr(new OOXMLShapes::CLeftRightUpArrow());
 	case OOXMLShapes::sptCLeftUpArrow:				return CBaseShapePtr(new OOXMLShapes::CLeftUpArrow());
 	case OOXMLShapes::sptCLightningBolt:			return CBaseShapePtr(new OOXMLShapes::CLightningBolt());
-	//case OOXMLShapes::sptCLine:						return CBaseShapePtr(new OOXMLShapes::CLine());
+	case OOXMLShapes::sptCLine:						return CBaseShapePtr(new OOXMLShapes::CLine());
 	case OOXMLShapes::sptCLineInv:					return CBaseShapePtr(new OOXMLShapes::CLineInv());
 	case OOXMLShapes::sptCMathDivide:				return CBaseShapePtr(new OOXMLShapes::CMathDivide());
 	case OOXMLShapes::sptCMathEqual:				return CBaseShapePtr(new OOXMLShapes::CMathEqual());
@@ -444,7 +444,7 @@ CBaseShapePtr CPPTXShape::CreateByType(OOXMLShapes::ShapeType type)
 	case OOXMLShapes::sptCPlus:						return CBaseShapePtr(new OOXMLShapes::CPlus());
 	case OOXMLShapes::sptCQuadArrow:				return CBaseShapePtr(new OOXMLShapes::CQuadArrow());
 	case OOXMLShapes::sptCQuadArrowCallout:			return CBaseShapePtr(new OOXMLShapes::CQuadArrowCallout());
-	//case OOXMLShapes::sptCRect:						return CBaseShapePtr(new OOXMLShapes::CRect());
+	case OOXMLShapes::sptCRect:						return CBaseShapePtr(new OOXMLShapes::CRect()); 
 	case OOXMLShapes::sptCRibbon:					return CBaseShapePtr(new OOXMLShapes::CRibbon());
 	case OOXMLShapes::sptCRibbon2:					return CBaseShapePtr(new OOXMLShapes::CRibbon2());
 	case OOXMLShapes::sptCRightArrow:				return CBaseShapePtr(new OOXMLShapes::CRightArrow());

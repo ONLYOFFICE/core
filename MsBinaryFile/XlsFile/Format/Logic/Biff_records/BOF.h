@@ -91,9 +91,9 @@ public:
     bool fGlJmp = 0;
     bool fFontLimit = 0;
 	
-	_UINT16 verXLHigh = 0x7;
+	_UINT16 verXLHigh = 0x8;
 	unsigned char	verLowestBiff = 0x6;
-	unsigned char	verLastXLSaved = 0x7;
+	unsigned char	verLastXLSaved = 0x8;
 	
 	_CP_OPT(unsigned int) stream_ptr;
 

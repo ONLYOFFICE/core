@@ -69,10 +69,10 @@ namespace SVG
 	{
 		Aggplus::CMatrix oOldTransform;
 
-		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
+		if (!StartPath(pRenderer, pFile, oOldTransform, oMode, true))
 			return false;
 
-		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
+		TBounds oBounds = (NULL != m_pParent && (IsRelativeValue(m_oCx) || IsRelativeValue(m_oCy) || IsRelativeValue(m_oRx) || IsRelativeValue(m_oRy))) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
 		double dParentWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
 		double dParentHeight = oBounds.m_dBottom - oBounds.m_dTop;
@@ -85,7 +85,7 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(dX + dRx, dY);
 		pRenderer->PathCommandArcTo(dX - dRx, dY - dRy, dRx * 2.0, dRy * 2.0, 0, 360);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject, true);
 
 		return true;
 	}
@@ -112,8 +112,7 @@ namespace SVG
 		{
 			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
 
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+			TransformBounds(oBounds, pTransform->GetFinalValue());
 
 			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 		}

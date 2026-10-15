@@ -231,6 +231,8 @@ public:
  	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	_CP_OPT(std::wstring) svg_d_;
 	_CP_OPT(std::wstring) svg_viewbox_;
+	_CP_OPT(odf_types::length) svg_height_;
+	_CP_OPT(odf_types::length) svg_width_;
 
 };
 /////////////////////////////////////////////////////////////////////////

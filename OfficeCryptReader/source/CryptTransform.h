@@ -70,6 +70,7 @@ namespace CRYPT
 class Decryptor
 {
 	public:
+		virtual ~Decryptor() {}
 		virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos, const size_t block_size) = 0;
 		virtual void Decrypt(char* data, const size_t size, const unsigned long block_index) = 0;
 		virtual bool SetPassword(std::wstring password) = 0;

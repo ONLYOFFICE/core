@@ -127,6 +127,14 @@ _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 }
 
 
+BinDocxRW::IDocumentContentProvider* CTxtXmlFile::txt_CreateContentProvider(const std::wstring & sSrcFileName, const std::wstring & sXMLOptions)
+{
+	int encoding, lcid;
+	ParseTxtOptions(sXMLOptions, encoding, lcid);
+
+	return new Txt2Docx::ContentProvider(sSrcFileName, encoding);
+}
+
 _UINT32 CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions)
 {
 	bool result = true;

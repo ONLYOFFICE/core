@@ -173,6 +173,8 @@ namespace NExtractTools
 			NSDirectory::CreateDirectory(sImagesDirectory);
 
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		convertParams.InitDoctRenderer(&oDoctRenderer);
+
 		std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT,
 									   NSDoctRenderer::DoctRendererFormat::FormatFile::HTML,
 									   sFrom, sHtmlFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);

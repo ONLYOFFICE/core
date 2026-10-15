@@ -832,7 +832,7 @@ void table_content_validation::add_attributes(xml::attributes_wc_ptr const & Att
 	CP_APPLY_ATTR(L"table:name",				table_name_);
     CP_APPLY_ATTR(L"table:condition",			table_condition_);
 	CP_APPLY_ATTR(L"table:display-list",		table_display_list_);
-	CP_APPLY_ATTR(L"table:allowempty-cell",		table_allowempty_cell_);
+	CP_APPLY_ATTR(L"table:allow-empty-cell",	table_allowempty_cell_);
 	CP_APPLY_ATTR(L"table:base-cell-address",	table_base_cell_address_);
 }
 void table_content_validation::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

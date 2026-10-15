@@ -1469,6 +1469,7 @@ namespace Draw
 
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+		bool bMacroRead = false;
 		while (pReader->GetPos() < end)
 		{
 			BYTE _rec = pReader->GetUChar();
@@ -1622,6 +1623,7 @@ namespace Draw
 					if (pReader->GetRelsPtr())
 					{
 						pReader->GetRelsPtr()->Add(oFile);
+						bMacroRead = true;
 					}
 				}
 				else
@@ -1659,6 +1661,8 @@ namespace Draw
 		}
 		pReader->Seek(end);
 		pReader->SetRelsPtr(rels_old);
+
+		m_bMacroEnabled = bMacroRead;
 	}
 	void OOX::Draw::CDocumentFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{

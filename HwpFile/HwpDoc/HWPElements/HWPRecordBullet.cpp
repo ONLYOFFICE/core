@@ -35,10 +35,14 @@
 
 #include "HWPRecordBullet.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
+	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo), m_oHeaderInfo{},
+	  m_chBulletChar(0), m_nBulletImage(0), m_chBright(0), m_chContrast(0),
+	  m_chImageEffect(0), m_chCheckBulletChar(0)
 {
 	oBuffer.SavePosition();
 
@@ -81,11 +85,13 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 }
 
 CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
-	: CHWPRecord(EHWPTag::HWPTAG_BULLET, 0, 0), m_pParent(&oDocInfo)
+	: CHWPRecord(EHWPTag::HWPTAG_BULLET, 0, 0), m_pParent(&oDocInfo), m_oHeaderInfo{},
+	  m_chBulletChar(0), m_nBulletImage(0), m_chBright(0), m_chContrast(0),
+	  m_chImageEffect(0), m_chCheckBulletChar(0)
 {
 	if (EHanType::HWPML == eType)
 		return; // TODO:: Implement when example is encountered
-	
+
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("char" == sAttributeName)
@@ -107,8 +113,92 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, E
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hc:img")
-		m_sBinItemRefID = oReader.GetAttribute("binaryItemIDRef");
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("hc:img" == sNodeName)
+		{
+			m_sBinItemRefID = oReader.GetAttribute("binaryItemIDRef");
+			continue;
+		}
+
+		if (GetNodeName(ENode::ParaHead, eType) != sNodeName)
+			continue;
+
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if (GetAttributeName(EAttribute::Aligment, eType) == sAttributeName)
+			{
+				const std::string sType{oReader.GetTextA()};
+
+				if (GetValueName(EValue::Left, eType) == sType)
+					m_oHeaderInfo.m_chAlign = 0;
+				else if (GetValueName(EValue::Center, eType) == sType)
+					m_oHeaderInfo.m_chAlign = 1;
+				else if (GetValueName(EValue::Right, eType) == sType)
+					m_oHeaderInfo.m_chAlign = 2;
+			}
+			else if (GetAttributeName(EAttribute::UseInstWidth, eType) == sAttributeName)
+				m_oHeaderInfo.m_bUseInstWidth = oReader.GetBool();
+			else if (GetAttributeName(EAttribute::AutoIndent, eType) == sAttributeName)
+				m_oHeaderInfo.m_bAutoIndent = oReader.GetBool();
+			else if (GetAttributeName(EAttribute::WidthAdjust, eType) == sAttributeName)
+				m_oHeaderInfo.m_shWidthAdjust = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::TextOffsetType, eType) == sAttributeName)
+			{
+				const std::string sType{oReader.GetTextA()};
+
+				if (GetValueName(EValue::Percent, eType) == sType)
+					m_oHeaderInfo.m_chTextOffsetType = 0;
+				else if (GetValueName(EValue::HwpUnit, eType) == sType)
+					m_oHeaderInfo.m_chTextOffsetType = 1;
+			}
+			else if (GetAttributeName(EAttribute::TextOffset, eType) == sAttributeName)
+				m_oHeaderInfo.m_shTextOffset = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::CharShape, eType) == sAttributeName)
+				m_oHeaderInfo.m_nCharShape = std::abs(oReader.GetInt());
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
 	END_WHILE
+}
+
+HWP_CHAR CHWPRecordBullet::GetBulletChar() const
+{
+	return m_chBulletChar;
+}
+
+HWP_CHAR CHWPRecordBullet::GetCheckBulletChar() const
+{
+	return m_chCheckBulletChar;
+}
+
+bool CHWPRecordBullet::UseImage() const
+{
+	return 0 != m_nBulletImage && !m_sBinItemRefID.empty();
+}
+
+const HWP_STRING& CHWPRecordBullet::GetBinItemRefID() const
+{
+	return m_sBinItemRefID;
+}
+
+HWP_BYTE CHWPRecordBullet::GetAlign() const
+{
+	return m_oHeaderInfo.m_chAlign;
+}
+
+int CHWPRecordBullet::GetCharShape() const
+{
+	return m_oHeaderInfo.m_nCharShape;
+}
+
+short CHWPRecordBullet::GetTextOffset() const
+{
+	return m_oHeaderInfo.m_shTextOffset;
+}
+
+bool CHWPRecordBullet::GetAutoIndent() const
+{
+	return m_oHeaderInfo.m_bAutoIndent;
 }
 }

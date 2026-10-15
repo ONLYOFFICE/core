@@ -114,7 +114,7 @@ namespace SVG
 
 	TBounds CMoveElement::GetBounds() const
 	{
-		return TBounds{m_oPoint.dX, m_oPoint.dY, 1, 1};
+		return TBounds{m_oPoint.dX, m_oPoint.dY, m_oPoint.dX, m_oPoint.dY};
 	}
 
 	//CLineElement
@@ -186,7 +186,7 @@ namespace SVG
 
 	TBounds CLineElement::GetBounds() const
 	{
-		return TBounds{m_oPoint.dX, m_oPoint.dY, 1, 1};
+		return TBounds{m_oPoint.dX, m_oPoint.dY, m_oPoint.dX, m_oPoint.dY};
 	}
 
 	//CCurveBezierElement
@@ -507,7 +507,7 @@ namespace SVG
 
 	TBounds CCloseElement::GetBounds() const
 	{
-		return TBounds{0., 0., 0., 0.};
+		return TBounds{DBL_MAX, DBL_MAX, -DBL_MAX, -DBL_MAX};
 	}
 
 	#define LASTELEMENT(array) (array.empty()) ? NULL : array.back()
@@ -556,13 +556,13 @@ namespace SVG
 	{
 		Aggplus::CMatrix oOldTransform;
 
-		if (m_arElements.empty() || !StartPath(pRenderer, pFile, oOldTransform, oMode))
+		if (m_arElements.empty() || !StartPath(pRenderer, pFile, oOldTransform, oMode, true))
 			return false;
 
 		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject, true);
 
 		DrawMarkers(pRenderer, pFile, oMode);
 
@@ -645,7 +645,7 @@ namespace SVG
 			}
 		}
 
-		if (!m_oMarkers.m_oMid.Empty() && NSCSS::NSProperties::EColorType::ColorUrl == m_oMarkers.m_oMid.GetType())
+		if (!m_oMarkers.m_oMid.Empty() && NSCSS::NSProperties::EColorType::ColorUrl == m_oMarkers.m_oMid.GetType() && m_arElements.size() > 2)
 		{
 			CMarker *pMidMarker = dynamic_cast<CMarker*>(pFile->GetMarkedObject(m_oMarkers.m_oMid.ToWString()));
 
@@ -752,12 +752,14 @@ namespace SVG
 			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
 		}
 
+		if (oBounds.m_dLeft > oBounds.m_dRight || oBounds.m_dTop > oBounds.m_dBottom)
+			return TBounds{0., 0., 0., 0.};
+
 		if (nullptr != pTransform)
 		{
 			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
 
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+			TransformBounds(oBounds, pTransform->GetFinalValue());
 
 			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 		}

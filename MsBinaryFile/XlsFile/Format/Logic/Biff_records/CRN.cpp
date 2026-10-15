@@ -68,6 +68,11 @@ void CRN::readFields(CFRecord& record)
 		record >> rec_type;
 		
 		SerArPtr ser(SerAr::createSerAr(rec_type));
+		if(ser == nullptr)
+		{
+			colLast = (i > 0) ? (colFirst + i - 1) : colFirst;
+			break;
+		}
 		record >> *ser;
 		crnOper.push_back(ser);
 		if(record.getRdPtr() >= record.getDataSize())

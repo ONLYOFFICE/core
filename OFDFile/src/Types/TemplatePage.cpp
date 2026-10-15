@@ -39,7 +39,7 @@
 
 namespace OFD
 {
-CTemplatePage::CTemplatePage(CXmlReader& oXmlReader, const std::wstring& wsRootPath)
+CTemplatePage::CTemplatePage(CXmlReader& oXmlReader, const std::wstring& wsRootPath, IFolder* pFolder)
 	: IOFDElement(oXmlReader), m_eZOrder(EZOrder::Background), m_pPage(nullptr)
 {
 	if ("ofd:TemplatePage" != oXmlReader.GetNameA() || 0 == oXmlReader.GetAttributesCount() || !oXmlReader.MoveToFirstAttribute())
@@ -51,7 +51,7 @@ CTemplatePage::CTemplatePage(CXmlReader& oXmlReader, const std::wstring& wsRootP
 		sAttributeName = oXmlReader.GetNameA();
 
 		if ("BaseLoc" == sAttributeName)
-			m_pPage = CPage::Read(oXmlReader.GetText(), wsRootPath);
+			m_pPage = CPage::Read(oXmlReader.GetText(), wsRootPath, pFolder);
 		else if ("ZOrder" == sAttributeName)
 			m_eZOrder = GetZOrderFromString(oXmlReader.GetTextA());
 	} while (oXmlReader.MoveToNextAttribute());

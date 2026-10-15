@@ -52,10 +52,14 @@ public:
 	CPage();
 	~CPage();
 
-	static CPage* Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
+	static CPage* Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath, IFolder* pFolder);
 	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
 
 	void GetPageSize(double& dWidth, double& dHeight) const;
+
+	#ifdef BUILDING_WASM_MODULE
+	void GetLinks(NSWasm::CData& oRes) const;
+	#endif
 };
 }
 

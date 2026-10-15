@@ -293,7 +293,7 @@ namespace MetaFile
 
 			MoveTo(arPoints[0]);
 
-			for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+            for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
 				CurveTo(arPoints[unIndex], arPoints[unIndex + 1], arPoints[unIndex + 2]);
 
 			DrawPath(true, false);

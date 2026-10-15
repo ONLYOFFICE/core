@@ -1353,7 +1353,7 @@ namespace Aggplus
 		{
 			agg::render_scanlines(ras, sl, ren);
 		}
-		else
+		else if (!m_oClip.IsEmpty())
 		{
 			if (!m_oClip.IsClip2())
 			{
@@ -2191,14 +2191,11 @@ namespace Aggplus
 
 				for (LONG i = 0; i < lCount2; ++i)
 				{
-					if (0 == i)
-					{
-						poly2_dash.add_dash((params[i * 2]) * dKoef, params[i * 2 + 1] * dKoef);
-					}
-					else
-					{
-						poly2_dash.add_dash(params[i * 2] * dKoef, params[i * 2 + 1] * dKoef);
-					}
+					double dashLen = params[i * 2] * dKoef;
+					double gapLen  = params[i * 2 + 1] * dKoef;
+					if (m_bIs0PenWidthAs1px && fabs(dashLen) < 0.0001 && LineCap == agg::round_cap)
+							dashLen = 0.0001;
+					poly2_dash.add_dash(dashLen, gapLen);
 				}
 				if (1 == (lCount % 2))
 				{

@@ -32,6 +32,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 #ifndef _ASC_HTMLRENDERER_TEXT_H_
 #define _ASC_HTMLRENDERER_TEXT_H_
 
@@ -45,9 +46,9 @@ namespace NSHtmlRenderer
 {
 	struct CHFontInfo
 	{
-		int m_lAscent;
-		int m_lDescent;
-		int m_lUnitsPerEm;
+		double m_lAscent;
+		double m_lDescent;
+		double m_lUnitsPerEm;
 
 		CHFontInfo() : m_lAscent(0), m_lDescent(0), m_lUnitsPerEm(0) {}
 		CHFontInfo(const CHFontInfo& oSrc) : m_lAscent(oSrc.m_lAscent), m_lDescent(oSrc.m_lDescent), m_lUnitsPerEm(oSrc.m_lUnitsPerEm) {}
@@ -68,11 +69,27 @@ namespace NSHtmlRenderer
 		NSStructures::CFont* m_pFont;
 		CHFontInfo m_oCurrentInfo;
 
+		bool m_bIsType3;
+		double m_dType3GlyphWidth;
+
 	public:
-		CFontManagerWrapper() : m_pManager(NULL) {}
+		CFontManagerWrapper() : m_pManager(NULL), m_bIsType3(false), m_dType3GlyphWidth(0) {}
 		virtual ~CFontManagerWrapper()
 		{
 			RELEASEOBJECT(m_pManager);
+		}
+
+		void SetType3Metrics(double dAscent, double dDescent, double dUnitsPerEm, double dGlyphWidth)
+		{
+			m_bIsType3 = true;
+			m_dType3GlyphWidth = dGlyphWidth;
+			m_oCurrentInfo.m_lAscent     = dAscent;
+			m_oCurrentInfo.m_lDescent    = dDescent;
+			m_oCurrentInfo.m_lUnitsPerEm = dUnitsPerEm > 0 ? dUnitsPerEm : 1000;
+		}
+		void ClearType3()
+		{
+			m_bIsType3 = false;
 		}
 
 		void Init(NSFonts::IApplicationFonts* pApplicationFonts, int nCacheSize = 0)
@@ -98,15 +115,25 @@ namespace NSHtmlRenderer
 			else
 				LoadFontByFile(m_pFont->Path, m_pFont->Size);
 		}
-		double MeasureString(const unsigned int* symbols, const int& count, double x, double y)
+		TBBox MeasureString(const unsigned int* symbols, const int& count, double x, double y)
 		{
+			if (m_bIsType3)
+			{
+				TBBox oBox;
+				double dUnitsPerEm = m_oCurrentInfo.m_lUnitsPerEm > 0 ? m_oCurrentInfo.m_lUnitsPerEm : 1000;
+				double dFontSizePt = m_pFont ? m_pFont->Size : 10.0;
+				oBox.fMinX = (float)x;
+				oBox.fMinY = (float)(-(m_oCurrentInfo.m_lAscent  / dUnitsPerEm) * dFontSizePt);
+				oBox.fMaxX = (float)(x + m_dType3GlyphWidth);
+				oBox.fMaxY = (float)( (m_oCurrentInfo.m_lDescent / dUnitsPerEm) * dFontSizePt);
+				return oBox;
+			}
+
 			if (!m_pManager)
-				return 0;
+				return TBBox();
 
 			m_pManager->LoadString1(symbols, count, (float)x, (float)y);
-			TBBox _box = m_pManager->MeasureString2();
-
-			return abs((_box.fMaxX - _box.fMinX) * 25.4 / 72.0);
+			return m_pManager->MeasureString2();
 		}
 
 	private:
@@ -358,7 +385,7 @@ namespace NSHtmlRenderer
 			}
 
 			// done, baseline is set. now just continue the line
-			if (bIsDumpFont)
+			if (bIsDumpFont && !m_oFontManager.m_bIsType3)
 				m_oFontManager.LoadCurrentFont();
 
 			double dKoef = m_oFontManager.m_pFont->Size * 25.4 / (72 * m_oFontManager.m_oCurrentInfo.m_lUnitsPerEm);
@@ -386,7 +413,14 @@ namespace NSHtmlRenderer
 			double dPrevW = dOffsetX;
 			for (int i = 0; i < nCount; ++i)
 			{
-				double dW = m_oFontManager.MeasureString((const unsigned int*)(input + i), 1, 0, 0);
+				TBBox bBox = m_oFontManager.MeasureString((const unsigned int*)(input + i), 1, 0, 0);
+				double dW = std::abs((bBox.fMaxX - bBox.fMinX) * 25.4 / 72.0);
+				double dMeasureAscent  = std::abs(bBox.fMinY * 25.4 / 72.0);
+				double dMeasureDescent = std::abs(bBox.fMaxY * 25.4 / 72.0);
+				if (m_oLine.m_dAscent < dMeasureAscent)
+					m_oLine.m_dAscent = dMeasureAscent;
+				if (m_oLine.m_dDescent < dMeasureDescent)
+					m_oLine.m_dDescent = dMeasureDescent;
 
 				NSWasm::CHChar* pChar = m_oLine.AddTail();
 				pChar->unicode = pUnicodes[i];

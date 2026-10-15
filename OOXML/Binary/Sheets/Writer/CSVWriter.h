@@ -61,6 +61,13 @@ public:
     void Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, int Lcid, bool bJSON);
 
 	bool Start(const std::wstring &sFileDst);
+	// All sheets: Start gets a directory, and each sheet goes to a file of its own there,
+	// sheet<number>.<name>.<sExt>, opened by StartSheet - number from 1, the sheet's place in the workbook;
+	// name the sheet's name made safe for a file name, the part left out when nothing of it is left.
+	// Without it only the active sheet is written, to the one file Start opens. Not for JSON.
+	void SetAllSheets(bool val, const std::wstring& sExt);
+	bool IsAllSheets() const;
+	void StartSheet(int nIndex, const std::wstring& sName);
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
 	void WriteCell(OOX::Spreadsheet::CCell *pCell);

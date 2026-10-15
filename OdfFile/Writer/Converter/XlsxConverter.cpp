@@ -39,6 +39,7 @@
 #include "../../../OOXML/XlsxFormat/Drawing/Pos.h"
 #include "../../../OOXML/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../../OOXML/XlsxFormat/Comments/Comments.h"
+#include "../../../OOXML/XlsxFormat/Comments/ThreadedComments.h"
 #include "../../../OOXML/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../OOXML/XlsxFormat/Styles/Styles.h"
 #include "../../../OOXML/XlsxFormat/Styles/NumFmts.h"
@@ -60,6 +61,8 @@
 #include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Media/ActiveX.h"
 #include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
+
+#include "../../../OOXML/Common/SimpleTypes_Shared.h"
 
 #include "../Format/ods_conversion_context.h"
 
@@ -169,6 +172,9 @@ bool XlsxConverter::convertDocument()
     if (!ods_context)       return false;
    
 	if (!xlsx_document && !xlsx_flat_document) return false;
+
+	if (xlsx_document && xlsx_document->m_pWorkbook && xlsx_document->m_pWorkbook->m_pPersonList)
+		xlsx_mapPersons = xlsx_document->m_pWorkbook->m_pPersonList->GetPersonList();
 
 	ods_context->start_document();
 
@@ -1082,8 +1088,28 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 	int row = oox_comment->m_nRow.IsInit() ? oox_comment->m_nRow.get()+1 : -1;
 
 	std::wstring author = oox_comment->m_sAuthor.IsInit() ? oox_comment->m_sAuthor.get() : L"";
+	std::wstring date_time;
 
-	ods_context->start_comment(col, row, author);	
+	if (oox_comment->m_pThreadedComment)
+	{
+		if ((oox_comment->m_pThreadedComment)->personId.IsInit() && xlsx_mapPersons.IsInit())
+		{			
+			std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>::iterator pFind = xlsx_mapPersons->find(oox_comment->m_pThreadedComment->personId->ToString());
+			if (pFind != xlsx_mapPersons->end())
+			{
+				if ((pFind->second) && (pFind->second->displayName.IsInit()))
+				{
+					author = *pFind->second->displayName;
+				}
+			}
+		}
+		if (oox_comment->m_pThreadedComment->dT.IsInit())
+		{
+			date_time = oox_comment->m_pThreadedComment->dT->ToString();
+		}
+	}
+
+	ods_context->start_comment(col, row, author, date_time);
 	if (oox_comment->m_dLeftMM.IsInit() &&  oox_comment->m_dTopMM.IsInit() && oox_comment->m_dWidthMM.IsInit() && oox_comment->m_dHeightMM.IsInit())
 	{
 		ods_context->set_comment_rect(oox_comment->m_dLeftMM.get(), oox_comment->m_dTopMM.get(), oox_comment->m_dWidthMM.get(), oox_comment->m_dHeightMM.get());
@@ -1100,7 +1126,50 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 	{
 		ods_context->set_comment_color(L"CCFFFF"); //default ms
 	}
-	if (oox_comment->m_oText.IsInit())
+	if (oox_comment->m_pThreadedComment)
+	{
+		convert(oox_comment->m_pThreadedComment->m_oText.GetPointer());
+		ods_context->text_context()->end_paragraph();
+
+		for (auto reply : oox_comment->m_pThreadedComment->m_arrReplies)
+		{
+			ods_context->text_context()->start_paragraph();
+
+			if (reply->personId.IsInit() && xlsx_mapPersons.IsInit())
+			{
+				std::wstring sTextReply;
+
+				std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>::iterator pFind = xlsx_mapPersons->find(reply->personId->ToString());
+				if (pFind != xlsx_mapPersons->end())
+				{
+					if ((pFind->second) && (pFind->second->displayName.IsInit()))
+					{
+						sTextReply += *pFind->second->displayName;
+					}
+					if (reply->dT.IsInit())
+					{
+						std::wstring sDate = reply->dT->ToString();
+
+						if (sDate.empty() == false)
+						{
+							size_t pos = sDate.find(L"T"); 
+							if (pos != std::wstring::npos) sDate[pos] = L' ';
+							sTextReply += L" (" + sDate + L")";
+						}
+					}
+				}
+				sTextReply += L": ";
+				if (reply->m_oText.IsInit())
+				{
+					sTextReply += reply->m_oText->m_sText;
+				}
+				ods_context->add_text_content(sTextReply);
+			}
+
+			ods_context->text_context()->end_paragraph();
+		}
+	}
+	else if (oox_comment->m_oText.IsInit())
 	{
 		for(size_t i = 0; i < oox_comment->m_oText->m_arrItems.size(); ++i)
 		{
@@ -1792,8 +1861,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetViews *oox_sheet_views)
 
 		ods_context->start_table_view( view_id );
 		
-		if (sheet_view->m_oRightToLeft.IsInit() && sheet_view->m_oRightToLeft->GetValue()==1)
+		if (sheet_view->m_oRightToLeft.IsInit() && sheet_view->m_oRightToLeft->ToBool())
+		{
 			ods_context->current_table()->set_table_rtl(true);
+		}
 
 		if (sheet_view->m_oShowGridLines.IsInit() && sheet_view->m_oShowGridLines->GetValue()==0)
 		{
@@ -2333,7 +2404,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont *font, odf_writer::text_form
 		text_properties->style_text_line_through_type_ = odf_types::line_type(odf_types::line_type::Single);
 
 	ods_context->add_font(font_name);
-	ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
+
+	if (font->m_oRFont.IsInit() && font->m_oSz.IsInit())
+		ods_context->calculate_font_metrix(font_name, font_size, font_italic, font_bold);
 }
 
 void XlsxConverter::convert(double oox_size,  _CP_OPT(odf_types::length) & odf_size)
@@ -2447,7 +2520,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::p
 	{
 		if (*aligment->m_oTextRotation <= 180 && *aligment->m_oTextRotation >= 0 )
 		{
-			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = *aligment->m_oTextRotation;
+			int angle = *aligment->m_oTextRotation;
+			if (angle > 90) angle = 450 - angle;
+
+			cell_properties->content_.common_rotation_angle_attlist_.style_rotation_angle_ = angle;
 			cell_properties->content_.style_rotation_align_= odf_types::rotation_align(odf_types::rotation_align::Bottom);
 		}
 		else if (*aligment->m_oTextRotation == 0xff)//vertical text
@@ -2457,7 +2533,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::p
 	_CP_OPT(odf_types::length) indent;
 	if (aligment->m_oIndent.IsInit())
 	{
-		indent = odf_types::length(ods_context->convert_symbol_width(*aligment->m_oIndent, true), odf_types::length::pt);
+		indent = odf_types::length(ods_context->convert_symbol_indent(*aligment->m_oIndent), odf_types::length::pt);
 	}
 	if(aligment->m_oHorizontal.IsInit())
 	{
@@ -2967,7 +3043,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 
 		if (oox_sheet->m_oOleObjects.IsInit() && oox_anchor->m_nId.IsInit())
 		{
-            boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
+            std::map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator pFind = oox_sheet->m_oOleObjects->m_mapOleObjects.find(oox_anchor->m_nId.get());
 			if (pFind != oox_sheet->m_oOleObjects->m_mapOleObjects.end())
 			{
 				//??? transfer binding data 
@@ -2995,7 +3071,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 {
 	if (!oox_objects) return;
 
-    for (boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
+    for (std::map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
 	{
 		OOX::Spreadsheet::COleObject* object = it->second;
 
@@ -3424,7 +3500,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSparklineGroup* sparklineGroup)
 {
 	if (!sparklineGroup) return;
 
-	if (sparklineGroup->m_oUId.IsInit()) ods_context->current_table()->set_sparkline_id(*sparklineGroup->m_oUId);
+	if (sparklineGroup->m_oUId.IsInit()) ods_context->current_table()->set_sparkline_id(sparklineGroup->m_oUId->ToString());
 	if (sparklineGroup->m_oManualMax.IsInit()) ods_context->current_table()->set_sparkline_manual_max(sparklineGroup->m_oManualMax->GetValue());
 	if (sparklineGroup->m_oManualMin.IsInit()) ods_context->current_table()->set_sparkline_manual_min(sparklineGroup->m_oManualMin->GetValue());
 	if (sparklineGroup->m_oLineWeight.IsInit()) ods_context->current_table()->set_sparkline_line_weight(sparklineGroup->m_oLineWeight->GetValue());
@@ -3479,7 +3555,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAltTextTable *alt_text)
 }
 
 void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_fmt, 
-							std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
+							std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	if (!oox_cond_fmt)return;
 
@@ -3504,14 +3580,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatting *oox_cond_f
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_cond_rule,
-							std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
+							std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	if (!oox_cond_rule) return;
 
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
+	std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
 	if (oox_cond_rule->m_oExtId.IsInit())
 	{
-		pFind = mapCFRuleEx.find(*oox_cond_rule->m_oExtId);
+		pFind = mapCFRuleEx.find(oox_cond_rule->m_oExtId->ToString());
 
 		if (pFind != mapCFRuleEx.end())
 		{

@@ -1254,7 +1254,7 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	}
 	else if ( "v" == sCommand )
 	{
-		charProps->m_bHidden = 1;
+		charProps->m_bHidden = ( true == hasParameter && 0 == parameter ) ? 0 : 1;
 	}
 	else if ( "deleted" == sCommand )
 	{
@@ -2995,6 +2995,31 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			m_oShape.m_aPSegmentInfo.push_back( val );
 		}
 	}
+	else if ( L"pInscribe" == m_sPropName )
+	{
+		std::vector< std::wstring > splitted;
+		boost::algorithm::split(splitted, sValue, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+		if (splitted.size() >= 3)
+		{
+			std::wstring sHex = splitted[2];
+			if (sHex.length() >= 12 + 32)
+			{
+				std::wstring sBody = sHex.substr(12);
+				int rect[4] = {0,0,0,0};
+				for (int n = 0; n < 4; n++)
+				{
+					unsigned int u = 0;
+					for (int byte = 0; byte < 4; byte++)
+						u |= ((unsigned int)wcstol(sBody.substr(n * 8 + byte * 2, 2).c_str(), NULL, 16)) << (byte * 8);
+					rect[n] = (int)u;
+				}
+				m_oShape.m_nInscribeLeft	= rect[0];
+				m_oShape.m_nInscribeTop		= rect[1];
+				m_oShape.m_nInscribeRight	= rect[2];
+				m_oShape.m_nInscribeBottom	= rect[3];
+			}
+		}
+	}
 	else if (L"geoBottom" == m_sPropName) m_oShape.m_nGeoBottom = (PROP_DEF != m_oShape.m_nRelTop) ? nValue - m_oShape.m_nRelTop : nValue;
 	else if (L"geoLeft" == m_sPropName) m_oShape.m_nGeoLeft = (PROP_DEF != m_oShape.m_nRelLeft) ? nValue - m_oShape.m_nRelLeft : nValue;
 	else if (L"geoRight" == m_sPropName) m_oShape.m_nGeoRight = (PROP_DEF != m_oShape.m_nRelLeft) ? nValue - m_oShape.m_nRelLeft : nValue;
@@ -3034,8 +3059,8 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	//WordArt Effects
 	else if ( L"cropFromTop"	== m_sPropName ) m_oShape.m_nCropFromTop	= nValue;
 	else if ( L"cropFromBottom"	== m_sPropName ) m_oShape.m_nCropFromBottom = nValue;
-	else if ( L"cropFromLeft"	== m_sPropName ) m_oShape.m_nCropFromRight	= nValue;
-	else if ( L"cropFromRight"	== m_sPropName ) m_oShape.m_nCropFromTop	= nValue;
+	else if ( L"cropFromLeft"	== m_sPropName ) m_oShape.m_nCropFromLeft	= nValue;
+	else if ( L"cropFromRight"	== m_sPropName ) m_oShape.m_nCropFromRight = nValue;
 	//Grouped Shapes
 	else if ( L"groupBottom"	== m_sPropName ) m_oShape.m_nGroupBottom	= nValue;
 	else if ( L"groupLeft"		== m_sPropName ) m_oShape.m_nGroupLeft		= nValue;
@@ -3108,6 +3133,14 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if (L"borderLeftColor"		== m_sPropName) m_oShape.m_nBorderLeftColor = nValue;
 	else if (L"borderBottomColor"	== m_sPropName) m_oShape.m_nBorderBottomColor = nValue;
 	else if (L"borderRightColor"	== m_sPropName) m_oShape.m_nBorderRightColor= nValue;
+
+    else if (L"fHorizRule"          == m_sPropName) m_oShape.m_bHr = (nValue == 1);
+    else if (L"fStandardHR"         == m_sPropName) m_oShape.m_bHrStd = (nValue == 1);
+    else if (L"alignHR"             == m_sPropName) m_oShape.m_nHrAlign = nValue;  // 0-left,1-center,2-right
+    else if (L"dxHeightHR"          == m_sPropName) m_oShape.m_oPicture->m_nHeight = nValue;
+    else if (L"dxWidthHR"           == m_sPropName) m_oShape.m_oPicture->m_nWidth = nValue;
+    else if (L"pctHR"               == m_sPropName) m_oShape.m_nHrPct = nValue;
+    else if (L"fNoshadeHR"          == m_sPropName) m_oShape.m_bHrNoShade = (nValue == 1);
 	
 	else if ( L"cxstyle"				== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
 	else if ( L"cxk"					== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
@@ -3736,7 +3769,7 @@ RtfPictureReader::PLACEABLEMETAHEADER::PLACEABLEMETAHEADER()
 	Top = 0;
 	Right = 0;
 	Bottom = 0;
-	Inch = 0x0902;
+	Inch = 96;
 	Reserved = 0;
 	Checksum = 0;
 }

@@ -36,6 +36,7 @@
 
 #include "../../../TxtFile/Source/TxtXmlFile.h"
 #include "../../../OOXML/Binary/Document/DocWrapper/DocxSerializer.h"
+#include "../../../OOXML/Binary/Document/BinWriter/IDocumentContentProvider.h"
 #include "common.h"
 
 namespace NExtractTools
@@ -56,18 +57,17 @@ namespace NExtractTools
 
 	_UINT32 txt2doct_bin(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		std::wstring sResultDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
-		NSDirectory::CreateDirectory(sResultDocxDir);
-
 		CTxtXmlFile txtFile;
 		params.m_bMacro = false;
 
-		_UINT32 nRes = txtFile.txt_LoadFromFile(sFrom, sResultDocxDir, params.getXmlOptionsFrom());
-		if (SUCCEEDED_X2T(nRes))
-		{
-			BinDocxRW::CDocxSerializer m_oCDocxSerializer;
-			nRes = m_oCDocxSerializer.saveToFile(sTo, sResultDocxDir, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-		}
+		// txt is read by the serializer straight into the binary, without an intermediate docx
+		BinDocxRW::IDocumentContentProvider *pContentProvider = txtFile.txt_CreateContentProvider(sFrom, params.getXmlOptionsFrom());
+		if (NULL == pContentProvider) return AVS_FILEUTILS_ERROR_CONVERT;
+
+		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+		_UINT32 nRes = m_oCDocxSerializer.saveToFile(sTo, *pContentProvider, convertParams.m_sTempDir) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+
+		delete pContentProvider;
 		return nRes;
 	}
 

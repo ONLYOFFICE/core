@@ -163,8 +163,12 @@ namespace DocFileFormat
 			case sprmTCellSpacing:
 			case sprmTCellSpacingDefault:
 			{
+				if (iter->argumentsSize < 6) break;
+
 				unsigned char grfbrc = iter->Arguments[2];
-				short wSpc = FormatUtils::BytesToInt16(iter->Arguments, 4, iter->argumentsSize);
+				unsigned char ftsWidth = iter->Arguments[3];
+				//ftsNil - bad wWidth
+				short wSpc = (ftsWidth == 0x03/*ftsDxa*/) ? FormatUtils::BytesToInt16(iter->Arguments, 4, iter->argumentsSize) : 0;
 				std::wstring strValue = FormatUtils::IntToWideString(wSpc);
 				if (FormatUtils::BitmaskToBool((int)grfbrc, 0x01))
 				{

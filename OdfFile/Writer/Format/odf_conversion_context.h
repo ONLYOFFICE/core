@@ -179,6 +179,7 @@ public:
 
 	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold, bool recalc = false);
 	double convert_symbol_width(double va, bool add_padding = false);
+	double convert_symbol_indent(double val);
 
 	void add_hyperlink(office_element_ptr& elem, const std::wstring& ref);
 	std::vector<std::pair<office_element_ptr, std::wstring>> get_deferred_hyperlinks();

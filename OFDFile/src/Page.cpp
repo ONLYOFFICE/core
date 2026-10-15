@@ -37,7 +37,9 @@
 
 #include "Utils/Utils.h"
 
+#include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 
 namespace OFD
 {
@@ -48,7 +50,7 @@ CPage::CPage()
 CPage::~CPage()
 {}
 
-CPage* CPage::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
+CPage* CPage::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath, IFolder* pFolder)
 {
 	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, wsRootPath))
 		return nullptr;
@@ -59,7 +61,8 @@ CPage* CPage::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPat
 		wsNormalizedPath = CombinePaths(wsNormalizedPath, L"Content.xml");
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(wsNormalizedPath) || !oLiteReader.ReadNextNode() || L"ofd:Page" != oLiteReader.GetName())
+
+	if (!pFolder->getReaderFromFile(wsNormalizedPath, oLiteReader) || !oLiteReader.ReadNextNode() || L"ofd:Page" != oLiteReader.GetName())
 		return nullptr;
 
 	const int nDepth = oLiteReader.GetDepth();
@@ -67,12 +70,14 @@ CPage* CPage::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPat
 
 	CPage *pPage = new CPage();
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oLiteReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oLiteReader.ReadNextSiblingNode(nDepth))
 	{
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:Content" == wsNodeName)
-			pPage->m_oContent.Read(oLiteReader);
+			pPage->m_oContent.Read(oLiteReader, pFolder);
 		else if (L"ofd:Area" == wsNodeName)
 			pPage->m_oArea.Read(oLiteReader);
 		else if (L"ofd:Template" == wsNodeName && 0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
@@ -126,4 +131,11 @@ void CPage::GetPageSize(double& dWidth, double& dHeight) const
 	dWidth  = oPhysicalBox.m_dWidth;
 	dHeight = oPhysicalBox.m_dHeight;
 }
+
+#ifdef BUILDING_WASM_MODULE
+void CPage::GetLinks(NSWasm::CData& oRes) const
+{
+	m_oContent.GetLinks(oRes);
+}
+#endif
 }

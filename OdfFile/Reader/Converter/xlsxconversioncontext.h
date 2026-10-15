@@ -158,6 +158,7 @@ public:
     }
 
     std::pair<double, double> getMaxDigitSize();
+    double getDefaultRowHeight();//in pt
 
     void process_styles();
 

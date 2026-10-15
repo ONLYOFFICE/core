@@ -35,67 +35,68 @@
 
 #include "PathObject.h"
 
-#include "src/Utils/Utils.h"
+#include "../Utils/Utils.h"
 #include "../Types/DrawParam.h"
+
+#include "../../../DesktopEditor/graphics/IRenderer.h"
 
 namespace OFD
 {
-CPathObject::CPathObject(CXmlReader& oLiteReader)
-	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader),
+CPathObject::CPathObject(CXmlReader& oReader)
+    : IPageBlock(oReader), CGraphicUnit(oReader),
 	  m_bStroke(true), m_bFill(false), m_eRule(ERule::NonZero),
 	  m_pFillColor(nullptr), m_pStrokeColor(nullptr)
 {
-	if (L"ofd:PathObject" != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid())
+	if (oReader.IsEmptyElement())
 		return;
 
-	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
+	if (oReader.MoveToFirstAttribute())
 	{
 		std::wstring wsAttributeName;
 
 		do
 		{
-			wsAttributeName = oLiteReader.GetName();
+			wsAttributeName = oReader.GetName();
 
 			if (L"Stroke" == wsAttributeName)
-				m_bStroke = oLiteReader.GetBoolean(true);
+				m_bStroke = oReader.GetBoolean(true);
 			else if (L"Fill" == wsAttributeName)
-				m_bFill = oLiteReader.GetBoolean(true);
+				m_bFill = oReader.GetBoolean(true);
 			else if (L"Rule" == wsAttributeName)
 			{
-				if (L"Even-odd" == oLiteReader.GetText())
+				if (L"Even-odd" == oReader.GetText())
 					m_eRule = ERule::Even_Odd;
 				else
 					m_eRule = ERule::NonZero;
 			}
-		} while (oLiteReader.MoveToNextAttribute());
+		} while (oReader.MoveToNextAttribute());
+
+		oReader.MoveToElement();
 	}
 
-	oLiteReader.MoveToElement();
+	const int nDepth = oReader.GetDepth();
+	std::string sNodeName;
 
-	const int nDepth = oLiteReader.GetDepth();
-	std::wstring wsNodeName;
-
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	while (oReader.ReadNextSiblingNode(nDepth))
 	{
-		wsNodeName = oLiteReader.GetName();
-
-		if (L"ofd:FillColor" == wsNodeName)
+		sNodeName = oReader.GetNameA();
+		if ("ofd:FillColor" == sNodeName)
 		{
 			if (nullptr != m_pFillColor)
 				delete m_pFillColor;
 
-			m_pFillColor = new CColor(oLiteReader);
+			m_pFillColor = new CColor(oReader);
 		}
-		else if (L"ofd:StrokeColor" == wsNodeName)
+		else if ("ofd:StrokeColor" == sNodeName)
 		{
 			if (nullptr != m_pStrokeColor)
 				delete m_pStrokeColor;
 
-			m_pStrokeColor = new CColor(oLiteReader);
+			m_pStrokeColor = new CColor(oReader);
 		}
-		else if (L"ofd:AbbreviatedData" == wsNodeName)
+		else if ("ofd:AbbreviatedData" == sNodeName)
 		{
-			std::vector<std::string> arValues{Split(oLiteReader.GetText2A(), ' ')};
+			std::vector<std::string> arValues{Split(oReader.GetText2A(), ' ')};
 
 			std::vector<std::string>::const_iterator itElement = arValues.cbegin();
 
@@ -154,6 +155,8 @@ CPathObject::CPathObject(CXmlReader& oLiteReader)
 				}
 			}
 		}
+		else
+			ReadChildren(oReader);
 	}
 }
 
@@ -206,7 +209,10 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 	}
 
 	const CRes* pPublicRes{oCommonData.GetPublicRes()};
-	std::vector<const CDrawParam*> arDrawParams{pPublicRes->GetDrawParams()};
+	std::vector<const CDrawParam*> arDrawParams;
+
+	if (nullptr != pPublicRes)
+		arDrawParams = pPublicRes->GetDrawParams();
 
 	if (m_bFill)
 	{
@@ -220,6 +226,7 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 		else
 		{
 			pRenderer->put_BrushColor1(0);
+			pRenderer->put_BrushAlpha1(255);
 
 			if (EPageType::TemplatePage == ePageType)
 				for (const CDrawParam* pDrawParam : arDrawParams)
@@ -240,6 +247,7 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 		else
 		{
 			pRenderer->put_PenColor(0);
+			pRenderer->put_PenAlpha(255);
 
 			if (EPageType::TemplatePage == ePageType)
 				for (const CDrawParam* pDrawParam : arDrawParams)
@@ -259,7 +267,15 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 	pRenderer->SetTransform(oOldTransform.m_dM11, oOldTransform.m_dM12, oOldTransform.m_dM21, oOldTransform.m_dM22, oOldTransform.m_dDx, oOldTransform.m_dDy);
 }
 
+#ifdef BUILDING_WASM_MODULE
+void CPathObject::GetLinks(NSWasm::CData& oRes) const
+{
+	CGraphicUnit::GetLinks(oRes);
+}
+#endif
+
 CStartElement::CStartElement()
+	: m_dX(0.), m_dY(0.)
 {}
 
 IPathElement* CStartElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
@@ -286,9 +302,10 @@ void CStartElement::Draw(IRenderer* pRenderer) const
 }
 
 CMoveElement::CMoveElement()
+	: m_dX(0.), m_dY(0.)
 {}
 
-IPathElement* CMoveElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
+CMoveElement* CMoveElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
 	if (itEnd - itBegin < 2)
 		return nullptr;
@@ -305,6 +322,40 @@ IPathElement* CMoveElement::ReadFromArray(std::vector<std::string>::const_iterat
 	return nullptr;
 }
 
+CMoveElement* CMoveElement::ReadFromNode(CXmlReader& oReader)
+{
+	if (!oReader.MoveToFirstAttribute())
+		return nullptr;
+
+	CMoveElement* pMove = new CMoveElement();
+
+	if (nullptr == pMove)
+	{
+		oReader.MoveToElement();
+		return nullptr;
+	}
+
+	do
+	{
+		if ("Point1" == oReader.GetNameA())
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pMove->m_dX = arDatas[0];
+			pMove->m_dY = arDatas[1];
+
+			break;
+		}
+	}while (oReader.MoveToNextAttribute());
+
+	oReader.MoveToElement();
+
+	return pMove;
+}
+
 void CMoveElement::Draw(IRenderer* pRenderer) const
 {
 	if (nullptr != pRenderer)
@@ -312,9 +363,10 @@ void CMoveElement::Draw(IRenderer* pRenderer) const
 }
 
 CLineElement::CLineElement()
+	: m_dX(0.), m_dY(0.)
 {}
 
-IPathElement* CLineElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
+CLineElement* CLineElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
 	if (itEnd - itBegin < 2)
 		return nullptr;
@@ -331,6 +383,40 @@ IPathElement* CLineElement::ReadFromArray(std::vector<std::string>::const_iterat
 	return nullptr;
 }
 
+CLineElement* CLineElement::ReadFromNode(CXmlReader& oReader)
+{
+	if (!oReader.MoveToFirstAttribute())
+		return nullptr;
+
+	CLineElement* pLine = new CLineElement();
+
+	if (nullptr == pLine)
+	{
+		oReader.MoveToElement();
+		return nullptr;
+	}
+
+	do
+	{
+		if ("Point1" == oReader.GetNameA())
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pLine->m_dX = arDatas[0];
+			pLine->m_dY = arDatas[1];
+
+			break;
+		}
+	}while (oReader.MoveToNextAttribute());
+
+	oReader.MoveToElement();
+
+	return pLine;
+}
+
 void CLineElement::Draw(IRenderer* pRenderer) const
 {
 	if (nullptr != pRenderer)
@@ -338,9 +424,10 @@ void CLineElement::Draw(IRenderer* pRenderer) const
 }
 
 CBezierCurve2Element::CBezierCurve2Element()
+	: m_dX1(0.), m_dY1(0.), m_dX2(0.), m_dY2(0.)
 {}
 
-IPathElement* CBezierCurve2Element::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
+CBezierCurve2Element* CBezierCurve2Element::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
 	if (itEnd - itBegin < 4)
 		return nullptr;
@@ -358,6 +445,48 @@ IPathElement* CBezierCurve2Element::ReadFromArray(std::vector<std::string>::cons
 	return nullptr;
 }
 
+CBezierCurve2Element* CBezierCurve2Element::ReadFromNode(CXmlReader& oReader)
+{
+	if (!oReader.MoveToFirstAttribute())
+		return nullptr;
+
+	CBezierCurve2Element* pBezierCurve2 = new CBezierCurve2Element();
+
+	if (nullptr == pBezierCurve2)
+	{
+		oReader.MoveToElement();
+		return nullptr;
+	}
+
+	do
+	{
+		if ("Point1" == oReader.GetNameA())
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pBezierCurve2->m_dX1 = arDatas[0];
+			pBezierCurve2->m_dY1 = arDatas[1];
+		}
+		else if ("Point2" == oReader.GetNameA())
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pBezierCurve2->m_dX2 = arDatas[0];
+			pBezierCurve2->m_dY2 = arDatas[1];
+		}
+	}while (oReader.MoveToNextAttribute());
+
+	oReader.MoveToElement();
+
+	return pBezierCurve2;
+}
+
 void CBezierCurve2Element::Draw(IRenderer* pRenderer) const
 {
 	if (nullptr == pRenderer)
@@ -369,9 +498,10 @@ void CBezierCurve2Element::Draw(IRenderer* pRenderer) const
 }
 
 CBezierCurveElement::CBezierCurveElement()
+	: m_dX1(0.), m_dY1(0.), m_dX2(0.), m_dY2(0.), m_dX3(0.), m_dY3(0.)
 {}
 
-IPathElement* CBezierCurveElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
+CBezierCurveElement* CBezierCurveElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
 	if (itEnd - itBegin < 6)
 		return nullptr;
@@ -390,6 +520,62 @@ IPathElement* CBezierCurveElement::ReadFromArray(std::vector<std::string>::const
 	return nullptr;
 }
 
+CBezierCurveElement* CBezierCurveElement::ReadFromNode(CXmlReader& oReader)
+{
+	if (!oReader.MoveToFirstAttribute())
+		return nullptr;
+
+	CBezierCurveElement* pBezierCurve = new CBezierCurveElement();
+
+	if (nullptr == pBezierCurve)
+	{
+		oReader.MoveToElement();
+		return nullptr;
+	}
+
+	std::string sName;
+
+	do
+	{
+		sName = oReader.GetNameA();
+
+		if ("Point1" == sName)
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pBezierCurve->m_dX1 = arDatas[0];
+			pBezierCurve->m_dY1 = arDatas[1];
+		}
+		else if ("Point2" == sName)
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pBezierCurve->m_dX2 = arDatas[0];
+			pBezierCurve->m_dY2 = arDatas[1];
+		}
+		else if ("Point2" == sName)
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pBezierCurve->m_dX3 = arDatas[0];
+			pBezierCurve->m_dY3 = arDatas[1];
+		}
+	}while (oReader.MoveToNextAttribute());
+
+	oReader.MoveToElement();
+
+	return pBezierCurve;
+}
+
 void CBezierCurveElement::Draw(IRenderer* pRenderer) const
 {
 	if (nullptr != pRenderer)
@@ -397,11 +583,11 @@ void CBezierCurveElement::Draw(IRenderer* pRenderer) const
 }
 
 CArcElement::CArcElement()
+	: m_dRadiusX(0.), m_dRadiusY(0.), m_dAngle(0.), m_bLarge(false), m_bSweep(false), m_dX(0.), m_dY(0.)
 {}
 
-IPathElement* CArcElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
+CArcElement* CArcElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
-
 	if (itEnd - itBegin < 7)
 		return nullptr;
 
@@ -418,6 +604,58 @@ IPathElement* CArcElement::ReadFromArray(std::vector<std::string>::const_iterato
 
 	delete pElement;
 	return nullptr;
+}
+
+CArcElement* CArcElement::ReadFromNode(CXmlReader& oReader)
+{
+	if (!oReader.MoveToFirstAttribute())
+		return nullptr;
+
+	CArcElement* pArc = new CArcElement();
+
+	if (nullptr == pArc)
+	{
+		oReader.MoveToElement();
+		return nullptr;
+	}
+
+	std::string sName;
+
+	do
+	{
+		sName = oReader.GetNameA();
+
+		if ("SweepDirection" == sName)
+			pArc->m_bSweep = oReader.GetBoolean(true);
+		else if ("LargeArc" == sName)
+			pArc->m_bLarge = oReader.GetBoolean(true);
+		else if ("RotationAngle" == sName)
+			pArc->m_dAngle = oReader.GetDouble(true);
+		else if ("EllipseSize" == sName)
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pArc->m_dRadiusX = arDatas[0];
+			pArc->m_dRadiusY = arDatas[1];
+		}
+		else if ("EndPoint" == sName)
+		{
+			const std::vector<double> arDatas{oReader.GetArrayDoubles(true)};
+
+			if (2 > arDatas.size())
+				continue;
+
+			pArc->m_dX = arDatas[0];
+			pArc->m_dY = arDatas[1];
+		}
+	}while (oReader.MoveToNextAttribute());
+
+	oReader.MoveToElement();
+
+	return pArc;
 }
 
 void CArcElement::Draw(IRenderer* pRenderer) const

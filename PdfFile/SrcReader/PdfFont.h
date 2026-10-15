@@ -38,38 +38,137 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <functional>
 
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/AcroForm.h"
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
-
-#include "RendererOutputDev.h"
-#include "PdfAnnot.h"
+#include "../../DesktopEditor/graphics/TemporaryCS.h"
 
 namespace PdfReader
 {
-struct CAnnotFontInfo
+struct TFontEntry
 {
-	std::wstring wsFontName;
-	std::wstring wsFontPath;
+	std::wstring wsFilePath;     // Path to font on disk
+	std::wstring wsFontName;     // Font name as written in PDF (branch for cases when font name is not specified in font itself)
+	int*         pCodeToGID;     // Code to glyph number in font table
+	int*         pCodeToUnicode; // Code to unicode value table
+	unsigned int unLenGID;
+	unsigned int unLenUnicode;
+	bool         bAvailable;     // Is font available. Made for multithreading
+	bool         bLoad = true;
+	bool         bFontSubstitution = false;
+	bool         bIsIdentity = false;
+	double       dStretch = 1.0;
+
 	std::wstring wsActualFontName;
 	bool bBold   = false;
 	bool bItalic = false;
+
 };
 
+class CPdfFontList
+{
+public:
+	CPdfFontList();
+	~CPdfFontList();
+	bool Find(Ref oRef, TFontEntry* pEntry);
+	bool Find2(Ref oRef, TFontEntry** ppEntry);
+	void Remove(Ref oRef);
+	TFontEntry* Add(Ref oRef, const std::wstring& wsFileName, int* pCodeToGID, int* pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode);
+	void Clear();
+	bool GetFont(Ref* pRef, TFontEntry* pEntry);
+	const std::map<Ref, TFontEntry*>& GetFonts();
+private:
+	TFontEntry* Lookup(Ref& oRef);
+	void Add(Ref& oRef, TFontEntry* pFontEntry);
+
+private:
+	std::map<Ref, TFontEntry*>          m_oFontMap;
+	NSCriticalSection::CRITICAL_SECTION m_oCS; // Critical section
+};
+struct CType3FontMetrics
+{
+	double dLLx, dLLy, dURx, dURy;
+	double arrFontMatrix[6];
+	std::map<int, double> mapWidths;
+	double dUnitsPerEm;
+	double dAscent;
+	double dDescent;
+
+	CType3FontMetrics() : dLLx(0), dLLy(0), dURx(0), dURy(1000), dUnitsPerEm(1000), dAscent(800), dDescent(200)
+	{
+		arrFontMatrix[0] = 0.001; arrFontMatrix[1] = 0;
+		arrFontMatrix[2] = 0;     arrFontMatrix[3] = 0.001;
+		arrFontMatrix[4] = 0;     arrFontMatrix[5] = 0;
+	}
+	double GetScale() const
+	{
+		return arrFontMatrix[0] > 0 ? arrFontMatrix[0] * dUnitsPerEm : 1.0;
+	}
+	double GetGlyphWidth(int nCode) const
+	{
+		auto it = mapWidths.find(nCode);
+		if (it != mapWidths.end())
+			return it->second;
+		return dUnitsPerEm * 0.5;
+	}
+};
+struct CFontData
+{
+	enum FontFlags : unsigned int
+	{
+		eFlagBold      = 1 << 0,
+		eFlagItalic    = 1 << 1,
+		eFlagStrike    = 1 << 3,
+		eFlagUnderline = 1 << 4,
+		eFlagVAlign    = 1 << 5,
+		eFlagAFont     = 1 << 6,
+		eFlagRTL       = 1 << 7,
+	};
+
+	bool bFind;
+	BYTE nAlign;
+	unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 strikethrough, 4 underline, 5 vertical-align, 6 actual font, 7 RTL
+	double dFontSize;
+	double dVAlign;
+	double dColor[3];
+	std::string sFontFamily;
+	std::string sActualFont;
+	std::string sText;
+
+	CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSize(10), dVAlign(0), dColor{0, 0, 0} {}
+	CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSize(oFont.dFontSize), dVAlign(oFont.dVAlign),
+		dColor{oFont.dColor[0], oFont.dColor[1], oFont.dColor[2]}, sFontFamily(oFont.sFontFamily), sActualFont(oFont.sActualFont), sText(oFont.sText) {}
+};
+struct SFontVisitContext
+{
+	Dict*       pFontDict;
+	Object*     pFontRefNF;
+	const char* sFontKey;
+};
+
+std::vector<CFontData*> ReadRC(const std::string& sRC);
 std::string GetRCFromDS(const std::string& sDS, Object* pContents, const std::vector<double>& arrCFromDA);
 bool IsNeedCMap(PDFDoc* pDoc);
 bool IsBaseFont(const std::wstring& wsName);
-std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, bool bIsNeedCMap);
-std::wstring GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic, bool bIsNeedCMap = false);
+std::map<std::wstring, std::wstring> GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList);
+void GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef);
 bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
-std::vector<CAnnotFontInfo> GetAnnotFontInfos(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
-std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
+std::vector<Ref> GetFreeTextFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef);
+std::map<std::wstring, std::wstring> GetFreeTextFontsRC(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CFontData*>& arrRC);
 bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
-int CollectFontWidths(GfxFont* gfxFont, Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth);
-void CheckFontStylePDF(std::wstring& sName, bool& bBold, bool& bItalic);
-bool EraseSubsetTag(std::wstring& sFontName);
+int CollectFontWidths(Dict* pFontDict, std::map<unsigned int, unsigned int>& mGIDToWidth);
+
+NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontManager, GfxFont* pFont, std::wstring& wsFontBaseName, double& dStretch);
+void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, GfxFont* pFont, std::wstring& wsFileName, std::wstring& wsFontName, bool bLoad = true);
+
+CType3FontMetrics* BuildType3FontMetrics(XRef* pXref, GfxFont* pFont);
+
+using FFontVisitor = std::function<bool(const SFontVisitContext&)>;
+bool ScanResourceFonts(Dict* pResources, int nDepth, std::vector<int>& arrUniqueResources, const FFontVisitor& fnVisit);
+bool ScanAPFonts(Object* pAnnotOrWidget, std::vector<int>& arrUniqueResources, const FFontVisitor& fnVisit);
 }
 
 #endif // _PDF_READER_FONT_H

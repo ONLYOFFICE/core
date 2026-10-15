@@ -226,7 +226,7 @@ void content_types_file::set_media(mediaitems & _Mediaitems)
 
 simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName), bXml(true)
 {
-    utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
+	content_utf8_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(Content);
 }
 simple_element::simple_element(const std::wstring & FileName, const std::string & Content) : file_name_(FileName), content_utf8_(Content), bXml(false)
 {

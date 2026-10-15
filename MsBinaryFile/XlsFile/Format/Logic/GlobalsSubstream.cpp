@@ -105,6 +105,7 @@
 #include "Biff_records/ExternName.h"
 #include "Biff_records/ExternSheet.h"
 #include "Biff_records/Continue.h"
+#include "Biff_records/MsoDrawingGroup.h"
 //#include "Biff_records/XCT.h"
 //#include "Biff_records/CRN.h"
 
@@ -673,9 +674,6 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_CodeName);
 	if(m_FNGROUPS != nullptr)
 		proc.mandatory(*m_FNGROUPS);
-	for(auto i : m_arLBL)
-		if(i != nullptr)
-			proc.mandatory(*i);
 	if(m_PROTECTION != nullptr)
 		proc.mandatory(*m_PROTECTION);
 	else
@@ -733,6 +731,16 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 	for(auto i: m_arSUPBOOK)
 		if(i != nullptr)
 			proc.mandatory(*i);
+	for(auto i : m_arLBL)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arMSODRAWINGGROUP)
+	{
+		auto drawingGroupUnion = static_cast<MSODRAWINGGROUP*>(i.get());
+		auto drawingGroup = static_cast<MsoDrawingGroup*>(drawingGroupUnion->m_MsoDrawingGroup.get());
+		drawingGroup->prepareChart(drawingGroup->drawingCount);
+		proc.mandatory(*drawingGroupUnion);
+	}
 	if(m_SHAREDSTRINGS != nullptr)
 		proc.mandatory(*m_SHAREDSTRINGS);
 	if(m_ExtSST != nullptr)
@@ -746,6 +754,8 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 			proc.mandatory(*i);
 	if(m_THEME != nullptr)
 		proc.mandatory(*m_THEME);
+	else
+		proc.mandatory<THEME>();
 	proc.mandatory<EOF_T>();
 	return true;
 }

@@ -54,7 +54,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// Metadata
 	//----------------------------------------------------------------------------------------
-	CMetadata::CMetadata(CXref* pXref, CInfoDict* pInfo)
+	CMetadata::CMetadata(CXref* pXref, CInfoDict* pInfo, const std::string& sAltTitle)
 	{
 		pXref->Add(this);
 
@@ -121,6 +121,8 @@ namespace PdfWriter
 		const char* sTitle   = pInfo->GetInfo(InfoTitle);
 		const char* sAuthor  = pInfo->GetInfo(InfoAuthor);
 		const char* sSubject = pInfo->GetInfo(InfoSubject);
+		if (pXref->IsPDFUA() && !sTitle)
+			sTitle = sAltTitle.c_str();
 		if (sTitle || sAuthor || sSubject)
 		{
 			sXML += "<rdf:Description rdf:about=\"\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
@@ -159,6 +161,12 @@ namespace PdfWriter
 		{
 			sXML += "<rdf:Description rdf:about=\"\" xmlns:pdfaid=\"http://www.aiim.org/pdfa/ns/id/\">\n";
 			sXML += "<pdfaid:part>2</pdfaid:part><pdfaid:conformance>A</pdfaid:conformance>\n";
+			sXML += "</rdf:Description>";
+		}
+		else if (pXref->IsPDFUA())
+		{
+			sXML += "<rdf:Description rdf:about=\"\" xmlns:pdfuaid=\"http://www.aiim.org/pdfua/ns/id/\">\n";
+			sXML += "<pdfuaid:part>2</pdfuaid:part><pdfuaid:rev>2024</pdfuaid:rev>\n";
 			sXML += "</rdf:Description>";
 		}
 

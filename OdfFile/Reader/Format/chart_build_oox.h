@@ -68,6 +68,7 @@ public:
 		size_t col;
 		size_t row;
 		std::wstring val;
+		std::wstring id;
 	};
 
 	object_odf_context(std::wstring ref) 
@@ -116,7 +117,12 @@ public:
     void add_point(unsigned int rep);
 	
     void calc_cache_series(std::wstring adress, std::vector<std::wstring> & cash);
-	
+
+	bool find_cache_anchor(std::wstring const & adress, size_t & col, size_t & row);
+
+	static void split_cache_levels(size_t levels, std::vector<std::wstring> const & cash,
+									std::vector<std::vector<std::wstring> > & out);
+
 	void xlsx_convert	(oox::xlsx_conversion_context & Context);
 	void docx_convert	(oox::docx_conversion_context & Context);
 	void pptx_convert	(oox::pptx_conversion_context & Context);
@@ -159,6 +165,8 @@ public:
 	chart::legend				legend_;
 	chart::plot_area			plot_area_;
 
+	chart::rect					coordinate_region_;
+
 	chart::simple				data_table_;
 	chart::simple				wall_;
 	chart::simple				floor_;
@@ -171,6 +179,7 @@ public:
 
 	chart_format_properties_ptr properties_;
 	graphic_format_properties_ptr graphic_properties_;
+	text_format_properties_ptr	text_properties_; //from chart:chart (default font)
 	oox::_oox_fill				chart_fill_;
 
 	std::vector<_cell>			cash_values;
@@ -217,7 +226,8 @@ class process_build_object
 		public visitor<chart_legend>,
 
 		public visitor<chart_plot_area>,
-	    
+		public visitor<chart_coordinate_region>,
+
 		public visitor<chart_axis>,
 		public visitor<chart_categories>,
 		public visitor<chart_date_scale>,
@@ -265,6 +275,8 @@ private:
 	void ApplyTextProperties(std::wstring style, text_format_properties_ptr & propertiesOut);
 	void ApplyChartProperties(std::wstring style, chart_format_properties_ptr & propertiesOut);
 
+	void ParseTitleParts(const office_element_ptr & elm, chart::title & t, const std::wstring & span_style);
+
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);
     bool visit_rows(unsigned int repeated);
@@ -288,6 +300,7 @@ public:
     virtual void visit(chart_footer			& val);
     virtual void visit(chart_legend			& val);
     virtual void visit(chart_plot_area		& val);
+	virtual void visit(chart_coordinate_region & val);
     virtual void visit(chart_axis			& val);
 	virtual void visit(chart_series			& val);
     virtual void visit(chart_domain			& val);

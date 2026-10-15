@@ -228,11 +228,8 @@ int GLOBALS::serialize_formatPr(std::wostream & stream)
 				if (def_row)
 				{
 					CP_XML_ATTR(L"defaultRowHeight", def_row->miyRw / 20.);
-					if(!def_row->fDyZero)
-					{
-						CP_XML_ATTR(L"customHeight", true);
-					}
-					else 
+					
+					if(def_row->fDyZero)
 					{
 						CP_XML_ATTR(L"zeroHeight", true);
 					}

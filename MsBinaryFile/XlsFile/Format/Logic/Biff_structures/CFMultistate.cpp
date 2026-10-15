@@ -85,7 +85,7 @@ int CFMultistate::serialize(std::wostream & stream)
 		{
 			switch(iIconSet)
 			{
-				case 0:		CP_XML_ATTR(L"iconSet", L"3Symbols");		break;
+				case 0:		CP_XML_ATTR(L"iconSet", L"3Arrows");		break;
 				case 1:		CP_XML_ATTR(L"iconSet", L"3ArrowsGray");	break;
 				case 2:		CP_XML_ATTR(L"iconSet", L"3Flags");			break;
 				case 3:		CP_XML_ATTR(L"iconSet", L"3TrafficLights1");break;

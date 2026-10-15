@@ -44,11 +44,12 @@ BiffStructurePtr ObjLinkFmla::clone()
 
 void ObjLinkFmla::load(CFRecord& record)
 {
+	const size_t startPtr = record.getRdPtr();
 	record >> ft;
-
 	if ( ft != 0x0014 && ft != 0x000e)
 	{
-		record.RollRdPtrBack(2);
+		const size_t bytesRead = record.getRdPtr() - startPtr;
+		record.RollRdPtrBack(bytesRead);
 		return;
 	}
 	fExist = true;

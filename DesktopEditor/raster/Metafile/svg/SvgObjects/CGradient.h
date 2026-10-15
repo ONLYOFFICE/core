@@ -44,7 +44,8 @@ namespace SVG
 	typedef enum
 	{
 		GradU_ObjectBoundingBox,
-		GradU_UserSpaceOnUse
+		GradU_UserSpaceOnUse,
+		GradU_None
 	}GradientUnits;
 
 	typedef enum
@@ -82,10 +83,9 @@ namespace SVG
 		void ReadChildrens(CSvgReader& oReader, CSvgFile* pSvgFile) override;
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
-		void ApplyTransform(IRenderer *pRenderer, const TBounds& oBounds, double& dAngle) const;
 	protected:
 		CGradient* GetRefGradient(const CSvgFile *pFile) const;
-		bool ApplyRefGradient(IRenderer *pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) const;
+		virtual void InheritRefGradient(const CSvgFile *pFile);
 
 		std::wstring  m_wsXlinkHref;
 		GradientUnits m_enGradientUnits;
@@ -102,6 +102,8 @@ namespace SVG
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:
+		void InheritRefGradient(const CSvgFile *pFile) override;
+
 		SvgDigit m_oX1;
 		SvgDigit m_oY1;
 		SvgDigit m_oX2;
@@ -117,6 +119,8 @@ namespace SVG
 
 		bool Apply(IRenderer* pRenderer, const CSvgFile *pFile, const TBounds &oObjectBounds) override;
 	private:
+		void InheritRefGradient(const CSvgFile *pFile) override;
+
 		SvgDigit m_oCx;
 		SvgDigit m_oCy;
 		SvgDigit m_oR;

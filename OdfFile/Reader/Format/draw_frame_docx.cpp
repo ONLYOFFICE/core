@@ -891,6 +891,10 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
     {
         drawing->isInline = true;
     }
+	if( anchor && anchor->get_type() == anchor_type::Char )
+	{
+		drawing->m_isChar = true;
+	}
 	if (attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_)
 	{
 		std::wstring transformStr = attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_transform_.get();
@@ -1913,16 +1917,16 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	bool runState = Context.get_run_state();
 	bool paraState = Context.get_paragraph_state();
 
-	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
-	{
-		Context.add_delayed_element(this);
-		return;
-	}
-
 	if (!control_id_) return;
 
 	oox::forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
 	if (state.id.empty()) return;
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_ && !(state.type == 6 || state.type == 4))
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
 
 	if ((state.type == 6 || state.type == 4) && state.element)
 	{

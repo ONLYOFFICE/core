@@ -66,7 +66,7 @@ enum class EAnnotType
 class CAnnot
 {
 public:
-	CAnnot(CXmlReader& oLiteReader);
+	CAnnot(CXmlReader& oLiteReader, IFolder *pFolder);
 	~CAnnot();
 
 	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
@@ -78,7 +78,7 @@ private:
 	bool m_bNoRotate;
 	bool m_bReadOnly;
 
-	std::vector<CParameter*> m_arParameters;
+	std::vector<CParameter*>  m_arParameters;
 	std::vector<CAppearance*> m_arAppearances;
 };
 
@@ -87,7 +87,7 @@ class CPageAnnot
 public:
 	CPageAnnot();
 
-	static CPageAnnot* Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
+	static CPageAnnot* Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath, IFolder* pFolder);
 
 	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
 private:
@@ -101,7 +101,7 @@ public:
 	CAnnotation();
 	~CAnnotation();
 
-	bool Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
+	bool Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath, IFolder* pFolder);
 
 	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
 private:

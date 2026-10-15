@@ -67,9 +67,9 @@ public:
 		LeftBorderColor = 9,
 		RightBorderColor = 10,
 		DiagonalBorderColor = 11,
-		TextColor = 12,
-		FontScheme = 13,
-		Indent = 14
+		TextColor = 13,
+		FontScheme = 14,
+		Indent = 15
 	}extType = None;
 	
 	struct extPropData_Tag

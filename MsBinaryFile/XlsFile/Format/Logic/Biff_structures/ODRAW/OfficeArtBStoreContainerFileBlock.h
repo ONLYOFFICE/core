@@ -74,6 +74,7 @@ public:
 	}
 	
 	virtual void load(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtBStoreContainerFileBlock;
@@ -89,6 +90,7 @@ public:
 	size_t			recType;	
 	std::wstring	rgbUid1;
 	std::wstring	rgbUid2;
+	std::wstring	nameData;
 	bool			result;
 
 	const std::wstring ReadMD4Digest(XLS::CFRecord& record)

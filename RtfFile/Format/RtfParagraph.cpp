@@ -226,7 +226,27 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += L"</w:r>";
 		}
 		oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
-		
+
+		// in RTF a run without an explicit \cf keeps the default (auto) color and does NOT inherit
+		// the paragraph style color; in OOXML an omitted <w:color> inherits it. Pass the style fore
+		// color down so runs without a color can block that inheritance with <w:color w:val="auto"/>.
+		if (PROP_DEF != m_oProperty.m_nStyle)
+		{
+			RtfStylePtr oParaStyle;
+			_INT32 nStyleId = m_oProperty.m_nStyle;
+			for (int nGuard = 0; nGuard < 32 && PROP_DEF != nStyleId && pRtfDocument->m_oStyleTable.GetStyle(nStyleId, oParaStyle); ++nGuard)
+			{
+				RtfParagraphStyle* pParaStyle = dynamic_cast<RtfParagraphStyle*>(oParaStyle.get());
+				if (NULL == pParaStyle) break;
+				if (PROP_DEF != pParaStyle->m_oCharProp.m_nForeColor)
+				{
+					oNewParam.nParaStyleForeColor = pParaStyle->m_oCharProp.m_nForeColor;
+					break;
+				}
+				nStyleId = (pParaStyle->m_nBasedOn != nStyleId) ? pParaStyle->m_nBasedOn : PROP_DEF;
+			}
+		}
+
         std::wstring ParagraphContent;
 		for (size_t i = 0; i < m_aArray.size(); i++)
 		{

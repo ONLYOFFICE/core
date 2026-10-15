@@ -152,7 +152,7 @@ public:
 		Link        = 1,
 		DocInfo     = 2,
 		FormField   = 3, // Backward compatibility for docxf
-		Annotaion   = 4,
+		Annotation  = 4,
 		DeleteAnnot = 5,
 		WidgetsInfo = 6,
 		ShapeStart  = 7,
@@ -161,6 +161,9 @@ public:
 		PageRotate  = 10,
 		Headings    = 11,
 		Redact      = 12,
+		RedactAnnot = 13,
+		RedactMeta  = 14,
+		Macros      = 15,
 
 		Undefined   = 255
 	};
@@ -307,6 +310,10 @@ public:
 		UNUSED_VARIABLE(codepointscount);
 		LONG c = (NULL == codepoints) ? 32 : codepoints[0];
 		return CommandDrawTextExCHAR(c, (LONG)gid, x, y, w, h);
+	}
+	virtual HRESULT CommandDrawType3CHAR(const std::wstring& wsUnicodeText, const double& x, const double& y, const double& w, const double& h, const double& ascent, const double& descent, const double& unitsPerEm)
+	{
+		return S_OK;
 	}
 
 	//-------- Command markers ---------------------------------------------------------------

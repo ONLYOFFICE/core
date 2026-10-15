@@ -70,18 +70,18 @@ void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 				{
 					CP_XML_ATTR(L"val", 1);
 				}
-				//CP_XML_NODE(L"c:lblAlgn")
-				//{
-				//	CP_XML_ATTR(L"val", "ctr");
-				//}
-				//CP_XML_NODE(L"c:lblOffset")
-				//{
-				//	CP_XML_ATTR(L"val",100);
-				//}
-				//CP_XML_NODE(L"c:noMultiLvlLbl")
-				//{
-				//	CP_XML_ATTR(L"val", 1);
-				//}
+				CP_XML_NODE(L"c:lblAlgn")
+				{
+					CP_XML_ATTR(L"val", L"ctr");
+				}
+				CP_XML_NODE(L"c:lblOffset")
+				{
+					CP_XML_ATTR(L"val", 100);
+				}
+				CP_XML_NODE(L"c:noMultiLvlLbl")
+				{
+					CP_XML_ATTR(L"val", 0);
+				}
 			}
 			break;
 		case 2:
@@ -121,8 +121,15 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 	_CP_OPT(double)			doubleVal;
 	
 	oox_title title;
-	title.set_content(content_.title_);//todo need to set layout properly
-  
+	title.set_content(content_.title_);
+	title.set_layout(title_layout_.x, title_layout_.y, title_layout_.w, title_layout_.h);
+
+	_CP_OPT(int) rotateLabels;
+	if (content_.properties_)
+	{
+		rotateLabels = odf_reader::oox_convert_rotation_angle(content_.properties_->common_rotation_angle_attlist_.style_rotation_angle_);
+	}
+
 	CP_XML_WRITER(_Wostream)
     {
 		CP_XML_NODE(L"c:axId")
@@ -178,11 +185,9 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		}
 		CP_XML_NODE(L"c:axPos")
         {
-			if (content_.dimension_ == L"x")
-				CP_XML_ATTR(L"val", L"b");//  "b" | "l" |  "r" |  "t"// == bottom left right top
-				
-			if (content_.dimension_ == L"y")
-				CP_XML_ATTR(L"val", L"l");//  "b" | "l" |  "r" |  "t"// == bottom left right top
+			//  "b" | "l" |  "r" |  "t"// == bottom left right top
+			if (content_.dimension_ == L"y")	CP_XML_ATTR(L"val", L"l");
+			else								CP_XML_ATTR(L"val", L"b");
 		}
 		//oox_serialize_ln(_Wostream, content_.graphic_properties_);
 		_CP_OPT(std::wstring) strNumFormat, strPercentFormat, strAxisType;
@@ -265,7 +270,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		shape.set(content_.graphic_properties_, content_.fill_) ;
 		shape.oox_serialize(_Wostream);
 
-		oox_serialize_default_text(_Wostream, content_.text_properties_);
+		oox_serialize_default_text(_Wostream, content_.text_properties_, rotateLabels);
 		
 		for (size_t i = 0; i < cross_id_.size(); i++)
 		{

@@ -107,6 +107,7 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
     common_padding_attlist_.add_attributes(Attributes);
     common_shadow_attlist_.add_attributes(Attributes);
     common_background_color_attlist_.add_attributes(Attributes);
+	common_writing_mode_attlist_.add_attributes(Attributes);
 
 	if (draw_fit_to_size_str_ && !style_shrink_to_fit_)
 	{//https://bugs.documentfoundation.org/show_bug.cgi?id=97630
@@ -262,6 +263,7 @@ void graphic_format_properties::apply_from(const graphic_format_properties *Othe
     common_padding_attlist_.apply_from			(Other->common_padding_attlist_);
     common_shadow_attlist_.apply_from			(Other->common_shadow_attlist_);
     common_background_color_attlist_.apply_from	(Other->common_background_color_attlist_);
+	common_writing_mode_attlist_.apply_from		(Other->common_writing_mode_attlist_);
      
 
     _CP_APPLY_PROP(style_background_image_,	Other->style_background_image_);

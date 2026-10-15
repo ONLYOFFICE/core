@@ -74,7 +74,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				
 				if (pIns->m_oDate.IsInit())
                 {
-                    std::wstring sVal = pIns->m_oDate->GetValue();
+                    std::wstring sVal = pIns->m_oDate->ToString();
                     m_oCharProperty.m_nRevdttm = RtfUtility::convertDateTime( sVal );
                 }
 
@@ -89,7 +89,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				
 				if (pDel->m_oDate.IsInit())
                 {
-                    std::wstring sVal = pDel->m_oDate->GetValue();
+                    std::wstring sVal = pDel->m_oDate->ToString();
 
                     m_oCharProperty.m_nRevdttmDel = RtfUtility::convertDateTime( sVal );
                 }

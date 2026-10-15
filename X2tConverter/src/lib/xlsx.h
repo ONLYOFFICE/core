@@ -185,6 +185,7 @@ namespace NExtractTools
 			oXlsx.PrepareHlinks();
 			oXlsx.PrepareRichStr();
 			oXlsx.PrepareTableFormula();
+			oXlsx.LinkTables();
 			nRes = oXlsx.WriteXLS(sTo)? S_OK : AVS_FILEUTILS_ERROR_CONVERT;;
 		}
 		return nRes;
@@ -396,6 +397,10 @@ namespace NExtractTools
 			nRes = xlsx_dir2xlsb(sTempUnpackedXLSX, sTo, params, convertParams);
 		}
 		return nRes;
+	}
+	_UINT32 xlsx_dir2xls(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		return xlsx_dir2xls_dir(sFrom, sTo, params, convertParams);
 	}
 	_UINT32 xlsx2xls(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{

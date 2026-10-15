@@ -39,6 +39,7 @@
 #include <CPSharedPtr.h>
 
 #include "oox_chart_shape.h"
+#include "oox_layout.h"
 
 #include "../../../OOXML/Base/Base.h"
 
@@ -64,9 +65,16 @@ public:
 	int get_Id(){return id_;}
 	void add_CrossedId (int id){cross_id_.push_back( id);}
 
+	void set_title_layout(const _CP_OPT(double) & rel_x, const _CP_OPT(double) & rel_y,
+	                      const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h)
+	{
+		title_layout_.set_rect(rel_x, rel_y, rel_w, rel_h);
+	}
+
 	unsigned int			id_;
 	std::vector<int>		cross_id_;
 	odf_reader::chart::axis content_;
+	oox_layout				title_layout_;
 };
 
 }

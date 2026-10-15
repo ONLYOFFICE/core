@@ -472,7 +472,10 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 	CxImage* img = new CxImage();
 
 	if (!img->Decode(oFile.GetFileNative(), m_nFileType))
+	{
+		delete img;
 		return false;
+	}
 
 #if CXIMAGE_SUPPORT_EXIF
 #if CXIMAGE_SUPPORT_TRANSFORMATION

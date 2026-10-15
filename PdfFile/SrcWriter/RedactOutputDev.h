@@ -37,6 +37,7 @@
 
 #include "../PdfWriter.h"
 #include "../PdfEditor.h"
+#include "OverlapOutputDev.h"
 
 #include "../SrcReader/GfxClip.h"
 
@@ -44,17 +45,33 @@
 #include "../lib/xpdf/OutputDev.h"
 
 #include <stack>
+#include <set>
+#include <map>
 
 namespace PdfWriter
 {
+	bool CheckFullRedact(const std::vector<double>& arrQuadPoints, const std::vector<CPoint>& XObjectPolygon);
+	bool CheckPartialRedact(const std::vector<double>& arrQuadPoints, const std::vector<CPoint>& XObjectPolygon);
+
 	class RedactOutputDev : public OutputDev
 	{
 	public:
-		RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID);
+		RedactOutputDev(CPdfWriter* pRenderer, CObjectsManager* pObjMng, int nStartRefID, int nRedactInfo);
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
+		void SetOverlapInfo(const std::set<int>& arrHiddenTextIndices,
+							const std::vector<int>* pFormTextCounts,
+							const std::vector<int>* pFormGraphicsCounts,
+							std::vector<SOverlapGraphicsResult>&& arrGraphicsResults,
+							int nStartTextCounter = 0,
+							int nStartFormCounter = 0,
+							int nStartGraphicsCounter = 0);
+		int  GetTextCounter()    const { return m_nTextCounter; }
+		int  GetFormCounter()    const { return m_nFormCounter; }
+		int GetGraphicsCounter() const { return m_nGraphicsCounter; }
 		void NewPDF(XRef* pXref);
+		void StartOnPage(CPage* pPage, CResourcesDict* pResources = NULL);
 
 		//----- get info about output device
 		virtual GBool upsideDown() override
@@ -148,11 +165,11 @@ namespace PdfWriter
 		// beginActualText
 		// endActualText
 		//----- additional
-		// beginMarkedContent
+		virtual GBool beginMarkedContent(GfxState *state, Object args[], int numArgs) override;
 		// beginMCOShapes
-		// endMarkedContent
+		virtual void endMarkedContent(GfxState *state) override;
 		virtual GBool useNameOp() override;
-		virtual void setExtGState(const char* name) override;
+		virtual void setExtGState(GfxState *pGState, Object* pExtGState, const char* name) override;
 		virtual void setFillColorSpace(const char* name) override;
 		virtual void setFillColor(Object* args, int numArgs) override;
 		virtual void setFillColorN(Object* args, int numArgs) override;
@@ -197,14 +214,17 @@ namespace PdfWriter
 		void DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pCTM, bool bStroke = false, bool bEoFill = false);
 		void DrawPathRedact(Aggplus::CGraphicsPath* oPath, bool bStroke, double& dXEnd, double& dYEnd, const std::vector<CSegment>& arrForStroke = {});
 		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM);
+		void DrawDeviceSpacePathRedacted(GfxState* pGState, Aggplus::CGraphicsPath& oPath, double* pCTM);
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();
 		void AddClip(GfxState* pGState, GfxRedactState* pState, int nIndex);
 		void DoStateOp();
-		void DrawXObject(const char* name);
+		void DrawXObject(const char* name, const double* pCropMatrix = NULL);
 		CObjectBase* CreateImage(Gfx *gfx, int nWidth, int nHeight, unsigned int nFilter, int nBPC, const char* sCS);
 		CResourcesDict* GetResources(Gfx *gfx, CDictObject* pNewForm = NULL);
+		const SOverlapGraphicsResult* FindGraphicsResult(int nGraphicsIndex) const;
+		void PropagateOverlapInfoToForm(RedactOutputDev* pChild) const;
 
 		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;
@@ -214,10 +234,22 @@ namespace PdfWriter
 		CPdfWriter* m_pRenderer;
 		CObjectsManager* m_mObjManager;
 		int m_nStartRefID;
+		int m_nRedactInfo;
 		CDocument*  m_pDoc;
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];
 		std::string m_sImageName;
+
+		std::set<int> m_arrHiddenTextIndices;
+		const std::vector<int>* m_pFormTextCounts;
+		const std::vector<int>* m_pFormGraphicsCounts;
+		int m_nTextCounter;
+		int m_nFormCounter;
+		int m_nGraphicsCounter;
+
+		std::vector<SOverlapGraphicsResult> m_arrGraphicsResultsStorage;
+		std::map<int, SOverlapGraphicsResult*> m_mapGraphicsResultsStorage;
+		const std::map<int, SOverlapGraphicsResult*>* m_pGraphicsResultsMap;
 
 		bool m_bUpdateAll;
 		std::deque<GfxRedactState> m_sStates;

@@ -167,16 +167,19 @@ void COFDFile::ConvertToPdf(const std::wstring& wsDstPath)
 
 std::wstring COFDFile::GetInfo()
 {
-	return std::wstring();
+	return (nullptr != m_pInternal) ? m_pInternal->GetInfo() : std::wstring();
 }
 
 unsigned char* COFDFile::GetStructure()
 {
-	return nullptr;
+	return (nullptr != m_pInternal) ? m_pInternal->GetStructure() : nullptr;
 }
 
 unsigned char* COFDFile::GetLinks(int nPageIndex)
 {
-	return nullptr;
+	return (nullptr != m_pInternal) ? m_pInternal->GetLinks(nPageIndex) : nullptr;
 }
+
+void COFDFile::SetPainter(IOfficeDrawingFilePainter* pPainter)
+{}
 #endif

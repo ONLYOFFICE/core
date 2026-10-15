@@ -441,7 +441,7 @@ namespace PdfWriter
 		standard14fonts_Helvetica            = 0,
 		standard14fonts_HelveticaBold        = 1,
 		standard14fonts_HelveticaOblique     = 2,
-		standard14fonts_HelveticeBoldOblique = 3,
+		standard14fonts_HelveticaBoldOblique = 3,
 		standard14fonts_Courier              = 4,
 		standard14fonts_CourierBold          = 5,
 		standard14fonts_CourierOblique       = 6,

@@ -11,15 +11,19 @@ platform = base.host_platform()
 
 if platform == "windows":
   platform_postfix = "win_64"
+elif platform == "mac" and base.is_os_arm():
+  platform_postfix = "mac_arm64"
 elif platform == "mac":
   platform_postfix = "mac_64"
 else:
   platform_postfix = "linux_64"
 
+print(f'Platform: {platform_postfix}')
+
 x2t_build_dir = "../../../build/bin/" + platform_postfix + "/debug"
 
 config.parse()
-build_js.build_sdk_builder("../../../../sdkjs/build")
+build_js.build_sdk_builder("../../../../onlyoffice/sdkjs/build")
 
 if base.is_dir(x2t_build_dir + "/sdkjs"):
   base.delete_dir(x2t_build_dir + "/sdkjs")

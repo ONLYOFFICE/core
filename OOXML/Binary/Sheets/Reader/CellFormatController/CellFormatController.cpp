@@ -303,6 +303,10 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 				pText->m_sText = value;
 			}
 			pCell_->m_oRichText->m_arrItems.push_back(pText);
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				addCustomColWidth(pCell, pText->m_sText.size());
+			}
 		}
 	}
 
@@ -397,11 +401,10 @@ void CellFormatController::addCustomColWidth(OOX::Spreadsheet::CCell *pCell, dou
 {
 	if(m_pWorksheet == nullptr || pCell == nullptr || !pCell->m_oCol.IsInit())
 		return;
-	// don't shrink columns, only expand
-	if(m_pWorksheet->m_oSheetFormatPr.IsInit() && m_pWorksheet->m_oSheetFormatPr->m_oBaseColWidth.IsInit() &&
-		m_pWorksheet->m_oSheetFormatPr->m_oBaseColWidth.get() > width)
-		return;
 	auto colNumber = pCell->m_oCol.get() + 1;
+	const double MIN_WIDTH = 3.0;
+	if(width < MIN_WIDTH)
+		width = MIN_WIDTH;
 	if(!m_pWorksheet->m_oCols.IsInit())
 	{
 		m_pWorksheet->m_oCols.Init();

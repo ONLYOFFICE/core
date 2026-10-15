@@ -61,7 +61,7 @@ public:
     CEncryptionHeader               m_oEncryptionHeader;
     bool                            m_bEncrypt;
     std::wstring                    m_strPassword;
-    CRYPT::ECMADecryptor*           m_pDecryptor;
+    CRYPT::Decryptor*               m_pDecryptor;
     POLE::Storage*                  m_pStorageDecrypt;
     std::vector<XLS::CFStreamPtr>   m_arStreamDecrypt; // each Persist has its own ... o_O
 
@@ -170,6 +170,9 @@ public:
     void LoadAutoNumBullet(CShapeElement* pShape, int slideID);
     void CreateDefaultStyle(CTextStyles& pStyle, CTheme* pTheme);
     void CorrectColorScheme(std::vector<CColor>& oScheme);
+    void CorrectColorSchemeByRoundTrip(CRecordSlide* pRecordSlide, std::vector<CColor>& oScheme, const std::vector<CColor>* pParentScheme = NULL);
+    void LoadFontSchemeByRoundTrip(CRecordSlide* pRecordSlide, CTheme* pTheme);
+    bool GetRoundTripTheme(CRecordSlide* pRecordSlide, std::string& strTheme);
 
     void ConvertLayoutType(SSlideLayoutAtom & layoutRecord, std::wstring & type, std::wstring & name);
 

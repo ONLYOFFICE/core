@@ -33,8 +33,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
-#ifndef OOX_OLEOBJECTS_FILE_INCLUDE_H_
-#define OOX_OLEOBJECTS_FILE_INCLUDE_H_
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
@@ -184,10 +182,9 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-            boost::unordered_map<unsigned int, COleObject*> m_mapOleObjects;
+            std::map<unsigned int, COleObject*> m_mapOleObjects;
 		};
 
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_OLEOBJECTS_FILE_INCLUDE_H_

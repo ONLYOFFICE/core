@@ -59,15 +59,15 @@ namespace OOX
 		}
 		std::wstring CCellStyle::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		void CCellStyle::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<cellStyle"));
+			writer.WriteString(L"<cellStyle");
 			WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
 			WritingStringNullableAttrInt(L"xfId", m_oXfId, m_oXfId->GetValue());
 			WritingStringNullableAttrInt(L"builtinId", m_oBuiltinId, m_oBuiltinId->GetValue());
-			writer.WriteString(_T("/>"));
+			writer.WriteString(L"/>");
 		}
 		void CCellStyle::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -117,18 +117,19 @@ namespace OOX
 		{
 			auto ptr = new XLS::Style;
 			if (m_oXfId.IsInit())
-				ptr->ixfe = m_oXfId->GetValue();
-			if(m_oBuiltinId.IsInit())
+				ptr->ixfe = m_oXfId->GetValue() + 16;
+
+			if (m_oName.IsInit())
+			{
+				ptr->fBuiltIn = false;
+				ptr->user = m_oName.get();
+			}
+			else if(m_oBuiltinId.IsInit())
 			{
 				ptr->fBuiltIn = true;
 				ptr->builtInData.istyBuiltIn = m_oBuiltinId->GetValue();
 				if(m_oILevel.IsInit())
 					ptr->builtInData.iLevel = m_oILevel->GetValue();
-			}
-			else if (m_oName.IsInit())
-			{
-				ptr->fBuiltIn = false;
-				ptr->user = m_oName.get();
 			}
 			return XLS::BaseObjectPtr(ptr);
 		}
@@ -139,12 +140,12 @@ namespace OOX
 		void CCellStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("builtinId"),      m_oBuiltinId )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("customBuiltin"),      m_oCustomBuiltin )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),      m_oHidden )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("iLevel"),      m_oILevel )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("name"),      m_oName )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("xfId"),      m_oXfId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"builtinId",	m_oBuiltinId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"customBuiltin",	m_oCustomBuiltin )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"hidden",		m_oHidden )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"iLevel",		m_oILevel )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"name",		m_oName )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"xfId",		m_oXfId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void CCellStyle::ReadAttributes(XLS::BaseObjectPtr& obj)
@@ -172,13 +173,13 @@ namespace OOX
 		}
 		std::wstring CCellStyles::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		void CCellStyles::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<cellStyles"));
+			writer.WriteString(L"<cellStyles");
 			WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-			writer.WriteString(_T(">"));
+			writer.WriteString(L">");
 
 			 for ( size_t i = 0; i < m_arrItems.size(); ++i)
 			 {
@@ -188,7 +189,7 @@ namespace OOX
 				 }
 			 }
 
-			writer.WriteString(_T("</cellStyles>"));
+			writer.WriteString(L"</cellStyles>");
 		}
 		void CCellStyles::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -202,11 +203,23 @@ namespace OOX
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( _T("cellStyle") == sName )
+				if ( L"cellStyle" == sName )
 				{
 					CCellStyle* pCellStyle = new CCellStyle();
 					*pCellStyle = oReader;
 					m_arrItems.push_back(pCellStyle);
+				}
+				else if (L"AlternateContent" == sName)
+				{
+					int nSubDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nSubDepth))
+					{
+						std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+						if (L"Choice" == sSubName)
+						{
+							fromXML(oReader);
+						}
+					}
 				}
 			}
 		}
@@ -248,7 +261,7 @@ namespace OOX
 		void CCellStyles::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("count"),      m_oCount )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"count",      m_oCount )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void CCellStyles::ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)

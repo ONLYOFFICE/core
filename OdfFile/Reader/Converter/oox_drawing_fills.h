@@ -142,6 +142,9 @@ namespace oox {
 		_CP_OPT(double) opacity;
 		_CP_OPT(double) image_opacity;
 
+		_CP_OPT(double) opacity_start;
+		_CP_OPT(double) opacity_end;
+
 		std::wstring clipping;
 
 		void clear()

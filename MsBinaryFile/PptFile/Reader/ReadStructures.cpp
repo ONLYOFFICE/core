@@ -677,7 +677,7 @@ CMetaHeader::CMetaHeader()
 {
 }
 
-void CMetaHeader::FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecryptor)
+void CMetaHeader::FromStream(POLE::Stream* pStream, CRYPT::Decryptor *pDecryptor)
 {
     BYTE	pData[34];
     pStream->read(pData, 34);
@@ -745,6 +745,25 @@ void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
     pHeader->szlMillimeters.cy = 100;
 }
 
+static short CalculateMetafileInch(const RECT& oBounds, const POINT& oSize)
+{
+	const int nWidth  = oBounds.right  - oBounds.left;
+	const int nHeight = oBounds.bottom - oBounds.top;
+
+	double dInch = 0.;
+
+	//914400 EMU = 1 Inch
+	if (nWidth > 0 && oSize.x > 0)
+		dInch = (double)nWidth * 914400. / (double)oSize.x;
+	else if (nHeight > 0 && oSize.y > 0)
+		dInch = (double)nHeight * 914400. / (double)oSize.y;
+
+	const int nInch = (int)(dInch + 0.5);
+
+	//32767 = INT16_MAX
+	return (nInch > 0 && nInch <= 32767) ? (short)nInch : 1440; //1440 - default inch
+}
+
 void CMetaHeader::ToWMFHeader(Gdiplus::WmfPlaceableFileHeader* pHeader)
 {
     if (NULL == pHeader)
@@ -758,7 +777,7 @@ void CMetaHeader::ToWMFHeader(Gdiplus::WmfPlaceableFileHeader* pHeader)
     pHeader->BoundingBox.Right = (short)rcBounds.right;
     pHeader->BoundingBox.Bottom = (short)rcBounds.bottom;
 
-    pHeader->Inch = 1440; // 1:1
+    pHeader->Inch = CalculateMetafileInch(rcBounds, ptSize);
     pHeader->Reserved = 0;
 
     pHeader->Checksum = 0;

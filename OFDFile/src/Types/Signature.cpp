@@ -39,9 +39,12 @@
 
 #include "../OFDFile_Private.h"
 
+#include "../../../OfficeUtils/src/ZipFolder.h"
+
 namespace OFD
 {
 CSignature::CSignature()
+	: m_pFolder(nullptr)
 {}
 
 CSignature* CSignature::Read(const std::wstring& wsFilePath, IFolder* pFolder)
@@ -50,12 +53,13 @@ CSignature* CSignature::Read(const std::wstring& wsFilePath, IFolder* pFolder)
 		return nullptr;
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(CombinePaths(pFolder->getFullFilePath(L""), wsFilePath)) || !oLiteReader.ReadNextNode() || L"ofd:Signature" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
+
+	if (!pFolder->getReaderFromFile(wsFilePath, oLiteReader) || !oLiteReader.ReadNextNode() || L"ofd:Signature" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
 		return nullptr;
 
 	CSignature *pSignature = new CSignature();
 
-	pSignature->m_wsRootPath = pFolder->getFullFilePath(L"");
+	pSignature->m_pFolder = pFolder;
 
 	const int nDepth = oLiteReader.GetDepth();
 
@@ -64,7 +68,12 @@ CSignature* CSignature::Read(const std::wstring& wsFilePath, IFolder* pFolder)
 		if ("ofd:SignedInfo" == oLiteReader.GetNameA())
 			pSignature->m_oSignedInfo.Read(oLiteReader);
 		else if ("ofd:SignedValue" == oLiteReader.GetNameA())
-			pSignature->m_wsSignedValue = CombinePaths(pSignature->m_wsRootPath, oLiteReader.GetText2());
+		{
+			const std::wstring wsSignedValue{oLiteReader.GetText2()};
+
+			if (CanUseThisPath(wsSignedValue, pFolder->getFullFilePath(L"")))
+				pSignature->m_wsSignedValue = wsSignedValue;
+		}
 	}
 
 	return pSignature;
@@ -72,15 +81,24 @@ CSignature* CSignature::Read(const std::wstring& wsFilePath, IFolder* pFolder)
 
 bool CSignature::Draw(IRenderer* pRenderer, unsigned int unPageIndex, NSFonts::IApplicationFonts* pFonts) const
 {
-	if (nullptr == pRenderer || m_wsSignedValue.empty() ||
+	if (nullptr == pRenderer || nullptr == m_pFolder || m_wsSignedValue.empty() ||
 	    m_oSignedInfo.m_oStampAnnot.m_unPageRef - 1 != unPageIndex ||
 	    m_oSignedInfo.m_oStampAnnot.m_oBoundary.Empty())
 		return false;
 
-	COFDFile_Private oFile(pFonts);
-	oFile.SetTempDir(m_wsRootPath);
+	IFolder::CBuffer* pBuffer = nullptr;
 
-	oFile.LoadFromFile(m_wsSignedValue);
+	if (!m_pFolder->read(m_wsSignedValue, pBuffer) || nullptr == pBuffer)
+		return false;
+
+	COFDFile_Private oFile(pFonts);
+
+	const bool bLoaded{oFile.LoadFromMemory(pBuffer->Buffer, pBuffer->Size)};
+
+	delete pBuffer;
+
+	if (!bLoaded)
+		return false;
 
 	oFile.DrawPage(pRenderer, 0,
 	               m_oSignedInfo.m_oStampAnnot.m_oBoundary.m_dX,

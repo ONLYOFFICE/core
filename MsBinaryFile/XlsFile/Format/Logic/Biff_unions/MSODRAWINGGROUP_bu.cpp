@@ -36,6 +36,8 @@
 #include "MSODRAWINGGROUP.h"
 #include "../Biff_records/MsoDrawingGroup.h"
 #include "../Biff_records/Continue.h"
+#include "../Biff_structures/ODRAW/OfficeArtBStoreContainer.h"
+#include "../Biff_structures/ODRAW/OfficeArtBStoreContainerFileBlock.h"
 
 namespace XLS
 {
@@ -71,6 +73,80 @@ const bool MSODRAWINGGROUP::loadContent(BinProcessor& proc)
 
 	proc.repeated<Continue>(0, 0);
 
+	return true;
+}
+
+const bool MSODRAWINGGROUP::saveContent(BinProcessor& proc)
+{
+	auto MaxRecSize = 8224;
+	proc.mandatory(*m_MsoDrawingGroup);
+	auto castedGroup = static_cast<MsoDrawingGroup*>(m_MsoDrawingGroup.get());
+	if(castedGroup->rgChildRec.m_OfficeArtBStoreContainer)
+	{
+		auto bstore = static_cast<ODRAW::OfficeArtBStoreContainer*>(castedGroup->rgChildRec.m_OfficeArtBStoreContainer.get());
+		for (auto* block : bstore->rgfb)
+		{
+			CFRecord continueRecord(60, proc.getGlobalWorkbookInfo());
+			block->save(continueRecord);
+
+			size_t headerSize = continueRecord.getRdPtr();
+			size_t filePtr = 0;
+
+			const BYTE* data = (BYTE*)block->pict_data;
+			size_t dataSize = block->pict_size;
+
+			while (filePtr < dataSize)
+			{
+				size_t freeSpace;
+
+				if (filePtr == 0)
+					freeSpace = MaxRecSize - headerSize;
+				else
+					freeSpace = MaxRecSize;
+
+				size_t chunkSize = (std::min)(freeSpace, dataSize - filePtr);
+
+				XLS::Continue continueRec;
+
+				size_t recSize = (filePtr == 0)
+					? headerSize + chunkSize
+					: chunkSize;
+
+				continueRec.m_iDataSize = recSize;
+				continueRec.m_pData = new char[recSize];
+
+				if (filePtr == 0)
+				{
+					memcpy(
+						continueRec.m_pData,
+						continueRecord.getCurStaticData<BYTE>() - headerSize,
+						headerSize
+					);
+
+					memcpy(
+						continueRec.m_pData + headerSize,
+						data + filePtr,
+						chunkSize
+					);
+				}
+				else
+				{
+					auto datPtr = data + filePtr;
+					memcpy(
+						continueRec.m_pData,
+						datPtr,
+						chunkSize
+					);
+					auto testPt = datPtr;
+					auto test2 = testPt;
+				}
+
+				proc.mandatory(continueRec);
+
+				filePtr += chunkSize;
+			}
+		}
+	}
 	return true;
 }
 

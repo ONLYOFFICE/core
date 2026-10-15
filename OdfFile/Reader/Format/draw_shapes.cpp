@@ -255,6 +255,27 @@ void draw_path::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	sub_type_ = 6;
 	
 }
+
+std::vector<double> transform_svg_view_box(std::wstring& svg_view_box)
+{
+	std::wstring::iterator it_start = svg_view_box.begin(), it_end = svg_view_box.end();
+	std::vector<double> vec_svg_view_box;
+	std::wstring element{};
+	for(;it_start != it_end; it_start++)
+	{
+		if(std::iswspace(*it_start) && !element.empty())
+		{
+			vec_svg_view_box.push_back(std::stod(element));
+			element.clear();
+		}
+		else if(std::isdigit(*it_start) || *it_start == L'\u002D')
+			element.push_back(*it_start);
+	}
+	if(!element.empty())
+		vec_svg_view_box.push_back(std::stod(element));
+
+	return vec_svg_view_box;
+}
 void draw_path::reset_svg_path()
 {
 	if (!draw_path_attlist_.svg_d_)
@@ -265,7 +286,19 @@ void draw_path::reset_svg_path()
 	{
 		std::vector<::svg_path::_polyline> o_Polyline_pt;
 		std::vector<::svg_path::_polyline> o_Polyline_cm;
-	
+		std::vector<double> svg_view_box = transform_svg_view_box(draw_path_attlist_.svg_viewbox_.get());
+
+		double scale_y{0.0}, scale_x{0.0};
+		if(svg_view_box.size() == 4)
+		{
+			if (draw_path_attlist_.svg_height_)
+				scale_y = draw_path_attlist_.svg_height_->get_value()/(svg_view_box[3]/1000.);
+
+			if (draw_path_attlist_.svg_width_)
+				scale_x = draw_path_attlist_.svg_width_->get_value()/(svg_view_box[2]/1000.);
+		}
+
+
 		bool bClosed = false, bStroked = true;
 		bool res = ::svg_path::parseSvgD(o_Polyline_cm, draw_path_attlist_.svg_d_.get(), false, bClosed, bStroked);
 		
@@ -279,11 +312,17 @@ void draw_path::reset_svg_path()
 			{
 				if (poly.points[i].x)
 				{
-					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu); 
+					if(svg_view_box.size() == 4 && scale_x != 0.0)
+						poly.points[i].x =  length((poly.points[i].x.get() - svg_view_box[0])/1000. * scale_x,length::cm).get_value_unit(length::emu);
+					else
+						poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu);
 				}
 				if (poly.points[i].y)
 				{
-					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu); 
+					if(svg_view_box.size() == 4 && scale_y != 0.0)
+						poly.points[i].y = length((poly.points[i].y.get() - svg_view_box[1])/1000. * scale_y,length::cm).get_value_unit(length::emu);
+					else
+						poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu);
 				}
 			}
 			o_Polyline_pt.push_back(poly);

@@ -35,9 +35,11 @@
 
 #include "Res.h"
 
+#include "Utils/CFontChecker.h"
 #include "Utils/Utils.h"
 
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 
 namespace OFD
 {
@@ -71,7 +73,7 @@ inline void AddElementToMap(T* pElement, unsigned int unIndex, std::map<unsigned
 	mElements.insert(std::make_pair(unIndex, pElement));
 }
 
-bool CRes::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
+bool CRes::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath, IFolder* pFolder)
 {
 	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, wsRootPath))
 		return false;
@@ -79,7 +81,8 @@ bool CRes::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
 	const std::wstring wsFullPath{CombinePaths(wsRootPath, wsFilePath)};
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(wsFullPath) || !oLiteReader.ReadNextNode() || L"ofd:Res" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
+
+	if (!pFolder->getReaderFromFile(wsFullPath, oLiteReader) || !oLiteReader.ReadNextNode() || L"ofd:Res" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
 		return false;
 
 	std::wstring wsResRootPath{wsRootPath};
@@ -113,6 +116,8 @@ bool CRes::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
 			if (element_name == oLiteReader.GetNameA())\
 			{\
 				pElement = creator;\
+				if (nullptr == pElement)\
+					continue;\
 				AddElementToMap(pElement, pElement->GetID(), melements);\
 			}\
 		}\
@@ -135,8 +140,9 @@ bool CRes::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
 		PARSE_CONTAINER_WITHOUT_PATH("ofd:DrawParams",            "ofd:DrawParam",             CDrawParam,            m_mDrawParams)
 		PARSE_CONTAINER_WITHOUT_PATH("ofd:CompositeGraphicUnits", "ofd:CCompositeGraphicUnit", CCompositeGraphicUnit, m_mCCompositeGraphicUnits)
 
-		PARSE_CONTAINER_WITH_PATH("ofd:Fonts",                    "ofd:Font",                  CFont,                 m_mFonts)
 		PARSE_CONTAINER_WITH_PATH("ofd:MultiMedias",              "ofd:MultiMedia",            CMultiMedia,           m_mMultiMedias)
+
+		PARSE_CONTAINER("ofd:Fonts", "ofd:Font", CFont, m_mFonts, new CFont(oLiteReader, wsResRootPath, pFolder))
 	}
 
 	return true;
@@ -179,5 +185,14 @@ std::vector<const CDrawParam*> CRes::GetDrawParams() const
 		arValues.push_back(itBegin->second);
 
 	return arValues;
+}
+
+void CRes::UpdateFonts(CFontChecker* pFontChecker)
+{
+	if (nullptr == pFontChecker)
+		return;
+
+	for (std::pair<unsigned int, CFont*> oElement : m_mFonts)
+		pFontChecker->UpdateFont(oElement.second);
 }
 }

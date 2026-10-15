@@ -47,12 +47,16 @@ BiffStructurePtr FtCf::clone()
 void FtCf::load(CFRecord& record)
 {
 	//record.skipNunBytes(4); // reserved
-	unsigned short ft, cb;
+	size_t startPtr = record.getRdPtr();
+	unsigned short ft = 0, cb = 0;
 	record >> ft;
 	
 	// OpenOffice fuck!!!
 	if (ft == 0)
-		record.RollRdPtrBack(2);		
+	{
+		const size_t bytesRead = record.getRdPtr() - startPtr;
+		record.RollRdPtrBack(bytesRead);
+	}
 	else
 	{
 		record >> cb;

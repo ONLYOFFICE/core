@@ -36,16 +36,47 @@
 #ifndef IWRITER_H
 #define IWRITER_H
 
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
+
 #include "../../Common/3dParty/html/css/src/CNode.h"
+#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
+#include "../../DesktopEditor/common/File.h"
 #include "../Common.h"
+
+#include <map>
 
 namespace HTML
 {
 class IWriter
 {
+protected:
+	const std::wstring *m_pTempDir;  // Temp folder
+	const std::wstring *m_pSrcPath;  // Source directory
+	const std::wstring *m_pBasePath; // Full base path
+	const std::wstring *m_pCorePath; // Path to the root file (used for working with Epub)
+
+	NSFonts::IApplicationFonts* m_pFonts; // Necessary for optimizing font handling
+
+	std::map<std::wstring, std::wstring> m_mDownloadedFiles;
+	UINT                                 m_unDownloadedFileId;
 public:
-	IWriter() = default;
-	virtual ~IWriter() = default;
+	IWriter()
+		: m_pTempDir(nullptr), m_pSrcPath(nullptr),
+		  m_pBasePath(nullptr), m_pCorePath(nullptr),
+		  m_pFonts(nullptr), m_unDownloadedFileId(0)
+	{};
+
+	virtual ~IWriter()
+	{
+		if (nullptr != m_pFonts)
+			delete m_pFonts;
+
+		for (const std::pair<const std::wstring, std::wstring>& oDownloaded : m_mDownloadedFiles)
+			if (!oDownloaded.second.empty())
+				NSFile::CFileBinary::Remove(oDownloaded.second);
+
+		m_mDownloadedFiles.clear();
+	};
 
 	virtual void Begin(const std::wstring& wsDst) = 0;
 	virtual void End(const std::wstring& wsDst) = 0;
@@ -53,6 +84,8 @@ public:
 	virtual bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) = 0;
 
 	virtual void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) = 0;
+
+	virtual void WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue) = 0;
 
 	virtual void PageBreak() = 0;
 
@@ -64,8 +97,91 @@ public:
 
 	virtual XmlString* GetCurrentDocument() const = 0;
 
-	//TODO:: move nested tables handling to conversion after changing how tables work
-	virtual bool SupportNestedTables() const = 0;
+	void SetSrcDirectory (const std::wstring& wsPath)
+	{
+		m_pSrcPath = &wsPath;
+	}
+	void SetTempDirectory(const std::wstring& wsPath)
+	{
+		m_pTempDir = &wsPath;
+	}
+	void SetBaseDirectory(const std::wstring& wsPath)
+	{
+		m_pBasePath = &wsPath;
+	}
+	void SetCoreDirectory(const std::wstring& wsPath)
+	{
+		m_pCorePath = &wsPath;
+	}
+
+	std::wstring GetTempDir()  const
+	{
+		return (nullptr != m_pTempDir) ? *m_pTempDir : std::wstring();
+	}
+	std::wstring GetSrcPath()  const
+	{
+		return (nullptr != m_pSrcPath) ? *m_pSrcPath : std::wstring();
+	}
+	std::wstring GetBasePath() const
+	{
+		return (nullptr != m_pBasePath) ? *m_pBasePath : std::wstring();
+	}
+	std::wstring GetCorePath() const
+	{
+		return (nullptr != m_pCorePath) ? *m_pCorePath : std::wstring();
+	}
+	std::wstring GetRootPath() const
+	{
+		const std::wstring wsCorePath{GetCorePath()};
+
+		return wsCorePath.empty() ? GetSrcPath() : wsCorePath;
+	}
+
+	NSFonts::IApplicationFonts* GetFonts()
+	{
+		if (nullptr == m_pFonts)
+		{
+			m_pFonts = NSFonts::NSApplication::Create();
+
+			if (NULL != m_pFonts)
+				m_pFonts->Initialize();
+		}
+
+		return m_pFonts;
+	}
+
+	bool DownloadExternalFile(const std::wstring& wsUrl, const std::wstring& wsDstPath)
+	{
+		if (wsUrl.empty() || wsDstPath.empty())
+			return false;
+
+		const std::map<std::wstring, std::wstring>::const_iterator itFound{m_mDownloadedFiles.find(wsUrl)};
+
+		if (m_mDownloadedFiles.cend() != itFound)
+			return !itFound->second.empty() && NSFile::CFileBinary::Copy(itFound->second, wsDstPath);
+
+		// gc_allowNetworkRequest check is assumed in kernel_network
+		NSNetwork::NSFileTransport::CFileDownloader oDownloader(wsUrl, false);
+		oDownloader.SetFilePath(wsDstPath);
+
+		if (!oDownloader.DownloadSync())
+		{
+			m_mDownloadedFiles.insert(std::make_pair(wsUrl, std::wstring()));
+			return false;
+		}
+
+		const std::wstring wsTempDir{GetTempDir()};
+
+		if (!wsTempDir.empty())
+		{
+			const std::wstring wsCachePath{wsTempDir + L"/htmldwl" + std::to_wstring(m_unDownloadedFileId++)};
+
+			if (NSFile::CFileBinary::Copy(wsDstPath, wsCachePath))
+				m_mDownloadedFiles.insert(std::make_pair(wsUrl, wsCachePath));
+		}
+
+		return true;
+	}
 };
 }
 

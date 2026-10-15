@@ -54,7 +54,8 @@ namespace odf_reader {
 
 namespace oox {
 
-void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_ptr properties);
+void oox_serialize_default_text(std::wostream & _Wostream, odf_reader::text_format_properties_ptr properties,
+								const _CP_OPT(int) & rotate = boost::none);
 
 class oox_chart_shape : boost::noncopyable
 {

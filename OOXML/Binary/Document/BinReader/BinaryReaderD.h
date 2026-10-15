@@ -66,6 +66,7 @@ public:
 	template<typename T> int ReadTrackRevision(long length, T* poResult);
 	template<typename T> int ReadTrackRevision2(long length, T* poResult);
 	int ReadShdComplexType(BYTE type, long length, void* poResult);
+	int ReadEastAsianLayout(BYTE type, long length, void* poResult);
 private:
 	template<typename T> int ReadTrackRevisionInner(BYTE type, long length, T* poResult);
 	template<typename T> int ReadTrackRevisionInner2(BYTE type, long length, T* poResult);

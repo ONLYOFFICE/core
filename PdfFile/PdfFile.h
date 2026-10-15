@@ -43,6 +43,7 @@
 #endif
 
 #include "../DesktopEditor/graphics/IRenderer.h"
+#include "../DesktopEditor/graphics/MetafileToRenderer.h"
 #include "../DesktopEditor/graphics/pro/Image.h"
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/xmlsec/src/include/Certificate.h"
@@ -105,12 +106,13 @@ public:
 	bool EditPdf(const std::wstring& wsDstFile = L"");
 	void EditClose();
 	void SetEditType(int nType);
+	void RedactInfo(int nFlag, const std::vector<IAdvancedCommand*>& arrForms);
 	// Page manipulations are possible in edit mode
 	bool EditPage  (int nPageIndex);
 	bool DeletePage(int nPageIndex);
 	bool AddPage   (int nPageIndex);
 	bool MovePage  (int nPageIndex, int nPos);
-	bool MergePages(const std::wstring& wsPath, int nMaxID = 0, const std::wstring& wsPrefixForm = L"");
+	bool MergePagesEdit(BYTE* data, DWORD length, int nMaxID = 0, const std::wstring& wsPrefixForm = L"");
 	bool PrintPages(const std::vector<bool>& arrPages, int nFlag);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 
@@ -121,6 +123,7 @@ public:
 	void SetCMapMemory(BYTE* pData, DWORD nSizeData);
 	void SetCMapFolder(const std::wstring& sFolder);
 	void SetCMapFile(const std::wstring& sFile);
+	void SetDrawOnlyText(bool bDraw);
 	void ToXml(const std::wstring& sFile, bool bSaveStreams = false);
 
 	static bool GetMetaData(const std::wstring& sFile, const std::wstring& sMetaName, BYTE** pMetaData, DWORD& nMetaLength);
@@ -132,6 +135,7 @@ public:
 
 	virtual std::wstring GetTempDirectory();
 	virtual void SetTempDirectory(const std::wstring& wsPath);
+	void SetCorrector(IMetafileToRenderter* pCorrector);
 
 	virtual int GetPagesCount();
 	virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
@@ -139,6 +143,7 @@ public:
 	virtual std::wstring GetInfo();
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
+	virtual void SetPainter(IOfficeDrawingFilePainter* pPainter);
 
 	bool ValidMetaData();
 	// Takes ownership of malloc data memory
@@ -151,15 +156,18 @@ public:
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	void SetPageFonts(int nPageIndex);
+	BYTE* GetMacros();
 	BYTE* GetWidgets();
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();
+	BYTE* GetAllFonts(int* arrPageIndex, int nLength, bool bCheck = true);
 	BYTE* GetAnnots    (int nPageIndex = -1);
 	BYTE* SplitPages   (const int* arrPageIndex, unsigned int unLength, BYTE* pChanges = NULL, DWORD nLength = 0);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
+	BYTE* EditPdfToMemory(BYTE* pChanges = NULL, DWORD nLength = 0, const wchar_t* sPassword = NULL);
 	BYTE* GetGIDByUnicode(const std::wstring& wsFontName);
 	std::wstring GetFontPath(const std::wstring& wsFontName);
 	std::wstring GetEmbeddedFontPath(const std::wstring& wsFontName);
@@ -168,6 +176,7 @@ public:
 
 	void CreatePdf    (bool isPDFA = false);
 	int  SaveToFile   (const std::wstring& wsPath);
+	int  SaveToMemory (BYTE** pData, int* pLength, bool bForWasm = false);
 	void RotatePage   (int nRotate);
 	void SetPassword  (const std::wstring& wsPassword);
 	void SetDocumentID(const std::wstring& wsDocumentID);
@@ -179,6 +188,7 @@ public:
 
 	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
 	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
+	HRESULT CommandsToPdfFromBinary(BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams = NULL);
 	HRESULT AddToPdfFromBinary(BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams = NULL);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
 	HRESULT DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);

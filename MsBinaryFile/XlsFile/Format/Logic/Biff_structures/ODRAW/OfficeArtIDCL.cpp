@@ -49,5 +49,10 @@ void OfficeArtIDCL::load(XLS::CFRecord& record)
 	record >> dgid >> cspidCur;
 }
 
+void OfficeArtIDCL::save(XLS::CFRecord& record)
+{
+	record << dgid << cspidCur;
+}
+
 
 } // namespace XLS

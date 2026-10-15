@@ -36,10 +36,16 @@
 
 #include <string>
 
+#include "../../OOXML/Binary/Document/BinWriter/IDocumentContentProvider.h"
+
 namespace NSStringUtils
 {
 	class CStringBuilder;
     class CStringBuilderA;
+}
+namespace Txt
+{
+	class File;
 }
 
 namespace Txt2Docx
@@ -58,6 +64,30 @@ namespace Txt2Docx
 
 	private:
 		Converter_Impl * converter_;
+	};
+
+	class ContentProvider : public BinDocxRW::IDocumentContentProvider
+	{
+	public:
+		ContentProvider	(const std::wstring& path, int encoding);
+		virtual ~ContentProvider();
+
+		virtual bool WriteNextContent(BinDocxRW::IDocumentContentWriter& oWriter);
+
+	private:
+		void writeParagraph	(BinDocxRW::IDocumentContentWriter& oWriter, const std::string& line);
+		void writeText		(BinDocxRW::IDocumentContentWriter& oWriter, int nRPr, const std::string& line, size_t start, size_t end);
+
+		std::wstring	path_;
+		Txt::File *		file_;
+		bool			read_;
+		size_t			pos_;
+
+		int				paraPr_;
+		int				textRPr_;
+		int				emojiRPr_;
+
+		std::wstring	buffer_;
 	};
 
 } // namespace Txt2Docx

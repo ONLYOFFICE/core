@@ -36,13 +36,13 @@
 #ifndef SIGNATURE_H
 #define SIGNATURE_H
 
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../../DesktopEditor/graphics/IRenderer.h"
-
-#include "../../../OfficeUtils/src/ZipFolder.h"
-
 #include "../Utils/XmlReader.h"
 #include "../Utils/Types.h"
+
+class IFolder;
+class IRenderer;
+
+namespace NSFonts { class IApplicationFonts; }
 
 namespace OFD
 {
@@ -100,7 +100,7 @@ class CSignature
 	TSignedInfo m_oSignedInfo;
 	std::wstring m_wsSignedValue;
 
-	std::wstring m_wsRootPath;
+	IFolder* m_pFolder;
 public:
 	CSignature();
 

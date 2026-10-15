@@ -37,9 +37,8 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "../../../OOXML/Base/Unit.h"
 
@@ -202,102 +201,6 @@ std::wstring cellType2Str(XlsxCellType::type type)
     default:
         return L"";
     }
-}
-
-boost::int64_t convertDate(int Year, int Month, int Day)
-{
-	if (Year < 1400 || Year >10000)
-		return - 1;
- 	if (Month < 1 || Month > 12)
-		return - 1;
-	if (Day < 1 || Day > 31)
-		return - 1;
-	
-	boost::int64_t daysFrom1900  =  boost::gregorian::date_duration(boost::gregorian::date(Year, Month, Day) - boost::gregorian::date(1900, 1, 1)).days() + 1;
-
-    if (Year <= 1900 && 
-        Month <= 2 &&
-        Day <= 29)
-    {
-        return daysFrom1900;
-    }
-    else
-    {
-        return daysFrom1900 + 1;
-    }
-}
-
-double convertTime(int hours, int minutes, double sec)
-{  
-    boost::posix_time::time_duration t(hours, minutes, 0);
-    t += boost::posix_time::millisec(static_cast<boost::uint32_t>(sec * 1000));
-    boost::posix_time::time_duration day(24, 0, 0);
-
-    const boost::uint64_t m1 = t.total_milliseconds() ;
-    const boost::uint64_t m2 = day.total_milliseconds() ;
-    const double v = 1.0 * m1 / m2;
-    return v;
-}
-
-bool parseDateTime(const std::wstring & DateTime, int & Year, int & Month, int & Day,
-									_CP_OPT(int) & Hours, _CP_OPT(int) & Minutes, _CP_OPT(int) & Sec)
-{
-    // for example, "1899-12-31T05:37:46.665696"
-    try 
-    {
-        boost::wregex r(L"([\\d]+)-([\\d]+)-([\\d]+)(?:T([\\d]+):([\\d]+):([\\d]+)(?:\\.([\\d]+))?)?");
-        boost::match_results<std::wstring::const_iterator> res;
-        if (boost::regex_match(DateTime, res, r))
-        {
-            Year    = boost::lexical_cast<int>(res[1].str());
-            Month   = boost::lexical_cast<int>(res[2].str());
-            Day     = boost::lexical_cast<int>(res[3].str());
-
-            if (res[4].matched)
-                Hours = boost::lexical_cast<int>(res[4].str());
-
-            if (res[5].matched)
-                Minutes = boost::lexical_cast<int>(res[5].str());
-
-            if (res[6].matched)
-                Sec = boost::lexical_cast<int>(res[6].str());
-
-            if (res[7].matched)
-				int FSec = boost::lexical_cast<int>(res[7].str());
-
-            return true;
-        }
-    }
-    catch(...)
-    {
-    }
-    return false;
-}
-
-bool parseTime(const std::wstring & Time, int & Hours, int & Minutes, double & seconds)
-{
-    try 
-    {
-        boost::wregex r(L"PT([\\d]+)H([\\d]+)M([\\d]+)(?:\\.([\\d]+))?S");
-        boost::match_results<std::wstring::const_iterator> res;
-        if (boost::regex_match(Time, res, r))
-        {
-            Hours   = boost::lexical_cast<int>(res[1].str());
-            Minutes = boost::lexical_cast<int>(res[2].str());
-            seconds = boost::lexical_cast<int>(res[3].str());
-
-            if (res[4].matched)
-            {
-                seconds += boost::lexical_cast<double>(res[4].str()) / pow(10.0, 1.0 * res[4].str().length());
-            }
-
-            return true;
-        }
-    }
-    catch(...)
-    {
-    }
-    return false;
 }
 
 }

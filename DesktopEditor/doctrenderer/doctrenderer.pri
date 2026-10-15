@@ -49,6 +49,7 @@ include($$PWD_CUR/../../Common/base.pri)
 
 DEFINES += DOCTRENDERER_USE_DYNAMIC_LIBRARY_BUILDING
 DEFINES += JSBASE_USE_DYNAMIC_LIBRARY_BUILDING
+#DEFINES += DOCBUILDER_V8_ALLOW_WASM
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 #CONFIG += build_xp
@@ -149,13 +150,15 @@ DEFINES += BUIDLER_OPEN_BASE64_ENABLED
 CONFIG += drawingfile_support
 drawingfile_support {
 	DEFINES += WASM_SERIALIZER_USE_ALLOCATOR
-	ADD_DEPENDENCY(PdfFile, XpsFile, DjVuFile, DocxRenderer)
+	DEFINES += DOCBUILDER_PDF_EDITOR
+	ADD_DEPENDENCY(PdfFile, XpsFile, DjVuFile, OFDFile, DocxRenderer)
 
 	HEADERS += \
 		$$PWD_CUR/drawingfile.h \
 		$$PWD_CUR/embed/DrawingFileEmbed.h
 
 	SOURCES += \
+		$$PWD_CUR/drawingfile.cpp \
 		$$PWD_CUR/../graphics/pro/js/wasm/src/HTMLRendererText.cpp \
 		$$PWD_CUR/embed/DrawingFileEmbed.cpp
 

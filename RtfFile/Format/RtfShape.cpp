@@ -35,6 +35,7 @@
 #include "RtfShape.h"
 #include "../OOXml/Writer/OOXWriter.h"
 #include "RtfOle.h"
+#include "DumpHrWmf.h"
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
@@ -190,6 +191,10 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nGeoRight)
 	DEFAULT_PROPERTY( m_nGeoBottom)
 	DEFAULT_PROPERTY( m_nShapePath)
+	DEFAULT_PROPERTY( m_nInscribeLeft)
+	DEFAULT_PROPERTY( m_nInscribeTop)
+	DEFAULT_PROPERTY( m_nInscribeRight)
+	DEFAULT_PROPERTY( m_nInscribeBottom)
 //Picture Effects
 	DEFAULT_PROPERTY( m_nCropFromTop )
 	DEFAULT_PROPERTY( m_nCropFromBottom )
@@ -243,6 +248,10 @@ void RtfShape::SetDefault()
 	DEFAULT_PROPERTY( m_nLineEndArrowLength )
 	DEFAULT_PROPERTY( m_nLineWidth )
 	DEFAULT_PROPERTY( m_nLineDashing )
+    DEFAULT_PROPERTY( m_nHrAlign )
+    DEFAULT_PROPERTY( m_nHrPct )
+    DEFAULT_PROPERTY( m_nHrHeight )
+    DEFAULT_PROPERTY( m_nHrWeight )
 
 	DEFAULT_PROPERTY( m_nGtextSize )
 	DEFAULT_PROPERTY( m_bGtext )
@@ -261,6 +270,9 @@ void RtfShape::SetDefault()
 	m_bInGroup		= false;
 	m_bIsGroup		= false;
 	m_bIsOle		= false;
+    m_bHr           = false;
+    m_bHrNoShade    = false;
+    m_bHrStd        = false;
 	
 	m_oCharProperty.SetDefault();
 }
@@ -347,13 +359,52 @@ std::wstring RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 				sResult += L"}";
 			}
 		}
+        else if (m_bHr)
+        {
+            int nHrWidth  = (PROP_DEF != m_nRelRight)  ? m_nRelRight  : m_nRight;
+            int nHrHeight = (PROP_DEF != m_nRelBottom) ? m_nRelBottom : m_nBottom;
+
+            sResult+=L"{\\pict";
+            sResult+=L"{\\*\\picprop";
+            RENDER_RTF_INT( m_nID, sResult, L"shplid" );
+            if (nHrHeight != PROP_DEF)
+            {
+                sResult += L"{\\sp{\\sn dxHeightHR}{\\sv " + std::to_wstring(nHrHeight) + L"}}";
+            }
+            if (nHrWidth != PROP_DEF)
+            {
+                sResult += L"{\\sp{\\sn dxWidthHR}{\\sv " + std::to_wstring(nHrWidth) + L"}}";
+            }
+            sResult +=  RenderToRtfShapeProperty( oRenderParameter );
+            sResult += L"}";
+
+            int nHrColor = (PROP_DEF != m_nFillColor) ? m_nFillColor : 0x00A0A0A0;
+            unsigned char nR = (unsigned char)( nHrColor        & 0xFF);
+            unsigned char nG = (unsigned char)((nHrColor >> 8)  & 0xFF);
+            unsigned char nB = (unsigned char)((nHrColor >> 16) & 0xFF);
+
+            int nGoalW = (PROP_DEF != nHrWidth)  ? nHrWidth  : 1440;
+            int nGoalH = (PROP_DEF != nHrHeight) ? nHrHeight : 20;
+            int nPicW = (int)((long long)nGoalW * 2540 / 1440);
+            int nPicH = (int)((long long)nGoalH * 2540 / 1440);
+
+            sResult += L"\\picscalex100\\picscaley100\\piccropl0\\piccropr0\\piccropt0\\piccropb0";
+            sResult += L"\\picw"     + std::to_wstring(nPicW);
+            sResult += L"\\pich"     + std::to_wstring(nPicH);
+            sResult += L"\\picwgoal" + std::to_wstring(nGoalW);
+            sResult += L"\\pichgoal" + std::to_wstring(nGoalH);
+            sResult += L"\\wmetafile8\n";
+            sResult += WMF::GenerateHrWmfHex(nR, nG, nB);
+
+            sResult += L"}";
+        }
 		else
 		{
 			if (m_bBackground)
 				sResult += L"{\\*\\background";
 
-			sResult += L"{\\shp";
-			sResult += L"{\\*\\shpinst";
+            sResult += L"{\\shp";
+            sResult += L"{\\*\\shpinst";
 			
 			if (!m_bInGroup)
 			{
@@ -629,6 +680,23 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
             sResult += L";" + std::to_wstring( m_aPSegmentInfo[i] );
         sResult += L"}}";
     }
+	if ( PROP_DEF != m_nInscribeLeft && PROP_DEF != m_nInscribeTop && PROP_DEF != m_nInscribeRight && PROP_DEF != m_nInscribeBottom )
+	{
+		std::wstring sHex = L"010001001000";
+		int rect[4] = { m_nInscribeLeft, m_nInscribeTop, m_nInscribeRight, m_nInscribeBottom };
+		const wchar_t hexd[] = L"0123456789abcdef";
+		for (int n = 0; n < 4; n++)
+		{
+			unsigned int u = (unsigned int)rect[n];
+			for (int byte = 0; byte < 4; byte++)
+			{
+				unsigned int b = (u >> (byte * 8)) & 0xFF;
+				sHex += hexd[(b >> 4) & 0xF];
+				sHex += hexd[b & 0xF];
+			}
+		}
+		sResult += L"{\\sp{\\sn pInscribe}{\\sv 16;1;" + sHex + L"}}";
+	}
 //Connectors
     RENDER_RTF_SHAPE_PROP(L"cxk",			sResult,		m_nConnectionType );
     RENDER_RTF_SHAPE_PROP(L"cxstyle",		sResult,		m_nConnectorStyle );
@@ -649,7 +717,7 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"relRotation",	sResult,   	m_nRelRotation );
     RENDER_RTF_SHAPE_PROP(L"dhgt",			sResult,	m_nRelZOrder );
 //Fill
-	if ( 0 == m_bFilled)
+	if ( 0 == m_bFilled && !(m_bHr && PROP_DEF != m_nFillColor))
 		sResult += L"{\\sp{\\sn fFilled}{\\sv 0}}";
 	RENDER_RTF_SHAPE_PROP(L"fillType",		sResult,	m_nFillType );
     RENDER_RTF_SHAPE_PROP(L"fillColor",		sResult,	m_nFillColor );
@@ -695,6 +763,14 @@ std::wstring RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter
     RENDER_RTF_SHAPE_PROP(L"lineEndArrowLength",    sResult,    m_nLineEndArrowLength );
     RENDER_RTF_SHAPE_PROP(L"lineWidth",             sResult,   	m_nLineWidth );
     RENDER_RTF_SHAPE_PROP(L"lineDashing",           sResult,   	m_nLineDashing );
+    RENDER_RTF_SHAPE_PROP(L"alignHR",               sResult,    m_nHrAlign);
+
+    if (m_bHr)
+        sResult += L"{\\sp{\\sn fHorizRule}{\\sv 1}}";
+    if (m_bHrStd)
+        sResult += L"{\\sp{\\sn fStandardHR}{\\sv 1}}";
+    if (m_bHrNoShade)
+        sResult += L"{\\sp{\\sn fNoshadeHR}{\\sv 1}}";
 
 //pWrapPolygonVertices	Points of the text wrap polygon.
 	if ( !m_aWrapPoints.empty())
@@ -852,7 +928,10 @@ std::wstring RtfShape::GetShapeNodeName()
 {
 	if (m_bBackground)	return L"v:background";
 	if (m_bIsOle)		return L"v:rect";
-	
+
+	if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
+		return L"v:shape";
+
 	switch(m_nShapeType)
 	{
 		case ODRAW::sptRectangle:			return L"v:rect";
@@ -944,7 +1023,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 
 	if (!m_bIsGroup)
 	{
-		if (PROP_DEF != m_nShapeType && 0 != m_nShapeType)
+		if (PROP_DEF != m_nShapeType && 0 != m_nShapeType && m_aPVerticles.empty() && m_aPSegmentInfo.empty())
 		{
 			sShapeStart += L" type=\"#_x0000_t" + std::to_wstring(m_nShapeType) + L"\"";
 			sShapeStart += L" o:spt=\"" + std::to_wstring(m_nShapeType) + L"\"";
@@ -1259,6 +1338,29 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	else
 	{
 	}
+    if (m_bHr)
+    {
+        sShapeStart += L" o:hr=\"t\"";
+
+        if (m_bHrStd)
+            sShapeStart += L" o:hrstd=\"t\"";
+
+        if (m_nHrAlign != PROP_DEF)
+        {
+            switch (m_nHrAlign)
+            {
+            case 0: sShapeStart += L" o:hralign=\"left\""; break;
+            case 1: sShapeStart += L" o:hralign=\"center\""; break;
+            case 2: sShapeStart += L" o:hralign=\"right\""; break;
+            }
+        }
+
+        if (m_bHrNoShade)
+            sShapeStart += L" o:hrnoshade=\"t\"";
+
+        if (m_nHrPct != PROP_DEF && m_nHrPct > 0)
+            sShapeStart += L" o:hrpct=\"" + std::to_wstring(m_nHrPct) + L"\"";
+    }
 
 	if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_CHILD)
 	{
@@ -1296,7 +1398,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		//Custom
 		if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
 		{
-			CBaseShapePtr base_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)m_nShapeType);
+			CBaseShapePtr base_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)SimpleTypes::Vml::sptNotPrimitive);
 			CPPTShape *custom_shape = dynamic_cast<CPPTShape*>(base_shape.get());
 			if (custom_shape)
 			{
@@ -1447,6 +1549,10 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			sShapeNodes += L"<v:stroke " + sStroke + L"/>";
 		}
 	}
+
+	if ( PROP_DEF != m_nInscribeLeft && PROP_DEF != m_nInscribeTop && PROP_DEF != m_nInscribeRight && PROP_DEF != m_nInscribeBottom )
+		sShapeNodes += L"<v:path textboxrect=\"" + std::to_wstring(m_nInscribeLeft) + L"," + std::to_wstring(m_nInscribeTop)
+					+ L"," + std::to_wstring(m_nInscribeRight) + L"," + std::to_wstring(m_nInscribeBottom) + L"\"/>";
 
 	if ( 0 != m_aTextItems && !m_bIsOle && !m_bIsGroup)
 	{
@@ -1610,7 +1716,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			std::wstring sColors;
 			for (size_t i = 0; i < m_aFillShadeColors.size(); i++)
 			{
-				sColors += std::to_wstring(m_aFillShadeColors[i].second) + L" #" + XmlUtils::ToString(m_aFillShadeColors[i].first, L"%06X") + L";";
+				sColors += std::to_wstring(m_aFillShadeColors[i].second) + L" #" + RtfColor(m_aFillShadeColors[i].first).ToHexColor(true) + L";";
 			}
 			sShapeNodes += L" colors=\"" + sColors.substr(0, sColors.length() - 1) + L"\"";
 		}

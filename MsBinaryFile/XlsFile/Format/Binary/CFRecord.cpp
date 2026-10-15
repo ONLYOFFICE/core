@@ -315,7 +315,7 @@ void CFRecord::appendRawData(const char* raw_data, const size_t size)
 
 void CFRecord::appendRawDataToStatic(const unsigned char *raw_data, const size_t size)
 {
-    if(MAX_RECORD_SIZE - rdPtr > size)
+	if(MAX_RECORD_SIZE - rdPtr >= size)
     {
         memcpy(&intData[rdPtr], raw_data, size);
         rdPtr += size;
@@ -410,6 +410,8 @@ const bool CFRecord::isEOF() const
 // Doesn't generate an exception
 const bool CFRecord::checkFitReadSafe(const size_t size) const
 {
+	if (rdPtr > size_)
+		return false;
 	return (rdPtr + size <= size_);
 }
 
@@ -425,7 +427,7 @@ const bool CFRecord::checkFitWriteSafe(const size_t size) const
 // Generates an exception
 bool CFRecord::checkFitRead(const size_t size) const
 {
-	if(!checkFitReadSafe(size))
+	if(!checkFitReadSafe(size) || rdPtr >= MAX_RECORD_SIZE_XLSB)
 	{
 		return false;// EXCEPT::RT::WrongBiffRecord("Wrong record size.", getTypeString());
 	}

@@ -34,7 +34,7 @@
  */
 
 #include "Ln.h"
-
+#include "Colors/SchemeClr.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/LineFormat.h"
 
 namespace PPTX
@@ -323,15 +323,16 @@ namespace PPTX
 		XLS::BaseObjectPtr Ln::toXLS()
 		{
 			auto ptr = new XLS::LineFormat;
+			ptr->fAuto = false;
 			if(w.IsInit())
 			{
-				switch(w.get())
-				{
-					case 3175:		ptr->we = 0xFFFF;	break; //Hairline
-					case 12700:		ptr->we = 0;	break; //single
-					case 25400:		ptr->we = 1;	break; //double
-					case 38100:		ptr->we = 2;	break; //triple
-				}
+
+					if(w.get() <= 3175)		ptr->we = 0xFFFF; //Hairline
+					else if (w.get() <= 12700)		ptr->we = 0; //single
+					else if (w.get() <=  25400)	ptr->we = 1; //double
+					else ptr->we = 2;//triple
+
+
 			}
 			if(Fill.is_init())
 			{
@@ -339,13 +340,39 @@ namespace PPTX
 					ptr->lns = 5;
 				else if(prstDash.IsInit() && prstDash->val.IsInit())
 				{
+					ptr->fAutoCo = false;
 					if(Fill.m_type == UniFill::Type::solidFill)
 					{
 						auto solid = dynamic_cast<PPTX::Logic::SolidFill*>(Fill.Fill.GetPointer());
-						auto rgba = solid->Color.Color->GetRGBA(0);
-						ptr->rgb.red = GETBITS(rgba, 0, 1);
-						ptr->rgb.green = GETBITS(rgba, 2, 3);
-						ptr->rgb.blue = GETBITS(rgba, 4, 5);
+						if(solid->Color.Color.IsInit() && solid->Color.is<PPTX::Logic::SchemeClr>())
+						{
+							auto scheme = static_cast<PPTX::Logic::SchemeClr*>( solid->Color.Color.GetPointer());
+							if(scheme->val.get() == L"tx1")
+							{
+								ptr->icv = 12;
+							}
+							else if(scheme->val.get() == L"bg1")
+							{
+								ptr->icv= 0x4E;
+								ptr->rgb.blue = 0xff;
+								ptr->rgb.red = 0xff;
+								ptr->rgb.green = 0xff;
+							}
+							else if(scheme->val.get() == L"accent1")
+							{
+								ptr->icv = 0x30;
+								ptr->rgb.blue = 0xC4;
+								ptr->rgb.red = 0x44;
+								ptr->rgb.green = 0x72;
+							}
+							else if(scheme->val.get() == L"accent2")
+							{
+								ptr->icv = 0x35;
+								ptr->rgb.red = 0xed;
+								ptr->rgb.green = 0x7d;
+								ptr->rgb.blue = 0x31;
+							}
+						}
 					}
 					if(prstDash->val->get() == L"dash")
 						ptr->lns = 1;
@@ -361,6 +388,10 @@ namespace PPTX
 				else
 					ptr->lns = 0;
 			}
+			if(ptr->icv == 77)
+				ptr->fAutoCo = true;
+			else
+				ptr->fAutoCo = false;
 			return XLS::BaseObjectPtr(ptr);
 		}
 		void Ln::Merge(nullable<Ln>& line)const

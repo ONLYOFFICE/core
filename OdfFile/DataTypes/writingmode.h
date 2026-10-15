@@ -68,7 +68,22 @@ public:
     {
         return type_;
     };
-    
+
+    bool is_rtl(bool defaultValue = false) const
+    {
+        switch (type_)
+        {
+        case RlTb:
+        case Rl:
+            return true;
+        case LrTb:
+        case Lr:
+            return false;
+        default:
+            return defaultValue;
+        }
+    }
+
     static writing_mode parse(const std::wstring & Str);
 
 private:

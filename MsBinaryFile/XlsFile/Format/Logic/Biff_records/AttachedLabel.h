@@ -69,6 +69,7 @@ public:
 //-----------------------------
 
 	bool is_area = false;
+	bool fShowKey = false;
 
 };
 

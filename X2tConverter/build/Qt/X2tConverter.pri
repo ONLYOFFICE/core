@@ -174,3 +174,6 @@ core_windows {
 }
 ########################################################
 
+core_mac | core_ios {
+    LIBS += -framework Security
+}

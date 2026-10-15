@@ -369,7 +369,7 @@ void _xlsx_drawing::serialize(std::wostream & strm, const std::wstring & ns, boo
 			{
 				CP_XML_NODE(ns + L":twoCellAnchor")
 				{
-					CP_XML_ATTR(L"editAs", L"oneCell");//"absolute");oneCell
+					CP_XML_ATTR(L"editAs", anchor_absolute ? L"absolute" : L"oneCell");
 
 					from_.serialize(CP_XML_STREAM());
 					to_.serialize(CP_XML_STREAM());
@@ -501,7 +501,10 @@ void _xlsx_drawing::serialize_control (std::wostream & strm)
 }
 void _xlsx_drawing::serialize_vml(std::wostream & strm)
 {
-	CP_XML_WRITER(strm)    
+	_CP_OPT(bool) visible;
+	GetProperty(additional, L"visible", visible);
+
+	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"v:shape")
 		{
@@ -520,6 +523,8 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 
 			std::wstring style = L"position:absolute";
 			//style +="margin-left:414.3pt;margin-top:70.2pt;width:144.15pt;height:96.75pt";
+			if (visible && *visible == false)
+				style += L";visibility:hidden";
 			
 			CP_XML_ATTR(L"style", style);
 			CP_XML_NODE(L"v:shadow")
@@ -605,8 +610,6 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 						CP_XML_STREAM() << fmla;
 					}
 				}	
-				_CP_OPT(bool) visible;
-				GetProperty(additional, L"visible", visible);
 				if (visible)
 				{
 					if (*visible == false)

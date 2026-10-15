@@ -43,8 +43,8 @@ std::wostream & operator << (std::wostream & _Wostream, const chart_series_sourc
 {
 	switch(_Val.get_type())
 	{
-	case   chart_series_source::columns: _Wostream <<  L"columns";
-	case   chart_series_source::rows: _Wostream <<  L"rows";
+	case   chart_series_source::columns: _Wostream <<  L"columns"; break;
+	case   chart_series_source::rows: _Wostream <<  L"rows"; break;
 	}
     return _Wostream;    
 }

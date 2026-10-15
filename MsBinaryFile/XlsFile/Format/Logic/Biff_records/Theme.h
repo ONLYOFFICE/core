@@ -56,7 +56,7 @@ public:
 	static const ElementType	type = typeTheme;
 
 //-----------------------------
-	_UINT32		dwThemeVersion = 0;
+	_UINT32		dwThemeVersion = 124226;
 	FrtHeader	frtHeader;
 
 	_UINT32		nThemeDataSize = 0;

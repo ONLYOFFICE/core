@@ -40,6 +40,7 @@
 #include "../../../../DesktopEditor/common/StringExt.h"
 
 #include "../../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 #include "../../../XlsxFormat/Xlsx.h"
 
 #include "../../../XlsxFormat/Workbook/Workbook.h"
@@ -65,6 +66,7 @@ public:
 	~Impl();
 
 	bool Start(const std::wstring &sFileDst);
+	void StartSheet(int nIndex, const std::wstring& sName);
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
 	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
 	void WriteCell(OOX::Spreadsheet::CCell *pCell);
@@ -74,7 +76,13 @@ public:
 	void Close();
 
 	int m_nColStartBeginning = 1;
+	bool m_bAllSheets = false;
+	std::wstring m_sSheetsExt = L"csv";
 private:
+	bool OpenFile(const std::wstring &sFileDst);
+	void EndFile();
+
+	std::wstring m_sSheetsDir;
 
 	NSFile::CFileBinary m_oFile;
 	OOX::Spreadsheet::CXlsx& m_oXlsx;
@@ -187,6 +195,23 @@ bool CSVWriter::Start(const std::wstring &sFileDst)
 	if (impl_)
 		return impl_->Start(sFileDst);
 	return false;
+}
+void CSVWriter::SetAllSheets(bool val, const std::wstring& sExt)
+{
+	if (impl_)
+	{
+		impl_->m_bAllSheets = val;
+		impl_->m_sSheetsExt = sExt;
+	}
+}
+bool CSVWriter::IsAllSheets() const
+{
+	return impl_ ? impl_->m_bAllSheets : false;
+}
+void CSVWriter::StartSheet(int nIndex, const std::wstring& sName)
+{
+	if (impl_)
+		impl_->StartSheet(nIndex, sName);
 }
 void CSVWriter::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 {
@@ -721,6 +746,18 @@ CSVWriter::Impl::~Impl()
 }
 bool CSVWriter::Impl::Start(const std::wstring &sFileDst)
 {
+	if (m_bAllSheets)
+	{
+		// A directory: StartSheet opens a file in it for each sheet
+		m_sSheetsDir = sFileDst;
+		if (!NSDirectory::Exists(m_sSheetsDir))
+			NSDirectory::CreateDirectories(m_sSheetsDir);
+		return NSDirectory::Exists(m_sSheetsDir);
+	}
+	return OpenFile(sFileDst);
+}
+bool CSVWriter::Impl::OpenFile(const std::wstring &sFileDst)
+{
 	bool res = m_oFile.CreateFileW(sFileDst);
 	if (!res) return false;
 
@@ -742,15 +779,69 @@ bool CSVWriter::Impl::Start(const std::wstring &sFileDst)
 	}
 	return true;
 }
+// The sheet's name as part of a file name - safe on every system rather than exact. White space becomes
+// '_'; control and invisible formatting characters, halves of surrogate pairs and, of ASCII, everything
+// but letters, digits, '_' and '-' are dropped. That is more than a file name forbids, which costs nothing:
+// the number in front of the name keeps the files apart. 64 characters at most, empty when nothing is left.
+static std::wstring SheetFileNamePart(const std::wstring& sName)
+{
+	const size_t c_nMax = 64;
+	std::wstring sOut;
+	for (size_t i = 0; i < sName.length() && sOut.length() < c_nMax; ++i)
+	{
+		unsigned int c = (unsigned int)sName[i];
+		if (c >= 0xD800 && c <= 0xDFFF)
+		{
+			// a UTF-16 pair is kept whole; half of one, or a surrogate in a 32-bit string, is not a character
+			if (2 == sizeof(wchar_t) && c <= 0xDBFF && i + 1 < sName.length() &&
+				(unsigned int)sName[i + 1] >= 0xDC00 && (unsigned int)sName[i + 1] <= 0xDFFF)
+			{
+				if (sOut.length() + 2 > c_nMax)
+					break;
+				sOut += sName[i];
+				sOut += sName[i + 1];
+				++i;
+			}
+			continue;
+		}
+		if (0x20 == c || 0x09 == c || 0xA0 == c || 0x1680 == c || (c >= 0x2000 && c <= 0x200A) ||
+			0x202F == c || 0x205F == c || 0x3000 == c)
+		{
+			sOut += L'_';
+			continue;
+		}
+		if (c < 0x20 || (c >= 0x7F && c <= 0x9F))
+			continue; // control characters
+		if ((c >= 0x200B && c <= 0x200F) || (c >= 0x2028 && c <= 0x202E) || (c >= 0x2060 && c <= 0x206F) ||
+			0xFEFF == c || c >= 0xFFF0)
+			continue; // invisible formatting, line and paragraph separators, byte order mark, specials
+		if (c < 0x80 && !((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || '_' == c || '-' == c))
+			continue; // ASCII punctuation
+		sOut += (wchar_t)c;
+	}
+	return sOut;
+}
+void CSVWriter::Impl::StartSheet(int nIndex, const std::wstring& sName)
+{
+	if (!m_bAllSheets)
+		return;
+	Close();
+	std::wstring sNamePart = SheetFileNamePart(sName);
+	OpenFile(m_sSheetsDir + FILE_SEPARATOR_STR + L"sheet" + std::to_wstring(nIndex) +
+			 (sNamePart.empty() ? L"" : L"." + sNamePart) + L"." + m_sSheetsExt);
+}
 void CSVWriter::Impl::WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet)
 {
 	m_nColDimension = 1;
 	m_nRowCurrent = 1;
+	// A sheet after the first one (all sheets) starts from its own first row and its own view
+	m_bStartRow = true;
+	m_bShowFormulas = false;
 	if (m_bJSON)
 	{
 		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sBkt, m_nCodePage);
 	}
-	
+
 	if (pWorksheet && pWorksheet->m_oSheetViews.IsInit() && false == pWorksheet->m_oSheetViews->m_arrItems.empty())
 	{
 		if (pWorksheet->m_oSheetViews->m_arrItems[0]->m_oShowFormulas.IsInit() &&
@@ -944,15 +1035,24 @@ void CSVWriter::Impl::WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet)
 		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sEndJson, m_nCodePage);
 		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sEndJson, m_nCodePage, true);
 	}
+	else if (m_bAllSheets)
+	{
+		// The sheet's own file ends here, the same way the one file of the active sheet ends in End
+		EndFile();
+		Close();
+	}
+}
+void CSVWriter::Impl::EndFile()
+{
+	// Now we write like MS Excel (write new line to file)
+	WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sNewLineN, m_nCodePage);
+	WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sNewLineN, m_nCodePage, true);
 }
 void CSVWriter::Impl::End()
 {
-	// Now we write like MS Excel (write new line to file)
-	if (!m_bJSON)
-	{
-		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sNewLineN, m_nCodePage);
-		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, g_sNewLineN, m_nCodePage, true);
-	}
+	// With all sheets every file was already ended by WriteSheetEnd
+	if (!m_bJSON && !m_bAllSheets)
+		EndFile();
 	Close();
 }
 void CSVWriter::Impl::Close()
@@ -1131,12 +1231,31 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 
 				size_t pos_comma = format_code.find(L",", pos_start);
 				size_t pos_dot = format_code.find(L".", pos_start);
+				size_t real_dot = format_code.find(L".");
+
 
 				if (std::wstring::npos != pos_dot)
 				{
 					numberFormat.bFloat = true;
 					numberFormat.count_float = (pos_zero_end != std::wstring::npos) ? (pos_zero_end - pos_dot) : 0;
 					numberFormat.count_int = (pos_zero_start != std::wstring::npos) ? (pos_dot - pos_zero_start) : 0;
+				}
+				else if (real_dot != std::wstring::npos)
+				{
+					numberFormat.bFloat = true;
+					// calculating fraction part
+					numberFormat.count_float = (pos_zero_end != std::wstring::npos && pos_zero_end > real_dot)
+											? (pos_zero_end - real_dot) : 0;
+					// calculating digits before dot
+					if (pos_zero_start != std::wstring::npos && pos_zero_start < real_dot)
+					{
+						numberFormat.count_int = real_dot - pos_zero_start;
+					}
+					else
+					{
+						pos_start = 0;
+						numberFormat.count_int = 0;
+					}
 				}
 				else
 				{

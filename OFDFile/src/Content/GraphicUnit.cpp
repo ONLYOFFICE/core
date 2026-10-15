@@ -34,35 +34,40 @@
  */
 
 #include "GraphicUnit.h"
-#include "../../../OOXML/Base/Unit.h"
+
+#include "../../../DesktopEditor/graphics/IRenderer.h"
+
+#ifdef BUILDING_WASM_MODULE
+#include "../../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#endif
 
 namespace OFD
 {
-CGraphicUnit::CGraphicUnit(CXmlReader& oLiteReader)
-	: m_bVisible(true), m_unDrawParam(0), m_oPenSettings(oLiteReader)
+CGraphicUnit::CGraphicUnit(CXmlReader& oReader)
+	: m_bVisible(true), m_unDrawParam(0), m_oPenSettings(oReader)
 {
-	if (0 == oLiteReader.GetAttributesCount() || !oLiteReader.MoveToFirstAttribute())
+	if (0 == oReader.GetAttributesCount() || !oReader.MoveToFirstAttribute())
 		return;
 
 	std::wstring wsAttributeName;
 
 	do
 	{
-		wsAttributeName = oLiteReader.GetName();
+		wsAttributeName = oReader.GetName();
 
 		if (L"Boundary" == wsAttributeName)
-			m_oBoundary.Read(oLiteReader.GetTextA());
+			m_oBoundary.Read(oReader.GetTextA());
 		else if (L"Name" == wsAttributeName)
-			m_wsName = oLiteReader.GetText();
+			m_wsName = oReader.GetText();
 		else if (L"Visible" == wsAttributeName)
-			m_bVisible = oLiteReader.GetBoolean(true);
+			m_bVisible = oReader.GetBoolean(true);
 		else if (L"CTM" == wsAttributeName)
-			m_oCTM.Read(oLiteReader.GetTextA());
+			m_oCTM.Read(oReader.GetTextA());
 		else if (L"DrawParam" == wsAttributeName)
-			m_unDrawParam = oLiteReader.GetUInteger(true);
-	} while (oLiteReader.MoveToNextAttribute());
+			m_unDrawParam = oReader.GetUInteger(true);
+	} while (oReader.MoveToNextAttribute());
 
-	oLiteReader.MoveToElement();
+	oReader.MoveToElement();
 }
 
 void CGraphicUnit::Apply(IRenderer* pRenderer, TMatrix& oOldTransform) const
@@ -105,9 +110,60 @@ void CGraphicUnit::Apply(IRenderer* pRenderer, TMatrix& oOldTransform) const
 	pRenderer->SetTransform(oTransform.sx(), oTransform.shy(), oTransform.shx(), oTransform.sy(), oTransform.tx(), oTransform.ty());
 }
 
+void CGraphicUnit::ReadChildren(CXmlReader& oReader)
+{
+	if ("ofd:Actions" == oReader.GetNameA())
+	{
+		const int nActionDepth{oReader.GetDepth()};
+
+		while (oReader.ReadNextSiblingNode(nActionDepth))
+		{
+			if("ofd:Action" == oReader.GetNameA())
+				AddAction(new CAction(oReader));
+		}
+	}
+}
+
 TBox CGraphicUnit::GetBoundary() const
 {
 	return m_oBoundary;
+}
+
+#ifdef BUILDING_WASM_MODULE
+void CGraphicUnit::GetLinks(NSWasm::CData& oRes) const
+{
+	for (const CAction* pActionElement : m_arActions)
+	{
+		const IAction* pAction{pActionElement->GetAction()};
+
+		if (nullptr == pAction || (EActionType::Goto != pAction->GetType() && EActionType::URI != pAction->GetType()))
+			continue;
+
+		if (EActionType::URI == pAction->GetType())
+			oRes.WriteString(((const CURI*)pAction)->GetURI());
+		else if (EActionType::Goto == pAction->GetType())
+		{
+			const TBookmark* pBookMark{((const CGoto*)pAction)->GetBookmark()};
+
+			if (nullptr == pBookMark)
+				continue;
+
+			oRes.WriteString(pBookMark->m_wsName);
+		}
+
+		oRes.WriteDouble(0.);
+		oRes.WriteDouble(m_oBoundary.m_dX);
+		oRes.WriteDouble(m_oBoundary.m_dY);
+		oRes.WriteDouble(m_oBoundary.m_dWidth);
+		oRes.WriteDouble(m_oBoundary.m_dHeight);
+	}
+}
+#endif
+
+void CGraphicUnit::AddAction(const CAction* pAction)
+{
+	if (nullptr != pAction)
+		m_arActions.push_back(pAction);
 }
 
 }

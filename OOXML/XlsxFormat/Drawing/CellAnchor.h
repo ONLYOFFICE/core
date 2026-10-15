@@ -109,22 +109,22 @@ namespace OOX
 			void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, std::wstring& sRequire);
 
 		public:
-			bool												m_bShapeOle;
-			bool												m_bShapeControl;
+			bool m_bShapeOle;
+			bool m_bShapeControl;
 
-			SimpleTypes::Spreadsheet::CCellAnchorType			m_oAnchorType;
+			SimpleTypes::Spreadsheet::CCellAnchorType m_oAnchorType;
 			nullable<SimpleTypes::Spreadsheet::CCellAnchorType> m_oEditAs;
-			nullable<OOX::Spreadsheet::CFromTo>					m_oFrom;
-			nullable<OOX::Spreadsheet::CFromTo>					m_oTo;
-			nullable<OOX::Spreadsheet::CPos>					m_oPos;
-			nullable<OOX::Spreadsheet::CExt>					m_oExt;
-			nullable<OOX::Spreadsheet::CClientData>				m_oClientData;
+			nullable<OOX::Spreadsheet::CFromTo> m_oFrom;
+			nullable<OOX::Spreadsheet::CFromTo> m_oTo;
+			nullable<OOX::Spreadsheet::CPos> m_oPos;
+			nullable<OOX::Spreadsheet::CExt> m_oExt;
+			nullable<OOX::Spreadsheet::CClientData> m_oClientData;
 
-			nullable<PPTX::Logic::SpTreeElem>					m_oElement;
+			nullable<PPTX::Logic::SpTreeElem> m_oElement;
 
-		//for convenience
-			nullable<std::wstring>								m_sVmlSpId;
-			nullable<int>										m_nId;
+		//for convert
+			nullable_string m_sVmlSpId; //nvSpPr.cNvPr.id
+			nullable_int m_nId;			//nvSpPr.cNvPr.vmlSpid
 		};
 	} //Spreadsheet
 } // namespace OOX

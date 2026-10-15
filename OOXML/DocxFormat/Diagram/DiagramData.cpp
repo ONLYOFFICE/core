@@ -46,6 +46,7 @@
 #include "../../VsdxFormat/Vsdx.h"
 
 #include "../../PPTXFormat/Logic/SpTree.h"
+#include "../../PPTXFormat/Logic/CNvPr.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX
@@ -710,7 +711,8 @@ namespace OOX
 			pWriter->WriteString2(19, m_loTypeId);
 			pWriter->WriteBool2(20, m_phldr);
 			pWriter->WriteString2(21, m_phldrT);
-			pWriter->WriteString2(22, m_presAssocID);
+			if (m_presAssocID.IsInit())
+				pWriter->WriteString1(22, m_presAssocID->ToString());
 			pWriter->WriteString2(23, m_presName);
 			pWriter->WriteInt2(24, m_presStyleCnt);
 			pWriter->WriteInt2(25, m_presStyleIdx);
@@ -751,7 +753,8 @@ namespace OOX
 			pWriter->WriteAttribute(L"custSzX", m_custSzX);
 			pWriter->WriteAttribute(L"custSzY", m_custSzY);
 			pWriter->WriteAttribute(L"custT", m_custT);
-			pWriter->WriteAttribute(L"presAssocID", m_presAssocID);
+			if (m_presAssocID.IsInit())
+				pWriter->WriteAttribute(L"presAssocID", m_presAssocID->ToString());
 			pWriter->WriteAttribute(L"presName", m_presName);
 			pWriter->WriteAttribute(L"presStyleLbl", m_presStyleLbl);
 			pWriter->WriteAttribute(L"presStyleIdx", m_presStyleIdx);
@@ -829,11 +832,21 @@ namespace OOX
 			std::wstring sName = oReader.GetName();
 
 			if (L"dgm:spPr" == sName)
+			{
 				m_oSpPr = oReader;
+			}
 			else if (L"dgm:t" == sName)
+			{
 				m_oTxBody = oReader;
+			}
 			else if (L"dgm:prSet" == sName)
+			{
 				m_oPrSet = oReader;
+			}
+			else if (L"dgm:extLst" == sName)
+			{
+				m_oExtLst = oReader;
+			}
 		}
 	}
 
@@ -882,6 +895,15 @@ namespace OOX
 					m_oPrSet.Init();
 					m_oPrSet->fromPPTY(pReader);
 				}break;
+				case 3:
+				{
+					if (false == m_oExtLst.IsInit()) m_oExtLst.Init();
+					m_oExtLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
+					m_oExtLst->m_arrExt.back()->m_sUri = L"{E40237B7-FDA0-4F09-8148-C483321AD2D9}";
+					m_oExtLst->m_arrExt.back()->m_oCNvPr.Init();
+					m_oExtLst->m_arrExt.back()->m_oCNvPr->fromPPTY(pReader);
+					m_oExtLst->m_arrExt.back()->m_oCNvPr->m_namespace = L"dgm14";
+				}break;
 				default:
 				{
 					pReader->SkipRecord();
@@ -894,25 +916,49 @@ namespace OOX
 	void Diagram::CPt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteString2(0, m_sModelId);
+			if (m_sModelId.IsInit())
+			{
+				pWriter->WriteString1(0, m_sModelId->ToString());
+			}
 			if (m_oType.IsInit())
+			{
 				pWriter->WriteByte1(1, m_oType->GetValue());
-			pWriter->WriteString2(2, m_sCxnId);			
+			}
+			if (m_sCxnId.IsInit())
+			{
+				pWriter->WriteString1(2, m_sCxnId->ToString());
+			}	
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 		pWriter->WriteRecord2(0, m_oSpPr);
 		pWriter->WriteRecord2(1, m_oTxBody);
 		pWriter->WriteRecord2(2, m_oPrSet);
 
+		if (m_oExtLst.IsInit())
+		{
+			for (auto ext : m_oExtLst->m_arrExt)
+			{
+				pWriter->WriteRecord2(3, ext->m_oCNvPr);
+			}
+		}
+
 	}
 
 	void Diagram::CPt::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"dgm:pt");
-			pWriter->WriteAttribute(L"modelId", m_sModelId);
+			if (m_sModelId.IsInit())
+			{
+				pWriter->WriteAttribute(L"modelId", m_sModelId->ToString());
+			}
 			if (m_oType.IsInit())
+			{
 				pWriter->WriteAttribute2(L"type", m_oType->ToString());
-			pWriter->WriteAttribute(L"cxnId", m_sCxnId);
+			}
+			if (m_sCxnId.IsInit())
+			{
+				pWriter->WriteAttribute(L"cxnId", m_sCxnId->ToString());
+			}
 		pWriter->EndAttributes();
 
 		if (m_oPrSet.IsInit())
@@ -923,6 +969,9 @@ namespace OOX
 		
 		if (m_oTxBody.IsInit())
 			m_oTxBody->toXmlWriter(pWriter);		
+
+		if (m_oExtLst.IsInit()) 
+			m_oExtLst->toXmlWriter(pWriter);
 
 		pWriter->WriteNodeEnd(L"dgm:pt");
 	}
@@ -1101,7 +1150,10 @@ namespace OOX
 	void Diagram::CCxn::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteString2(0, m_sModelId);
+		if (m_sModelId.IsInit())
+		{
+			pWriter->WriteString1(0, m_sModelId->ToString());
+		}
 			pWriter->WriteString2(1, m_sType);
 			pWriter->WriteString2(2, m_sDestId);
 			pWriter->WriteString2(3, m_sDestOrd);
@@ -1117,7 +1169,10 @@ namespace OOX
 	{
 		pWriter->StartNode(L"dgm:cxn");
 		
-		pWriter->WriteAttribute(L"modelId", m_sModelId);
+		if (m_sModelId.IsInit())
+		{
+			pWriter->WriteAttribute(L"modelId", m_sModelId->ToString());
+		}
 		pWriter->WriteAttribute(L"type", m_sType);
 		pWriter->WriteAttribute(L"srcId", m_sSrcId);
 		pWriter->WriteAttribute(L"destId", m_sDestId);

@@ -102,7 +102,7 @@ public:
     virtual bool moveToAttrOwner() = 0;
 
     virtual NodeType next(int Depth) = 0;
-   
+
     virtual ~sax() = 0;
 
 };

@@ -42,6 +42,7 @@
 
 #include "odfcontext.h"
 #include "draw_common.h"
+#include "office_text.h"
 
 namespace cpdoccore { 
 
@@ -133,14 +134,36 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 		Context.add_page_properties(L""); // 
 		Context.add_page_properties(L"");
 	}
-//background (for all pages) 
-    if (page_layout_instance * firtsPageLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_by_name(Context.get_page_properties()))
+//background (for all pages)
 	{
-        if (style_page_layout_properties * layout_properties = firtsPageLayout->properties())
+		page_layout_container & pgContainer = Context.root()->odf_context().pageLayoutContainer();
+
+		std::wstring backgroundLayoutName = Context.get_page_properties();
+
+		if (office_text * textContent = dynamic_cast<office_text*>(content_.get()))
+		{
+			const _CP_OPT(std::wstring) & firstStyleName = textContent->get_first_element_style_name();
+
+			if ((firstStyleName) && (!firstStyleName->empty()))
+			{
+				_CP_OPT(std::wstring) masterPageName = Context.root()->odf_context().styleContainer().master_page_name_by_name(*firstStyleName);
+
+				if (masterPageName)
+				{
+					const std::wstring layoutName = pgContainer.page_layout_name_by_style(*masterPageName);
+
+					if (false == layoutName.empty())
+						backgroundLayoutName = layoutName;
+				}
+			}
+		}
+		page_layout_instance * backgroundLayout = pgContainer.page_layout_by_name(backgroundLayoutName);
+
+		if (style_page_layout_properties * layout_properties = backgroundLayout ? backgroundLayout->properties() : NULL)
 		{
 			oox::_oox_fill fill;
-			
-			Compute_GraphicFill(layout_properties->attlist_.common_draw_fill_attlist_, 
+
+			Compute_GraphicFill(layout_properties->attlist_.common_draw_fill_attlist_,
 								layout_properties->style_background_image_, Context.root(), fill);
 
 			if (layout_properties->attlist_.common_background_color_attlist_.fo_background_color_ || fill.type != 0)
@@ -149,7 +172,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 				{
 					std::wstring href = fill.bitmap->xlink_href_;
 					fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, fill.bitmap->isInternal, href, Context.get_type_place());
-				}		
+				}
 				int id = Context.get_drawing_context().get_current_shape_id();
 				if (layout_properties->docx_background_serialize(Context.output_stream(), Context, fill, id))
 				{

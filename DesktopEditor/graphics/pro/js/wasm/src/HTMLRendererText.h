@@ -32,6 +32,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 #ifndef _ASC_HTMLRENDERER3_TEXT_H_
 #define _ASC_HTMLRENDERER3_TEXT_H_
 
@@ -143,6 +144,8 @@ namespace NSHtmlRenderer
 
 		virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h);
 		virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
+
+		virtual HRESULT CommandDrawType3CHAR(const std::wstring& wsUnicodeText, const double& x, const double& y, const double& w, const double& h, const double& ascent, const double& descent, const double& unitsPerEm);
 
 		//-------- Command markers ---------------------------------------------------------------
 		virtual HRESULT BeginCommand(const DWORD& lType);

@@ -53,6 +53,11 @@ namespace SVG
 
 		TRect        m_oRect;
 		std::wstring m_wsHref;
+
+		bool         m_bPreserveRatio;
+		bool         m_bSlice;
+		double       m_dLeadingSpaceRatioX;
+		double       m_dLeadingSpaceRatioY;
 	};
 }
 

@@ -67,6 +67,7 @@ public:
 	void start_chart (office_element_ptr & root);
 		void set_chart_type			(odf_types::chart_class::type type);
 		void set_chart_3D			(bool Val);
+		void set_treat_empty_cells	(const std::wstring & val);	//leave-gap | use-zero | ignore
 		void set_chart_size			(_CP_OPT(double) width_pt, _CP_OPT(double) height_pt);		
 		void set_chart_colored		(bool val);
 		void set_chart_grouping		(int type);
@@ -131,7 +132,10 @@ public:
 			void set_axis_min(double val);
 			void set_axis_tick_minor(int type);
 			void set_axis_tick_major(int type);
+			void set_axis_date_scale(bool val);
 			void set_axis_visible(bool val);
+		void set_layout_target_inner(bool bInner);
+
 		void start_title();
 		void start_grid(int type);
 		void start_legend();
@@ -160,7 +164,7 @@ public:
 		void set_textarea_rotation		(double val);
 
 		void add_domain(const std::wstring & odf_ref);
-		void add_categories(const std::wstring & odf_ref, const std::wstring & format_code, office_element_ptr & axis);
+		void add_categories(const std::wstring & odf_ref, const std::wstring & format_code, office_element_ptr & axis, office_element_ptr & axis_style, bool date_axis);
 
 		void set_layout_x(double val,int mode);
 		void set_layout_y(double val,int mode);

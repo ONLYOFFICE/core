@@ -120,6 +120,7 @@ public:
     odf_types::common_padding_attlist				common_padding_attlist_;    
     odf_types::common_shadow_attlist				common_shadow_attlist_;    
     odf_types::common_background_color_attlist		common_background_color_attlist_;    
+	odf_types::common_writing_mode_attlist			common_writing_mode_attlist_;
  
     _CP_OPT(bool)							style_print_content_;
     _CP_OPT(std::wstring)					style_protect_;

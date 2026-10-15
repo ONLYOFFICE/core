@@ -295,7 +295,26 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CArrayObject
 	//----------------------------------------------------------------------------------------
-    void CArrayObject::Add(CObjectBase* pObject, bool bPushBack)
+	void CArrayObject::GetChildRefs(std::vector<CObjectBase*>& arrOut) const
+	{
+		for (size_t i = 0; i < m_arrList.size(); ++i)
+		{
+			CObjectBase* pVal = m_arrList[i];
+			if (!pVal)
+				continue;
+
+			CProxyObject* pProxy = dynamic_cast<CProxyObject*>(pVal);
+			if (pProxy)
+			{
+				CObjectBase* pTarget = pProxy->Get();
+				if (pTarget && std::find(arrOut.begin(), arrOut.end(), pTarget) == arrOut.end())
+					arrOut.push_back(pTarget);
+			}
+			else
+				pVal->GetChildRefs(arrOut);
+		}
+	}
+	void CArrayObject::Add(CObjectBase* pObject, bool bPushBack)
 	{
 		if (!pObject)
 			return;
@@ -637,6 +656,25 @@ namespace PdfWriter
 		if (m_pStream)
 			delete m_pStream;
 	}
+	void CDictObject::GetChildRefs(std::vector<CObjectBase*>& arrOut) const
+	{
+		for (std::map<std::string, CObjectBase*>::const_iterator it = m_mList.begin(); it != m_mList.end(); ++it)
+		{
+			CObjectBase* pVal = it->second;
+			if (!pVal)
+				continue;
+
+			CProxyObject* pProxy = dynamic_cast<CProxyObject*>(pVal);
+			if (pProxy)
+			{
+				CObjectBase* pTarget = pProxy->Get();
+				if (pTarget && std::find(arrOut.begin(), arrOut.end(), pTarget) == arrOut.end())
+					arrOut.push_back(pTarget);
+			}
+			else
+				pVal->GetChildRefs(arrOut);
+		}
+	}
 	CObjectBase* CDictObject::Get(const std::string& sKey) const
 	{
 		std::map<std::string, CObjectBase*>::const_iterator oIter = m_mList.find(sKey);
@@ -733,7 +771,8 @@ namespace PdfWriter
 			if (!pObject)
 				continue;
 
-			if (pObject->IsHidden())
+			// a proxy to a deleted object writes nothing, the key would take the next key as its value
+			if (pObject->IsHidden() || (object_type_PROXY == pObject->GetType() && !((CProxyObject*)pObject)->Get()))
 			{
 				// do nothing
 			}
@@ -1009,6 +1048,24 @@ namespace PdfWriter
 			}
 		}
 	}
+	// The entry of pObject turns free (gen + 1) and pObject is deleted: an object copied into an incremental
+	// update, in an xref of its own, that leaves it
+	void CXref::Free(CObjectBase* pObject)
+	{
+		TXrefEntry* pEntry = pObject ? pObject->GetXrefEntry() : NULL;
+		if (!pEntry || pEntry->pObject != pObject)
+			return;
+
+		for (int i = 0; i < pEntry->pRefObj.size(); ++i)
+			pEntry->pRefObj[i]->Clear();
+		pEntry->pRefObj.clear();
+
+		pEntry->nEntryType   = FREE_ENTRY;
+		pEntry->unByteOffset = 0;
+		pEntry->unGenNo      = pEntry->unGenNo + 1 > MAX_GENERATION_NUM ? MAX_GENERATION_NUM : pEntry->unGenNo + 1;
+		pEntry->pObject      = NULL;
+		delete pObject;
+	}
     void CXref::WriteTrailer(CStream* pStream)
 	{
 		CXref* pPrev = m_pPrev;
@@ -1245,5 +1302,9 @@ namespace PdfWriter
 	bool CXref::IsPDFA() const
 	{
 		return m_pDocument->IsPDFA();
+	}
+	bool CXref::IsPDFUA() const
+	{
+		return m_pDocument->IsPDFUA();
 	}
 }

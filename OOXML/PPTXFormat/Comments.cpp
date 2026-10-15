@@ -633,10 +633,19 @@ namespace PPTX
 //----------------------------------------------------------------------------------------------------------------------------------------------------
 		void Comment::fromXML(XmlUtils::CXmlNode& node)
 		{
-			XmlMacroReadAttributeBase(node, L"authorId", authorId);
-			if (!bModern)
+			nullable_string sAuthorId;
+			XmlMacroReadAttributeBase(node, L"authorId", sAuthorId);
+
+			if (sAuthorId.IsInit())
 			{
-				authorIdx = XmlUtils::GetInteger(*authorId);
+				if (!bModern)
+				{
+					authorIdx = XmlUtils::GetInteger(*sAuthorId);
+				}
+				else
+				{
+					authorId = *sAuthorId;
+				}
 			}
 			XmlMacroReadAttributeBase(node, L"dt", dt);
 			XmlMacroReadAttributeBase(node, L"idx", idx);
@@ -755,6 +764,19 @@ namespace PPTX
 		{
 			return L"";
 		}
+		static void WriteCommentText(NSBinPptxRW::CXmlWriter* pWriter, const std::wstring& text)
+		{
+			std::wstring s = text;
+
+			XmlUtils::replace_all(s, L"&",	L"&amp;");
+			XmlUtils::replace_all(s, L"'",	L"&apos;");
+			XmlUtils::replace_all(s, L"<",	L"&lt;");
+			XmlUtils::replace_all(s, L">",	L"&gt;");
+			XmlUtils::replace_all(s, L"\"",	L"&quot;");
+			XmlUtils::replace_all(s, L"\r",	L"&#13;");
+
+			pWriter->WriteString(s);
+		}
 		void Comment::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			std::wstring extAdditional = additional_data.IsInit() ? (L"<p:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\">\
@@ -765,10 +787,13 @@ namespace PPTX
 				pWriter->StartNode(L"p188:cm");
 				pWriter->StartAttributes();
 				
-				pWriter->WriteAttribute(L"id", id);
+				if (id.IsInit())
+				{
+					pWriter->WriteAttribute(L"id", id->ToString());
+				}
 				if (authorId.IsInit())
 				{
-					pWriter->WriteAttribute(L"authorId", *authorId);
+					pWriter->WriteAttribute(L"authorId", authorId->ToString());
 				}
 				else
 				{
@@ -805,7 +830,7 @@ namespace PPTX
 				else if (text.is_init())
 				{
 					pWriter->WriteString(L"<p188:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr/><a:t>");
-					pWriter->WriteStringXML(*text);
+					WriteCommentText(pWriter, *text);
 					pWriter->WriteString(L"</a:t></a:r></a:p></p188:txBody>");
 				}
 				if (additional_data.is_init())
@@ -834,7 +859,7 @@ namespace PPTX
 				}
 				else if (id.IsInit())
 				{
-					int int_id = XmlUtils::GetHex(id->c_str());
+					int int_id = id->m_oGUID.a & id->m_oGUID.b & id->m_oGUID.j; // ??? may be new 
 					pWriter->WriteAttribute(L"idx", abs(int_id));
 				}
 				pWriter->EndAttributes();
@@ -852,14 +877,14 @@ namespace PPTX
 				if (text.is_init())
 				{
 					pWriter->WriteString(L"<p:text>");
-					pWriter->WriteStringXML(*text);
+					WriteCommentText(pWriter, *text);
 					pWriter->WriteString(L"</p:text>");
 				}
 				else if (txBody.IsInit())
 				{
 					std::wstring textFrom = txBody->GetText();
 					pWriter->WriteString(L"<p:text>");
-					pWriter->WriteStringXML(textFrom);
+					WriteCommentText(pWriter, textFrom);
 					pWriter->WriteString(L"</p:text>");
 				}
 				bool bIsExtLst = false;
@@ -943,9 +968,15 @@ namespace PPTX
 		
 			pWriter->StartRecord(100);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteString2(0, id);
+				if (id.IsInit())
+				{
+					pWriter->WriteString1(0, id->ToString());
+				}
 					pWriter->WriteString2(1, created);
-					pWriter->WriteString2(2, authorId);
+				if (authorId.IsInit())
+				{
+					pWriter->WriteString1(2, authorId->ToString());
+				}
 					pWriter->WriteString2(3, status);
 					pWriter->WriteString2(4, startDate);
 					pWriter->WriteString2(5, dueDate);
@@ -1267,7 +1298,8 @@ namespace PPTX
 				if (true == comm.idx.IsInit() && true == comm.authorIdx.IsInit())
 					break;
 
-				std::map<std::wstring, int>::iterator pFind = authors->mapAuthors.find(*comm.authorId);
+				//std::map<std::wstring, int>::iterator pFind = authors->mapAuthors.find(*comm.authorId);
+				std::map<std::wstring, int>::iterator pFind = authors->mapAuthors.find(comm.authorId->ToString());
 
 				if (pFind != authors->mapAuthors.end())
 				{
@@ -1276,7 +1308,7 @@ namespace PPTX
 				else
 				{
 					comm.authorIdx = authors->mapAuthors.size() + 1;
-					authors->mapAuthors.insert(std::make_pair(*comm.authorId, *comm.authorIdx));
+					authors->mapAuthors.insert(std::make_pair(comm.authorId->ToString(), *comm.authorIdx));
 				}
 				//todooo idx new generate ??? (now id->idx)
 			}

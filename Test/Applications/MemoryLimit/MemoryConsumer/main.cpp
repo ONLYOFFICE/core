@@ -42,34 +42,51 @@
 #include "../../../../DesktopEditor/common/StringExt.h"
 using namespace std;
 
+int g_nFailedChecks = 0;
+
+void check(const std::wstring& sBytes, bool bExpectedRes, long long nExpected)
+{
+	long long nBytes = 0;
+	bool res = NSStringExt::FromHumanReadableByteCount(sBytes, nBytes);
+	bool bEqual = (bExpectedRes == res && nExpected == nBytes);
+	if (!bEqual)
+		++g_nFailedChecks;
+	wcout<<L"res="<<res<<L";equal="<<bEqual<<L";sBytes="<<sBytes<<L";nBytes="<<nBytes<< endl;
+}
+
 void test()
 {
-	bool res = false;
-	long long nBytes;
-	std::wstring sBytes;
-	sBytes = L"1KB";
-	res = NSStringExt::FromHumanReadableByteCount(sBytes, nBytes);
-	wcout<<L"res="<<res<<L";equal="<<(1000 == nBytes)<<L";sBytes="<<sBytes<<L";nBytes="<<nBytes<< endl;
-
-	sBytes = L"1MB";
-	res = NSStringExt::FromHumanReadableByteCount(sBytes, nBytes);
-	wcout<<L"res="<<res<<L";equal="<<(1000000 == nBytes)<<L";sBytes="<<sBytes<<L";nBytes="<<nBytes<< endl;
-
-	sBytes = L"1KiB";
-	res = NSStringExt::FromHumanReadableByteCount(sBytes, nBytes);
-	wcout<<L"res="<<res<<L";equal="<<(1024 == nBytes)<<L";sBytes="<<sBytes<<L";nBytes="<<nBytes<< endl;
-
-	sBytes = L"11kb";
-	res = NSStringExt::FromHumanReadableByteCount(sBytes, nBytes);
-	wcout<<L"res="<<res<<L";equal="<<(11000 == nBytes)<<L";sBytes="<<sBytes<<L";nBytes="<<nBytes<< endl;
-
-	sBytes = L"4GiB";
-	res = NSStringExt::FromHumanReadableByteCount(sBytes, nBytes);
-	wcout<<L"res="<<res<<L";equal="<<(4294967296 == nBytes)<<L";sBytes="<<sBytes<<L";nBytes="<<nBytes<< endl;
-
-	sBytes = L"-1 kB ";
-	res = NSStringExt::FromHumanReadableByteCount(sBytes, nBytes);
-	wcout<<L"res="<<res<<L";equal="<<(-1000 == nBytes)<<L";sBytes="<<sBytes<<L";nBytes="<<nBytes<< endl;
+	check(L"1KB", true, 1000);
+	check(L"1MB", true, 1000000);
+	check(L"1KiB", true, 1024);
+	check(L"11kb", true, 11000);
+	check(L"4GiB", true, 4294967296LL);
+	check(L"-1 kB ", true, -1000);
+	check(L"4294967296", true, 4294967296LL);
+	check(L"4608MiB", true, 4831838208LL);
+	check(L"4.5GiB", true, 4831838208LL);
+	check(L"4.5000000000000GiB", true, 4831838208LL);
+	check(L"0.5KiB", true, 512);
+	check(L".5GiB", true, 536870912LL);
+	check(L"4.GiB", true, 4294967296LL);
+	check(L"1.5 kB", true, 1500);
+	check(L"-0.5KiB", true, -512);
+	check(L"\n-0.5GiB", true, -536870912LL);
+	check(L"0.000000001TiB", true, 1099);
+	check(L"0.9999999999GiB", true, 1073741823LL);
+	check(L"0.0000000009TiB", true, 989);
+	check(L"1PiB", true, 1125899906842624LL);
+	check(L"1EiB", true, 1152921504606846976LL);
+	check(L"9007199254740993", true, 9007199254740992LL);
+	check(L"4,5GiB", false, 0);
+	check(L"4.5XiB", false, 0);
+	check(L"1.2.3GiB", false, 0);
+	check(L"9223372036854775807", false, 0);
+	check(L"-9223372036854775808", false, 0);
+	check(L"8EiB", false, 0);
+	check(L"8YiB", false, 0);
+	check(L"", false, 0);
+	wcout<<L"failed="<<g_nFailedChecks<<endl;
 }
 
 

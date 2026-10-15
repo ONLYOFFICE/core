@@ -236,7 +236,9 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 	{
 		CP_XML_NODE(L"table")
 		{
-			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");	
+			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+			CP_XML_ATTR(L"xmlns:xr", L"http://schemas.microsoft.com/office/spreadsheetml/2014/revision");
+			CP_XML_ATTR(L"xmlns:xr3", L"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3");
 
 			if (feature11)
 			{
@@ -351,7 +353,12 @@ int FEAT11::serialize(std::wostream & strm, size_t index)
 						CP_XML_NODE(L"tableColumn")
 						{
 							CP_XML_ATTR(L"id", field->idField);
-							CP_XML_ATTR(L"name", field->strCaption.value());
+							if(field->strCaption.value().size())
+								CP_XML_ATTR(L"name", field->strCaption.value());
+							else if(field->strFieldName.value().size())
+								CP_XML_ATTR(L"name", field->strFieldName.value());
+							else
+								CP_XML_ATTR(L"name", "column"+i);
 
 							if (!field->strTotal.value().empty())
 								CP_XML_ATTR(L"totalsRowLabel", field->strTotal.value());	

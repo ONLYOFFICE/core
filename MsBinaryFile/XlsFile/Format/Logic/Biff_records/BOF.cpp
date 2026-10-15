@@ -50,11 +50,6 @@ BOF::BOF()
 	fOOM		= false;
 	fGlJmp		= false;
 	fFontLimit	= false;
-	
-	verXLHigh = 0;
-
-	verLowestBiff	= 6;
-	verLastXLSaved	= 0;
 }
 
 

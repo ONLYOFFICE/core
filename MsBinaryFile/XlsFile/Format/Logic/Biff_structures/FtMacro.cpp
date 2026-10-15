@@ -50,11 +50,13 @@ BiffStructurePtr FtMacro::clone()
 
 void FtMacro::load(CFRecord& record)
 {
-	short ft;
+	short ft = 0;
+	const size_t startPtr = record.getRdPtr();
 	record >> ft; 
 	if (ft != 0x0004)
 	{
-		record.RollRdPtrBack(2);
+		const size_t bytesRead = record.getRdPtr() - startPtr;
+		record.RollRdPtrBack(bytesRead);
 		return;
 	}
 	fExist = true;

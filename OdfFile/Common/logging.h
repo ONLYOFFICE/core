@@ -35,6 +35,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <sstream>
 #include <chrono>
 #include <iomanip>
 #include <ctime>

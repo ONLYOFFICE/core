@@ -757,7 +757,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			{
 				if(i->m_oName.IsInit())
                 {
-					i->m_oName = boost::algorithm::replace_all_copy(i->m_oName.get(), L"_x000a_", L"\n");
+					i->m_oName = boost::algorithm::erase_all_copy(i->m_oName.get(), L"_x000a_");
 					std::unordered_map<int, std::vector<std::wstring>>::iterator pFind = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(m_oId->GetValue());
 					if (pFind != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
 					{
@@ -770,8 +770,18 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 				colInd++;
 			}
 		}
+		if(m_oId.IsInit() && m_oName.IsInit())
         XLS::GlobalWorkbookInfo::mapTableNames_static.emplace(m_oId->GetValue(), m_oName.get());
-		XLS::GlobalWorkbookInfo::mapTableRefsStatic.emplace(m_oId->GetValue(), m_oRef->GetValue());
+		if(m_oId.IsInit() && m_oRef.IsInit())
+		{
+			auto headerCount = 0;
+			auto totalCount = 0;
+			if(m_oTotalsRowCount.IsInit())
+				totalCount = m_oTotalsRowCount->GetValue();
+			if(m_oHeaderRowCount.IsInit())
+				headerCount = m_oHeaderRowCount->GetValue();
+			XLS::GlobalWorkbookInfo::mapTableRefsStatic.emplace(m_oId->GetValue(), std::tuple<std::wstring, int, int>(m_oRef->GetValue(),headerCount, totalCount));
+		}
 	}
     void CTable::fromBin(XLS::BaseObjectPtr& obj)
     {
@@ -965,7 +975,14 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		if(m_oTableColumns.is_init())
 		{
 			for(auto i : m_oTableColumns->m_arrItems)
+			{
 				ptr->rgbFeat.arFieldData.push_back(i->toXLS());
+				if(ptr->rgbFeat.crwHeader == 0 && ptr->rgbFeat.fSingleCell == false)
+				{
+					auto castedCol = static_cast<XLS::Feat11FieldDataItem*>(ptr->rgbFeat.arFieldData.back().get());
+					castedCol->bDiskHdrCache = true;
+				}
+			}
 		}
 		return XLS::BaseObjectPtr(ptr);
 	}

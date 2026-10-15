@@ -127,8 +127,11 @@ class CConverter2OOXML
 
 	bool IsRasterFormat(const HWP_STRING& sFormat);
 
-	void WriteParagraphProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
-	void WriteTable(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteParagraphProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, short shCharShapeID = -1);
+	int GetCharHeight(short shCharShapeID);
+	void WriteTable(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, short shHiddenLineCharShapeID = -1);
+	void WriteTableSpacing(short shParaShapeID, short shHiddenLineCharShapeID, NSStringUtils::CStringBuilder& oBuilder);
+	int GetLineHeight(const CHWPRecordParaShape& oParaShape, short shCharShapeID);
 	void WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteCell(const CTblCell* pCell, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, ECellCreator eCellCreator);
 	void WriteCellProperties(short shBorderFillID, NSStringUtils::CStringBuilder& oBuilder);
@@ -146,8 +149,9 @@ class CConverter2OOXML
 	bool SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName);
 	HWP_STRING SavePicture(const HWP_STRING& sBinItemId, TConversionState& oState);
 
-	void WriteParaShapeProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteParaShapeProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, short shCharShapeID = -1);
 	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const CRunnerStyle& sExternStyles = CRunnerStyle());
+	void WriteBreak(NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteTextBorderStyle(short shBorderFillId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
@@ -158,7 +162,7 @@ class CConverter2OOXML
 	void WriteShapeWrapMode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 
-	void OpenParagraph(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void OpenParagraph(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, short shCharShapeID = -1);
 	void CloseParagraph(NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void WriteText(const CParaText* pParaText, const VECTOR<TRangeTag>& arRangeTags, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);

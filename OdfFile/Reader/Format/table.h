@@ -367,6 +367,8 @@ public:
 	bool empty();
 	bool empty_content_cells(bool bWithCellStyle = true);
 
+	void activate_content_validations(oox::xlsx_conversion_context & Context);
+
 	bool bHeader = false;
 
     table_table_row_attlist		attlist_;

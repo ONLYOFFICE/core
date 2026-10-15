@@ -37,6 +37,17 @@
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
 
+namespace SimpleTypes
+{
+	class CGuid;
+}
+namespace PPTX
+{
+	namespace Logic
+	{
+		class CNvPr;
+	}
+}
 namespace OOX
 {
 	class RId;
@@ -67,7 +78,6 @@ namespace OOX
 		class CRichValueBlock;
         class CWorkbookPivotCaches;
 	}
-
 	namespace Drawing
 	{
 		class CCompatExt : public WritingElement
@@ -142,7 +152,7 @@ namespace OOX
             nullable<OOX::Spreadsheet::CSparklineGroups>            m_oSparklineGroups;
             nullable<CDataModelExt>                                 m_oDataModelExt;
             nullable<OOX::Spreadsheet::CAltTextTable>               m_oAltTextTable;
-            nullable_string											m_oId;
+            nullable<SimpleTypes::CGuid>							m_oId;
             nullable<OOX::Spreadsheet::CDataValidations>            m_oDataValidations;
 
             nullable<OOX::Spreadsheet::CConnection>                 m_oConnection;
@@ -167,8 +177,10 @@ namespace OOX
 
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 
-			nullable < OOX::Spreadsheet::CDynamicArrayProperties>	m_oDynamicArrayProperties;
-			nullable < OOX::Spreadsheet::CRichValueBlock>			m_oRichValueBlock;
+			nullable<OOX::Spreadsheet::CDynamicArrayProperties>	m_oDynamicArrayProperties;
+			nullable<OOX::Spreadsheet::CRichValueBlock>			m_oRichValueBlock;
+
+			nullable<PPTX::Logic::CNvPr> m_oCNvPr;
 
 			nullable<OOX::CPresenceInfo> m_oPresenceInfo;
 
@@ -182,6 +194,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CUserProtectedRanges> m_oUserProtectedRanges;
 
 			nullable_bool m_oExternalLinksAutoRefresh;
+
+			nullable_uint m_oXfComplement;
 		};
 
 		//--------------------------------------------------------------------------------

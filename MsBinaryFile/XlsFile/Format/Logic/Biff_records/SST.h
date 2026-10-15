@@ -63,7 +63,7 @@ public:
 //-----------------------------
     _INT32	cstTotal = 0;
     _INT32	cstUnique = 0;
-	BiffStructurePtrVector rgb;
+	std::deque<BiffStructurePtr> rgb;
 
 //-----------------------------
 	unsigned short code_page_;

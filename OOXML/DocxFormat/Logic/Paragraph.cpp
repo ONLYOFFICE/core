@@ -240,7 +240,25 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				WritingElement *pItem = NULL;
 
-				if (L"bdo" == sName )
+				if (L"AlternateContent" == sName)
+				{
+					int nSubDepth = oReader.GetDepth();
+					
+					bool bFound = false;
+					size_t old_size = m_arrItems.size();
+					while (oReader.ReadNextSiblingNode(nSubDepth))
+					{
+						std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+						if ((L"Fallback" == sSubName || L"Choice" == sSubName) && !bFound)
+						{
+							int nSubSubDepth = oReader.GetDepth();
+							fromXML(nSubSubDepth, oReader);
+							bFound = (m_arrItems.size() - old_size) > 0;
+						}
+						if (bFound) break;
+					}
+				}
+				else if (L"bdo" == sName )
 					pItem = new CBdo( document );
 				else if (L"bookmarkEnd" == sName )
 					pItem = new CBookmarkEnd( document );
@@ -435,7 +453,6 @@ namespace OOX
                     sResult += m_arrItems[i]->toXML();
                 }
             }
-
 			sResult +=L"</w:p>";
 
 			return sResult;
@@ -445,9 +462,9 @@ namespace OOX
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 
 			WritingElement_ReadAttributes_Read_if     ( oReader,L"rsidDel",		m_oRsidDel )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"rsidP",			m_oRsidP )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"rsidR",			m_oRsidR )
-			WritingElement_ReadAttributes_Read_else_if( oReader,L"rsidRDefault",	m_oRsidRDefault )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"rsidP",		m_oRsidP )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"rsidR",		m_oRsidR )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"rsidRDefault",m_oRsidRDefault )
 			WritingElement_ReadAttributes_Read_else_if( oReader,L"rsidRPr",		m_oRsidRPr )
 			WritingElement_ReadAttributes_Read_else_if( oReader,L"paraId",		m_oParaId )
 			WritingElement_ReadAttributes_Read_else_if( oReader,L"textId",      m_oTextId )
@@ -458,6 +475,5 @@ namespace OOX
 		{
 			return et_w_p;
 		}
-
 	} // namespace Logic
 } // namespace OOX

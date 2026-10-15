@@ -200,31 +200,45 @@ namespace PPTX
 			}
 
 			pWriter->StartAttributes();
-								pWriter->WriteAttribute (L"id",      _id);
-								pWriter->WriteAttribute (L"name",    XmlUtils::EncodeXmlString(name));
-			if (descr.IsInit())
-			{
-				std::wstring d = XmlUtils::EncodeXmlString(descr.get());
-				XmlUtils::replace_all(d, L"\n", L"&#xA;");
+				if (strNS == L"dgm14")
+				{
+					pWriter->WriteAttribute(L"xmlns:dgm14", L"http://schemas.microsoft.com/office/drawing/2010/diagram");
+				}
+				pWriter->WriteAttribute (L"id", _id);
+				pWriter->WriteAttribute (L"name", XmlUtils::EncodeXmlString(name));
+				if (descr.IsInit())
+				{
+					std::wstring d = XmlUtils::EncodeXmlString(descr.get());
+					XmlUtils::replace_all(d, L"\n", L"&#xA;");
 
-				pWriter->WriteAttribute	(L"descr", d);
-			}
-								pWriter->WriteAttribute (L"hidden", hidden);
-			if (title.IsInit()) pWriter->WriteAttribute (L"title",   XmlUtils::EncodeXmlString(title.get()));
-								pWriter->WriteAttribute (L"form", form);
+					pWriter->WriteAttribute	(L"descr", d);
+				}
+				pWriter->WriteAttribute (L"hidden", hidden);
+				if (title.IsInit())
+				{
+					pWriter->WriteAttribute(L"title", XmlUtils::EncodeXmlString(title.get()));
+				}
+				pWriter->WriteAttribute (L"form", form);
 
 			pWriter->EndAttributes();
 
 			pWriter->Write(hlinkClick);
 			pWriter->Write(hlinkHover);
 
-			if (creationId.IsInit())
+			if (creationId.IsInit() || vmlSpid.IsInit())
 			{
 				pWriter->WriteString(L"<a:extLst>");
-				pWriter->WriteString(L"<a:ext uri=\"{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}\">\
+				if (creationId.IsInit())
+				{
+					pWriter->WriteString(L"<a:ext uri=\"{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}\">\
 <a16:creationId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" id=\"" + *creationId + L"\"/></a:ext>");
+				}
+				if (vmlSpid.IsInit())
+				{
+					pWriter->WriteString(L"<a:ext uri=\"{63B3BB69-23CF-44E3-9099-C40C66FF867C}\">\
+<a14:compatExt xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" spid =\"" + *vmlSpid + L"\"/></a:ext>");
+				}
 				pWriter->WriteString(L"</a:extLst>");
-
 			}
 
 			pWriter->EndNode(strNS + L":cNvPr");

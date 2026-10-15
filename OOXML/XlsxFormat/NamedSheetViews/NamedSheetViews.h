@@ -40,6 +40,7 @@
 
 namespace SimpleTypes
 {
+	class CGuid;
 	namespace Spreadsheet
 	{
 		class CSortMethod;
@@ -86,7 +87,7 @@ namespace OOX
 				return et_x_SortRule;
 			}
 			nullable_uint m_oColId;
-			nullable_string m_oId;
+			nullable<SimpleTypes::CGuid> m_oId;
 			nullable<CDxf> m_oDxf;
 //			nullable<CRichSortCondition> m_oRichSortCondition;
 			nullable<CSortCondition> m_oSortCondition;
@@ -158,7 +159,7 @@ namespace OOX
 			{
 				return et_x_NsvFilter;
 			}
-			nullable_string m_oFilterId;
+			nullable<SimpleTypes::CGuid> m_oFilterId;
 			nullable_string m_oRef;
 			nullable_uint m_oTableId;
 
@@ -183,10 +184,9 @@ namespace OOX
 			{
 				return et_x_NamedSheetView;
 			}
-			//Attributes
 			nullable_string m_oName;
-			nullable_string m_oId;
-			//Members
+			nullable<SimpleTypes::CGuid> m_oId;
+
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
 		class CNamedSheetViews : public WritingElementWithChilds<CNamedSheetView>

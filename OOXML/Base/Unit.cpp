@@ -764,150 +764,88 @@ namespace XmlUtils
 		return sstream.str();
 	}
 
-	bool IsUnicodeSymbol( unsigned int symbol )
+	bool IsUnicodeSymbol(unsigned int symbol)
 	{
-		bool result = false;
-
-		if ( ( 0x0009 == symbol ) || ( 0x000A == symbol ) || ( 0x000D == symbol ) ||
-			 ( ( 0x0020 <= symbol ) && ( 0xD7FF >= symbol ) ) || ( ( 0xE000 <= symbol ) && ( symbol <= 0xFFFD ) ) ||
-			 ( ( 0x10000 <= symbol ) && symbol ) )
-		{
-			result = true;
-		}
-
-		return result;
+		return (symbol == 0x0009) || (symbol == 0x000A) || (symbol == 0x000D)
+			|| (symbol >= 0x0020   && symbol <= 0xD7FF)
+			|| (symbol >= 0xE000   && symbol <= 0xFFFD)
+			|| (symbol >= 0x10000  && symbol <= 0x10FFFF);
 	}
 
-	std::string EncodeXmlString(const std::string& data, bool bDeleteNoUnicode)
-	{
-		std::string buffer;
-		buffer.reserve(data.size());
-
-		if(bDeleteNoUnicode)
-		{
-			for(size_t pos = 0; pos < data.size(); ++pos)
-			{
-				switch(data[pos])
-				{
-				case '&':  buffer.append("&amp;");      break;
-				case '\"': buffer.append("&quot;");     break;
-				case '\'': buffer.append("&apos;");     break;
-				case '<':  buffer.append("&lt;");       break;
-				case '>':  buffer.append("&gt;");       break;
-				default:
-				{
-					if ( false == IsUnicodeSymbol( data[pos] ) )
-					{
-						wchar_t symbol1 = data[pos];
-						if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
-						{
-							pos++;
-							wchar_t symbol2 = data[pos];
-							if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
-							{
-								buffer.append(&data[pos-1], 2);
-							}
-							else
-							{
-								buffer.append(" ");
-							}
-						}
-						else
-						{
-							buffer.append(" ");
-						}
-					}
-					else
-						buffer.append(&data[pos], 1);
-				}break;
-				}
-			}
-		}
-		else
-		{
-			for(size_t pos = 0; pos < data.size(); ++pos)
-			{
-				switch(data[pos])
-				{
-				case '&':  buffer.append("&amp;");      break;
-				case '\"': buffer.append("&quot;");     break;
-				case '\'': buffer.append("&apos;");     break;
-				case '<':  buffer.append("&lt;");       break;
-				case '>':  buffer.append("&gt;");       break;
-				case '\0':
-					return buffer;
-				default:   buffer.append(&data[pos], 1);	break;
-				}
-			}
-		}
-
-		return buffer;
-	}
 	std::wstring EncodeXmlString(const std::wstring& data, bool bDeleteNoUnicode)
 	{
 		std::wstring buffer;
 		buffer.reserve(data.size());
 
-		if(bDeleteNoUnicode)
+		if (bDeleteNoUnicode)
 		{
-			for(size_t pos = 0; pos < data.size(); ++pos)
+			for (size_t pos = 0; pos < data.size(); ++pos)
 			{
-				switch(data[pos])
+				switch (data[pos])
 				{
-				case '&':  buffer.append(L"&amp;");      break;
-				case '\"': buffer.append(L"&quot;");     break;
-				case '\'': buffer.append(L"&apos;");     break;
-				case '<':  buffer.append(L"&lt;");       break;
-				case '>':  buffer.append(L"&gt;");       break;
-				default:
+				case L'&':  buffer.append(L"&amp;");  continue;
+				case L'\"': buffer.append(L"&quot;"); continue;
+				case L'\'': buffer.append(L"&apos;"); continue;
+				case L'<':  buffer.append(L"&lt;");   continue;
+				case L'>':  buffer.append(L"&gt;");   continue;
+				default: break;
+				}
+
+				unsigned int codepoint = 0;
+				size_t consumed = 1;
+
+#if defined(_WIN32) || defined(_WIN64)
+				uint16_t w1 = static_cast<uint16_t>(data[pos]);
+				if (w1 >= 0xD800 && w1 <= 0xDBFF && pos + 1 < data.size())
 				{
-					if ( false == IsUnicodeSymbol( data[pos] ) )
+					uint16_t w2 = static_cast<uint16_t>(data[pos + 1]);
+					if (w2 >= 0xDC00 && w2 <= 0xDFFF)
 					{
-						wchar_t symbol1 = data[pos];
-						if(0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
-						{
-							pos++;
-							wchar_t symbol2 = data[pos];
-							if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
-							{
-								buffer.append(&data[pos-1], 2);
-							}
-							else
-							{
-								buffer.append(L" ");
-							}
-						}
-						else
-						{
-							buffer.append(L" ");
-						}
+						codepoint = 0x10000 + ((w1 - 0xD800) << 10) + (w2 - 0xDC00);
+						consumed = 2;
 					}
 					else
-						buffer.append(&data[pos], 1);
-				}break;
+					{
+						codepoint = w1;
+					}
 				}
+				else
+				{
+					codepoint = w1;
+				}
+#else
+				codepoint = static_cast<unsigned int>(data[pos]);
+#endif
+
+				if (IsUnicodeSymbol(codepoint))
+					buffer.append(&data[pos], consumed);
+				else
+					buffer.append(L" ");
+
+				if (consumed == 2)
+					++pos;
 			}
 		}
 		else
 		{
-			for(size_t pos = 0; pos < data.size(); ++pos)
+			for (size_t pos = 0; pos < data.size(); ++pos)
 			{
-				switch(data[pos])
+				switch (data[pos])
 				{
-				case '&':  buffer.append(L"&amp;");      break;
-				case '\"': buffer.append(L"&quot;");     break;
-				case '\'': buffer.append(L"&apos;");     break;
-				case '<':  buffer.append(L"&lt;");       break;
-				case '>':  buffer.append(L"&gt;");       break;
-				case '\0':
-					return buffer;
-				default:   buffer.append(&data[pos], 1);	break;
+				case L'&':  buffer.append(L"&amp;");  break;
+				case L'\"': buffer.append(L"&quot;"); break;
+				case L'\'': buffer.append(L"&apos;"); break;
+				case L'<':  buffer.append(L"&lt;");   break;
+				case L'>':  buffer.append(L"&gt;");   break;
+				case L'\0': return buffer;
+				default:    buffer.append(&data[pos], 1); break;
 				}
 			}
 		}
 
 		return buffer;
 	}
+
 	std::wstring DeleteNonUnicode(const std::wstring& data)
 	{
 		std::wstring buffer;

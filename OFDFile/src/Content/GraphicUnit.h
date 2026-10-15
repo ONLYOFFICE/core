@@ -38,6 +38,11 @@
 
 #include "../Types/PenSettings.h"
 #include "../Utils/Types.h"
+#include "../Action.h"
+
+#ifdef BUILDING_WASM_MODULE
+namespace NSWasm { class CData; }
+#endif
 
 namespace OFD
 {
@@ -49,12 +54,22 @@ class CGraphicUnit
 	TMatrix m_oCTM;
 	unsigned int m_unDrawParam;
 	CPenSettings m_oPenSettings;
+
+	std::vector<const CAction*> m_arActions;
 public:
-	CGraphicUnit(CXmlReader& oLiteReader);
+	CGraphicUnit(CXmlReader& oReader);
 
 	void Apply(IRenderer* pRenderer, TMatrix& oOldTransform) const;
 
+	void ReadChildren(CXmlReader& oReader);
+
 	TBox GetBoundary() const;
+
+	#ifdef BUILDING_WASM_MODULE
+	void GetLinks(NSWasm::CData& oRes) const;
+	#endif
+private:
+	void AddAction(const CAction* pAction);
 };
 }
 

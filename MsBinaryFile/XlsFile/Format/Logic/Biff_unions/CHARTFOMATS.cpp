@@ -293,9 +293,10 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 
 const bool CHARTFORMATS::saveContent(BinProcessor& proc)
 {
-	if(m_ChartRect == nullptr)
-		return false;
-	proc.mandatory(*m_ChartRect);
+	if(m_ChartRect != nullptr)
+		proc.mandatory(*m_ChartRect);
+	else
+		proc.mandatory<Chart>();
 	proc.mandatory<Begin>();
 	for(auto i : m_arFONTLIST)
 	{

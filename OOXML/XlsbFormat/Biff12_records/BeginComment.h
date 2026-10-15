@@ -56,7 +56,7 @@ namespace XLSB
 
             _INT32          iauthor;
             UncheckedRfX    rfx;
-            std::wstring    guid;
+            std::wstring    guid; // ->SimpleTypes::CGuid
     };
 
 } // namespace XLSB

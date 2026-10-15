@@ -59,7 +59,7 @@ std::wstring OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(double dVal)
 	//according to http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2005.pdf
 	//DBL_MAX = 15 digits, DBL_MAXDIG10 = 17 digits.
 	char buffer[_CVTBUFSIZE];
-	_gcvt( dVal, DBL_MAXDIG10, buffer );
+	_gcvt( dVal, DBL_MAX, buffer );
     std::string sRes(buffer);
     int nLength = sRes.length();
 	if(nLength > 0 && '.' == sRes[nLength - 1])

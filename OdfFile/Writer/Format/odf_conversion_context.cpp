@@ -112,7 +112,12 @@ void odf_conversion_context::set_temp_directory(const std::wstring & tempPath)
 void odf_conversion_context::set_fonts_directory(const std::wstring & fontsPath)
 {
     if (applicationFonts_)
-        applicationFonts_->InitializeFromFolder(fontsPath);
+	{
+		if (fontsPath.empty())
+			applicationFonts_->Initialize();
+		else
+			applicationFonts_->InitializeFromFolder(fontsPath);
+	}
 }
 void odf_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold, bool recalc)
 {
@@ -134,17 +139,29 @@ double odf_conversion_context::convert_symbol_width(double val, bool add_padding
 	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
 	//width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels	
 	
+	double symbol_width = font_metrix_.approx_symbol_width;
+	if (symbol_width < 1) symbol_width = 7.;
+
 	//if (add_padding)
 	{
-		val = ((int)((val * font_metrix_.approx_symbol_width + 5) / font_metrix_.approx_symbol_width * 256)) / 256.;
+		val = ((int)((val * symbol_width + 5) / symbol_width * 256)) / 256.;
 	}
 
-	double pixels = (int)(((256. * val + ((int)(128. / font_metrix_.approx_symbol_width))) / 256.) * font_metrix_.approx_symbol_width); //in pixels
+	double pixels = (int)(((256. * val + ((int)(128. / symbol_width))) / 256.) * symbol_width); //in pixels
 
 	// to back
 	//double back = (int((pixels /*/ 0.75*/ - 5) / font_metrix_.approx_symbol_width * 100. + 0.5)) / 100.;// *0.98; // * 9525. * 72.0 / (360000.0 * 2.54);
 
 	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
+}
+
+double odf_conversion_context::convert_symbol_indent(double val)
+{
+	//1 indent = 3 space
+	double symbol_width = font_metrix_.approx_symbol_width;
+	if (symbol_width < 1) symbol_width = 7.;
+
+	return val * 1.5 * symbol_width * 0.75; //pixels -> pt
 }
 
 void odf_conversion_context::add_hyperlink(office_element_ptr& elem, const std::wstring& ref)

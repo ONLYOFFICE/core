@@ -105,8 +105,12 @@ namespace OOX
 			extern const FileType RdRichValueStructure;
 
 			extern const FileType RdRichValueTypes;
+
+			extern const FileType RichValueRel;
 			
 			extern const FileType XmlMaps;
+
+			extern const FileType FeaturePropertyBag;
 		} // namespace FileTypes
 	}
 } // namespace OOX

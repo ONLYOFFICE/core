@@ -236,6 +236,9 @@ void draw_line::pptx_convert(oox::pptx_conversion_context & Context)
 
 void draw_path::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	draw_path_attlist_.svg_height_ = Context.get_text_context().get_svg_height();
+	draw_path_attlist_.svg_width_ = Context.get_text_context().get_svg_width();
+
 	reset_svg_path();
 ///////////////////////////////////////////////////////////////////////
 	Context.get_slide_context().start_shape(sub_type_);

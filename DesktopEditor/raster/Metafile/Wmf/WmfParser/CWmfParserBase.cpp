@@ -231,7 +231,7 @@ namespace MetaFile
 		if (InterpretatorType::Svg == oInterpretatorType)
 		{
 			CWmfInterpretatorSvg *pWmfInterpretatorSvg = new CWmfInterpretatorSvg(this, unWidth, unHeight);
-			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::OptimizeSpeed);
+			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::Auto);
 			m_pInterpretator = pWmfInterpretatorSvg;
 		}
 	}
@@ -774,11 +774,17 @@ namespace MetaFile
 		    oNewRect.Top  < 0 || oNewRect.Bottom < 0)
 			return NULL;
 
-		if (unHeight < static_cast<unsigned int>(std::abs(oNewRect.Bottom - oNewRect.Top)))
-			oNewRect.Bottom = oNewRect.Top + unHeight;
+		if (oNewRect.Left   > static_cast<int>(unWidth))
+			oNewRect.Left   = static_cast<int>(unWidth);
 
-		if (unWidth < static_cast<unsigned int>(std::abs(oNewRect.Right - oNewRect.Left)))
-			oNewRect.Right = oNewRect.Left + unWidth;
+		if (oNewRect.Right  > static_cast<int>(unWidth))
+			oNewRect.Right  = static_cast<int>(unWidth);
+
+		if (oNewRect.Top    > static_cast<int>(unHeight))
+			oNewRect.Top    = static_cast<int>(unHeight);
+
+		if (oNewRect.Bottom > static_cast<int>(unHeight))
+			oNewRect.Bottom = static_cast<int>(unHeight);
 
 		if (unHeight == (oNewRect.Bottom - oNewRect.Top) &&
 		    unWidth  == (oNewRect.Right  - oNewRect.Left))
@@ -1770,7 +1776,10 @@ namespace MetaFile
 				{
 					((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg);
 
-					XmlUtils::CXmlWriter *pXmlWriter = ((CWmfInterpretatorSvg*)GetInterpretator())->GetXmlWriter();
+					CWmfInterpretatorSvg *pSvgInterpretator    = (CWmfInterpretatorSvg*)GetInterpretator();
+					CEmfInterpretatorSvg *pEmfSvgInterpretator = (CEmfInterpretatorSvg*)oEmfParser.GetInterpretator();
+
+					XmlUtils::CXmlWriter *pXmlWriter = pSvgInterpretator->GetXmlWriter();
 
 					const TRectL& oEmfRect{oEmfParser.GetDCBounds()};
 					const TRectL& oCurentRect{GetDCBounds()};
@@ -1787,9 +1796,12 @@ namespace MetaFile
 						pXmlWriter->WriteNodeEnd(L"g", true, false);
 					}
 
-					((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->SetXmlWriter(pXmlWriter);
+					pEmfSvgInterpretator->SetXmlWriter(pXmlWriter);
+					pEmfSvgInterpretator->SetNumberDefs(pSvgInterpretator->GetNumberDefs());
 
 					oEmfParser.PlayFile();
+
+					pSvgInterpretator->SetNumberDefs(pEmfSvgInterpretator->GetNumberDefs());
 
 					if (bAddGElement)
 						pXmlWriter->WriteNodeEnd(L"g", false, false);

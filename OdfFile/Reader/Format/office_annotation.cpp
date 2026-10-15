@@ -149,7 +149,10 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 	Context.dump_hyperlinks(Context.get_comments_context().get_rels(), oox::comment_place);
 	Context.get_mediaitems()->dump_rels(Context.get_comments_context().get_rels(), oox::comment_place);
 	
-	Context.get_comments_context().start_comment(content, author, date, office_name_);//content, date, author	
+	if (true == Context.get_comments_context().start_comment(content, author, date, office_name_))
+	{//return bSingle
+		Context.get_comments_context().end_comment(*office_name_);
+	}
 }
 
 void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -205,8 +208,10 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 	Context.get_drawing_context().set_rect(width_pt, height_pt, x_pt, y_pt);
 	if (attr_.display_)
 	{
-		Context.get_drawing_context().set_property(_property(L"visibly", attr_.display_.get()));
+		Context.get_drawing_context().set_property(_property(L"visible", attr_.display_.get()));
 	}
+	else 
+		Context.get_drawing_context().set_property(_property(L"visible", false));
 
 	if (attr_.draw_style_name_)
 	{

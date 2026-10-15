@@ -73,7 +73,7 @@ public:
     virtual bool moveToAttrOwner();
 
     virtual NodeType next(int Depth);
-    
+
 private:
     smart_ptr< XmlUtils::CXmlLiteReader > xml_;
 
@@ -222,9 +222,7 @@ NodeType saxXmlLiteReader::next(int Depth)
 		return NodeTypeConvert(nTempType);
 	}
 	else 
-		return typeNone;
-
-	
+		return typeNone;	
 }
 
 sax_ptr create_sax_xmllite(const wchar_t * FileName)

@@ -50,6 +50,9 @@
 #include"../Biff_records/End.h"
 #include"../Biff_records/StartObject.h"
 #include"../Biff_records/EndObject.h"
+#include"../Biff_records/ShapePropsStream.h"
+
+#include"../../../../../OOXML/PPTXFormat/Logic/SpPr.h"
 
 namespace XLS
 {
@@ -248,10 +251,65 @@ const bool SS::saveContent(BinProcessor& proc)
 	proc.mandatory<Begin>();
 	if(m_Chart3DBarShape != nullptr)
 		proc.mandatory(*m_Chart3DBarShape);
-	if(m_LineFormat != nullptr)
+	std::vector<BYTE> CheckSumData;
+	_UINT32 checkSum = 0;
+	auto calcChecksum = [](const std::vector<uint8_t>& data, _UINT32 &checksum)
+	{
+		for (BYTE byte : data) {
+			checksum ^= (static_cast<_UINT32>(byte) << 24);
+
+			for (int i = 0; i < 8; ++i) {
+				if (checksum & 0x80000000U) {
+					checksum = (checksum << 1) ^ 0x000000AFU;
+				} else {
+					checksum <<= 1;
+				}
+			}
+		}
+	};
+	/*if(m_LineFormat != nullptr)
+	{
 		proc.mandatory(*m_LineFormat);
+		auto castedLine = static_cast<LineFormat*>(m_LineFormat.get());
+		castedLine->setChecksum(CheckSumData);
+	}
+	else if(!m_arSHAPEPROPS.empty())
+	{
+		LineFormat lnFmt;
+		lnFmt.setChecksum(CheckSumData);
+		proc.mandatory(lnFmt);
+	}
 	if(m_AreaFormat != nullptr)
+	{
 		proc.mandatory(*m_AreaFormat);
+		auto castedArea = static_cast<AreaFormat*>(m_AreaFormat.get());
+		if(!castedArea->fAuto)
+			castedArea->setChecksum(CheckSumData);
+	}
+	else if(!m_arSHAPEPROPS.empty())
+	{
+		AreaFormat areaFmt;
+		proc.mandatory(areaFmt);
+	}*/
+	{
+		LineFormat line;
+		line.rgb.red = 0xFFFF;
+		line.rgb.green = 0xFFFF;
+		line.rgb.blue = 0xFFFF;
+		line.lns = 0;
+		line.we = 0;
+		line.icv = 9;
+		line.fAuto = false;
+		line.fAutoCo = false;
+		line.setChecksum(CheckSumData);
+		proc.mandatory(line);
+		AreaFormat area;
+		area.fls = 1;
+		area.fAuto = false;
+		area.setChecksum(CheckSumData);
+		proc.mandatory(area);
+	}
+	calcChecksum(CheckSumData, checkSum);
 	if(m_PieFormat != nullptr)
 		proc.mandatory(*m_PieFormat);
 	if(m_SerFmt != nullptr)
@@ -263,8 +321,37 @@ const bool SS::saveContent(BinProcessor& proc)
 	if(m_AttachedLabel != nullptr)
 		proc.mandatory(*m_AttachedLabel);
 	for(auto i : m_arSHAPEPROPS)
-		if(i != nullptr)
-			proc.mandatory(*i);
+	{
+		auto castedProp = dynamic_cast<SHAPEPROPS*>(i.get());
+		if(castedProp == nullptr)
+			continue;
+		auto propHeader = dynamic_cast<ShapePropsStream*>(castedProp->m_ShapePropsStream.get());
+		if(propHeader == nullptr)
+			continue;
+
+		if(propHeader->wObjContext == 0)
+			propHeader->dwChecksum = checkSum;
+		else if(propHeader->wObjContext == 1 && m_MarkerFormat != nullptr)
+		{
+			auto castedMarker = static_cast<MarkerFormat*>(m_MarkerFormat.get());
+			AreaFormat area;
+			area.rgbFore.red = castedMarker->rgbFore.red;
+			area.rgbFore.green = castedMarker->rgbFore.green;
+			area.rgbFore.blue = castedMarker->rgbFore.blue;
+			area.rgbBack.red = castedMarker->rgbBack.red;
+			area.rgbBack.green = castedMarker->rgbBack.green;
+			area.rgbBack.blue = castedMarker->rgbBack.blue;
+			area.fls = 1;
+			area.fAuto = false;
+			CheckSumData = std::vector<BYTE>();
+			_UINT32 MarkerCheckSum = 0;
+			area.setChecksum(CheckSumData);
+			calcChecksum(CheckSumData, MarkerCheckSum);
+			propHeader->dwChecksum = MarkerCheckSum;
+		}
+		proc.mandatory(*i);
+	}
+
 	proc.mandatory<End>();
 	return true;
 }
@@ -307,8 +394,8 @@ int SS::serialize_default(std::wostream & _stream, int series_type, int ind )
 				
 				if ((line) && (line->lns == (_UINT16)5)) ind = -1;
 			}
-
-			if (ind >= 0 && default_series_line_color->size() > ind &&  m_isAutoLine)
+			const size_t colorsCount = sizeof(default_series_line_color) / sizeof(default_series_line_color[0]);
+			if (ind >= 0 && colorsCount > ind &&  m_isAutoLine)
 			{
 				CP_XML_NODE(L"a:ln")
 				{
@@ -371,6 +458,25 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	DataFormat		*series_data_format = dynamic_cast<DataFormat*>		(m_DataFormat.get());
 	SerFmt			*series_format		= dynamic_cast<SerFmt*>			(m_SerFmt.get());
 	MarkerFormat	*marker_format		= dynamic_cast<MarkerFormat*>	(m_MarkerFormat.get());
+	ShapePropsStream *spStream			= nullptr;
+	ShapePropsStream *mkPropStream		= nullptr;
+	if(!m_arSHAPEPROPS.empty())
+	{
+		for(auto spProp : m_arSHAPEPROPS)
+		{
+			auto SpProps = dynamic_cast<SHAPEPROPS*>(spProp.get());
+			if(SpProps == nullptr)
+				continue;
+			auto tempStream = dynamic_cast<ShapePropsStream*>(SpProps->m_ShapePropsStream.get());
+			if(tempStream == nullptr)
+				continue;
+
+			if (tempStream->wObjContext == 0)
+				spStream = tempStream;
+			else if(tempStream->wObjContext == 1)
+				mkPropStream  = tempStream;
+		}
+	}
 
 	int ind = series_data_format->iss;
 
@@ -384,6 +490,17 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	if ((line) && (line->fAuto == false)) bLine = true;
 
 	bool bMarkerEx = false;
+	if(spStream)
+	{
+		std::wstring spPr = spStream->getChartSpPr();
+		if (false == spPr.empty())
+		{
+			_stream.write(spPr.c_str(), spPr.size());
+			bLine = false;
+			bArea = false;
+			indPt = 0;
+		}
+	}
 
 	CP_XML_WRITER(_stream)    
 	{
@@ -438,7 +555,7 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 					}	
 					else if ( series_type != CHART_TYPE_Line || m_is3D == true ) //line & !3dLine
 						ind = 31; //black
-
+					const size_t colorsCount = sizeof(default_series_line_color) / sizeof(default_series_line_color[0]);
 					CP_XML_NODE(L"a:ln")
 					{
 						CP_XML_ATTR(L"w", 12700);//single
@@ -447,8 +564,10 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 						{
 							CP_XML_NODE(L"a:srgbClr")
 							{
-								if(default_series_line_color->size() > ind)
+								if(colorsCount > ind)
 									CP_XML_ATTR(L"val",  default_series_line_color[ind]);
+								else
+									CP_XML_ATTR(L"val", L"000000");
 							}
 						}
 						CP_XML_NODE(L"a:prstDash")
@@ -470,7 +589,11 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 								series_type != CHART_TYPE_Bar		&&	
 								series_type != CHART_TYPE_BopPop )
 		{
-			marker_format->serialize(_stream, ind, bMarkerEx ? m_GELFRAME : BaseObjectPtr());
+			std::wstring MkSpPr;
+			if(mkPropStream != nullptr)
+				MkSpPr = mkPropStream->getChartSpPr();
+
+			marker_format->serialize(_stream, ind, bMarkerEx ? m_GELFRAME : BaseObjectPtr(), MkSpPr);
 		}
 		else if (/*series_type == CHART_TYPE_Line ||*/ series_type == CHART_TYPE_Scatter)
 		{
@@ -509,9 +632,7 @@ int SS::serialize2(std::wostream & _stream, int series_type)
 			}
 		}
 		
-		if (m_isAutoLine == false && (	series_type == CHART_TYPE_Line	|| 
-										series_type == CHART_TYPE_Radar/* || 
-										series_type == CHART_TYPE_Scatter*/))
+		if (m_LineFormat && (series_type == CHART_TYPE_Line || series_type == CHART_TYPE_Radar))
 		{
 			if (series_format)
 			{

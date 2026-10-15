@@ -42,6 +42,7 @@
 #include "../Biff_unions/SUB.h"
 #include "../Biff_records/String.h"
 #include "../Biff_records/Continue.h"
+#include "../Biff_structures/PtgExp.h"
 
 #include "../../../../../OOXML/Base/Unit.h"
 
@@ -114,9 +115,22 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 		{
 			m_SharedFormula = elements_.back();
 			elements_.pop_back();
-
-			m_sharedIndex = shared_formulas_locations_ref_.size();
-			shared_formulas_locations_ref_.push_back(shr_formula.ref_);
+			if(!formula->formula.rgce.sequence.empty() && formula->formula.rgce.sequence.back()->ptg_id.get() ==  0x01)
+			{
+				auto exp = static_cast<XLS::PtgExp*>(formula->formula.rgce.sequence.back().get());
+				CellRangeRef range;
+				range.columnFirst = exp->col;
+				range.columnLast = exp->col;
+				range.rowFirst = exp->row;
+				range.rowLast = exp->row;
+				m_sharedIndex = shared_formulas_locations_ref_.size();
+				shared_formulas_locations_ref_.push_back(range);
+			}
+			else
+			{
+				m_sharedIndex = shared_formulas_locations_ref_.size();
+				shared_formulas_locations_ref_.push_back(shr_formula.ref_);
+			}
 		}
 		else
 		{
@@ -128,8 +142,23 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 	{
 		for (size_t i = 0; i < shared_formulas_locations_ref_.size(); i++)
 		{
-			if (shared_formulas_locations_ref_[i].inRange(location)) 
+			if(!formula->formula.rgce.sequence.empty() && formula->formula.rgce.sequence.back()->ptg_id.get() ==  0x01)
+			{
+				auto exp = static_cast<XLS::PtgExp*>(formula->formula.rgce.sequence.back().get());
+				CellRef sourseRef;
+				sourseRef.column = exp->col;
+				sourseRef.row = exp->row;
+				if(shared_formulas_locations_ref_[i].inRange(sourseRef))
+				{
+					m_sharedIndex = i;
+					break;
+				}
+			}
+			else if (shared_formulas_locations_ref_[i].inRange(location))
+			{
 				m_sharedIndex = i;
+				break;
+			}
 		}		
 	}
 

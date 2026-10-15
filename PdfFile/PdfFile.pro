@@ -95,7 +95,8 @@ SOURCES += \
     SrcReader/Adaptors.cpp \
     SrcReader/PdfAnnot.cpp \
 	SrcReader/PdfFont.cpp \
-    SrcReader/GfxClip.cpp
+	SrcReader/GfxClip.cpp \
+	../DesktopEditor/cximage/CxImage/APP14cmyktorgb.cpp
 
 HEADERS += \
 	SrcReader/RendererOutputDev.h \
@@ -198,7 +199,8 @@ HEADERS += \
     SrcWriter/Metadata.h \
     SrcWriter/ICCProfile.h \
 	SrcWriter/States.h \
-	SrcWriter/RedactOutputDev.h
+	SrcWriter/RedactOutputDev.h \
+	SrcWriter/OverlapOutputDev.h
 
 SOURCES += \
     SrcWriter/AcroForm.cpp \
@@ -228,7 +230,8 @@ SOURCES += \
     SrcWriter/Utils.cpp \
     SrcWriter/Metadata.cpp \
 	SrcWriter/States.cpp \
-	SrcWriter/RedactOutputDev.cpp
+	SrcWriter/RedactOutputDev.cpp \
+	SrcWriter/OverlapOutputDev.cpp
 
 # PdfFile
 

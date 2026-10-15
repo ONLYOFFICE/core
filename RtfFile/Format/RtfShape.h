@@ -164,6 +164,10 @@ public:
 	int m_nGeoRight;
 	int m_nGeoBottom;	
 	int	m_nShapePath;
+	int m_nInscribeLeft;
+	int m_nInscribeTop;
+	int m_nInscribeRight;
+	int m_nInscribeBottom;
 	std::vector< std::pair<int, int> >	m_aPVerticles;
 	std::vector< int>					m_aPSegmentInfo;
 //Connectors
@@ -214,6 +218,13 @@ public:
 	int m_nLineEndArrowLength;		//lineEndArrowLength	End arrow length (for acceptable values see meaning for lineStartArrowLength).
 	int m_nLineWidth;				//lineWidth Width of the line.
 	int m_nLineDashing;
+    bool m_bHr;
+    bool m_bHrStd;
+    int  m_nHrAlign;
+    bool m_bHrNoShade;
+    int  m_nHrPct;
+    int  m_nHrHeight;
+    int  m_nHrWeight;
 
 //WordArt
     std::wstring	m_sGtextUNICODE;

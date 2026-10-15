@@ -658,11 +658,11 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 			CP_XML_NODE(L"sheetPr")
 			{
 				//at filterMode="false">
-				if (table_prop->content().tableooo_tab_color_)
+				if (table_prop->content().table_tab_color_)
 				{
 					CP_XML_NODE(L"tabColor")
 					{
-						CP_XML_ATTR(L"rgb", table_prop->content().tableooo_tab_color_->get_hex_value());	
+						CP_XML_ATTR(L"rgb", table_prop->content().table_tab_color_->get_hex_value());	
 					}
 				}
 				//<pageSetUpPr fitToPage="true"/>
@@ -752,26 +752,14 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 			//	-showRowColHeaders
 		} 
 
-		double default_height = (2 * context_->getMaxDigitSize().second * 72. / 96. * 100.) /100.;//in point size.
-		
-		odf_reader::style_instance * rowDefStyle = odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableRow);
-		if ((rowDefStyle) && (rowDefStyle->content()))
-		{
-			const odf_reader::style_table_row_properties * prop = rowDefStyle->content()->get_style_table_row_properties();
+		std::wstringstream ht_s;
+		ht_s.precision(3);
+		ht_s << std::fixed << context_->getDefaultRowHeight();//in point size.
 
-			if ( (prop) &&  (prop->attlist_.style_row_height_))
-			{
-				default_height = prop->attlist_.style_row_height_->get_value_unit(odf_types::length::pt);
-			}
-			std::wstringstream ht_s;
-			ht_s.precision(1);
-			ht_s << std::fixed << default_height;
-			
-			CP_XML_NODE(L"sheetFormatPr")
-			{
-				CP_XML_ATTR(L"defaultRowHeight", ht_s.str());	
-			}
-		}  
+		CP_XML_NODE(L"sheetFormatPr")
+		{
+			CP_XML_ATTR(L"defaultRowHeight", ht_s.str());	
+		}
 	}
 
 }

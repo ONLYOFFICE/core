@@ -274,6 +274,8 @@ vector3D vector3D::parse(const std::wstring & Str)
 
 	std::wstring vsp = Str.substr(1, Str.length() - 2);
 	
+	boost::algorithm::trim(vsp);	//"(x y z )"
+
 	std::vector<std::wstring> coord;
 	boost::algorithm::split(coord, vsp, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 

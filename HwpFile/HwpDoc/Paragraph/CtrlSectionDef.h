@@ -94,6 +94,8 @@ public:
 
 	const CPage* GetPage() const;
 	VECTOR<const CCtrlHeadFoot*> GetHeaderFooters() const;
+
+	int GetOutlineNumberingID() const;
 };
 }
 

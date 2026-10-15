@@ -76,6 +76,7 @@ public:
     std::vector<CElementPtr>		m_arElements;
 
     std::wstring					m_sThemeName;
+    std::wstring					m_sRoundTripFontScheme; 
 
     std::vector<std::vector<ODRAW::CColor>>m_arExtraColorScheme;
 

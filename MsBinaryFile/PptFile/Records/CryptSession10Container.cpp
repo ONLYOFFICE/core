@@ -113,20 +113,9 @@ void CEncryptionHeader::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pSt
         int Reserved1	= StreamUtils::ReadDWORD(pStream);
         int Reserved2	= StreamUtils::ReadDWORD(pStream);
 
-        POLE::uint64 pos	= pStream->tell();
-        POLE::uint64 size	= pStream->size();
+        // skip csp name
+        pStream->seek(pos_start_record + 12 + HeaderSize); 
 
-        std::vector<char> dataCSPName;
-        while(pos  < size - 1)
-        {
-            dataCSPName.push_back(StreamUtils::ReadBYTE(pStream));
-            dataCSPName.push_back(StreamUtils::ReadBYTE(pStream));
-            if (dataCSPName[dataCSPName.size() - 1] == 0 && dataCSPName[dataCSPName.size() - 2] == 0)
-            {
-                break;
-            }
-            pos+=2;//unicode null-terminate string
-        }
         //EncryptionVerifier
         crypt_data_aes.saltSize = StreamUtils::ReadDWORD(pStream);
         crypt_data_aes.saltValue = StreamUtils::ReadStringA(pStream, crypt_data_aes.saltSize);
@@ -137,8 +126,6 @@ void CEncryptionHeader::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pSt
 
         int szEncryptedVerifierHash = (ProviderType == 0x0001) ? 0x14 : 0x20;
         crypt_data_aes.encryptedVerifierValue = StreamUtils::ReadStringA(pStream, szEncryptedVerifierHash);
-
-        pos = pStream->tell();
 
         //------------------------------------------------------------------------------------------
         switch(AlgIDHash)

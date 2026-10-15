@@ -34,6 +34,9 @@
  */
 
 #include "MsoDrawingGroup.h"
+#include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
+#include "../Biff_structures/ODRAW/OfficeArtFDGGBlock.h"
+#include "../Biff_structures/ODRAW/OfficeArtBStoreContainer.h"
 
 namespace XLS
 {
@@ -65,6 +68,59 @@ void MsoDrawingGroup::readFields(CFRecord& record)
 	}
 
 	record >> rgChildRec;
+}
+
+void MsoDrawingGroup::writeFields(CFRecord& record)
+{
+	rgChildRec.save(record);
+}
+
+void MsoDrawingGroup::prepareChart(unsigned int count)
+{
+	if(!drawingCount)
+		return;
+	auto fdggblock = new ODRAW::OfficeArtFDGGBlock;
+	rgChildRec.m_OfficeArtFDGGBlock = ODRAW::OfficeArtRecordPtr(fdggblock);
+	fdggblock->cdgSaved = count;
+	fdggblock->cspSaved = count;
+	for(auto i = 0; i < count; i++)
+	{
+		ODRAW::OfficeArtIDCL idcl;
+		idcl.cspidCur = i;
+		idcl.dgid = i;
+		fdggblock->Rgidcl.push_back(idcl);
+	}
+}
+
+int MsoDrawingGroup::AddPict(OOX::CPath& picPath)
+{
+	int pictNum = -1;
+	ODRAW::OfficeArtBStoreContainer *bstore;
+	if(rgChildRec.m_OfficeArtBStoreContainer == nullptr)
+	{
+		bstore = new ODRAW::OfficeArtBStoreContainer;
+		rgChildRec.m_OfficeArtBStoreContainer = ODRAW::OfficeArtRecordPtr(bstore);
+	}
+	else
+		bstore = static_cast<ODRAW::OfficeArtBStoreContainer*>(rgChildRec.m_OfficeArtBStoreContainer.get());
+	if(!drawingNames.IsInit())
+		drawingNames.Init();
+	if(drawingNames->find(picPath.GetPath()) == drawingNames->end())
+	{
+		auto fileBlock = new ODRAW::OfficeArtBStoreContainerFileBlock;
+		bstore->rgfb.push_back(fileBlock);
+
+		pictNum = bstore->rgfb.size();
+		drawingNames->emplace(picPath.GetPath(), pictNum);
+
+		DWORD fileSize = 0;
+		auto result = NSFile::CFileBinary::ReadAllBytes(picPath.GetPath(), (BYTE**)&fileBlock->pict_data, fileSize);
+		fileBlock->pict_size = fileSize;
+		fileBlock->pict_type = picPath.GetExtention();
+	}
+	else
+		pictNum = drawingNames->find(picPath.GetPath())->second;
+	return  pictNum;
 }
 
 } // namespace XLS

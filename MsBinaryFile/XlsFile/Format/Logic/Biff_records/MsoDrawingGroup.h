@@ -36,6 +36,8 @@
 
 #include "BiffRecordContinued.h"
 #include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
+#include "../../../../../OOXML/Base/Nullable.h"
+#include "../../../../../OOXML/SystemUtility/SystemUtility.h"
 
 namespace XLS
 {
@@ -47,15 +49,21 @@ class MsoDrawingGroup: public BiffRecordContinued
 	BIFF_RECORD_DEFINE_TYPE_INFO(MsoDrawingGroup)
 	BASE_OBJECT_DEFINE_CLASS_NAME(MsoDrawingGroup)
 public:
-	MsoDrawingGroup(const bool is_inside_chart_sheet);
+	MsoDrawingGroup(const bool is_inside_chart_sheet = false);
 	~MsoDrawingGroup();
 
 	BaseObjectPtr clone();
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
+
+	void prepareChart(unsigned int count);
+	int AddPict(OOX::CPath& pictPath);
 
 	ODRAW::OfficeArtDggContainer rgChildRec;
+	unsigned int drawingCount = 0;
+	nullable<std::map<std::wstring, unsigned int>> drawingNames;
 
 
 };

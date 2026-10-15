@@ -366,22 +366,23 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    std::wstring			style_name_;
-    _CP_OPT( std::wstring ) style_display_name_; 
+    std::wstring style_name_;
+    _CP_OPT(std::wstring) style_display_name_;
     odf_types::style_family	style_family_;
 
-    _CP_OPT( std::wstring ) style_parent_style_name_; 
-    _CP_OPT( std::wstring ) style_next_style_name_; 
-    _CP_OPT( std::wstring ) style_list_style_name_; 
-    _CP_OPT( std::wstring ) style_master_page_name_;
-	_CP_OPT( bool)			style_auto_update_; // default = false
-    _CP_OPT( std::wstring ) style_data_style_name_; 
-    _CP_OPT( std::wstring ) style_class_;
-    _CP_OPT(std::wstring)	style_default_outline_level_; 
+    _CP_OPT(std::wstring) style_parent_style_name_;
+    _CP_OPT(std::wstring) style_next_style_name_;
+    _CP_OPT(std::wstring) style_list_style_name_;
+    _CP_OPT(std::wstring) style_master_page_name_;
+    _CP_OPT(std::wstring) style_data_style_name_;
+    _CP_OPT(std::wstring) style_class_;
+    _CP_OPT(std::wstring) style_default_outline_level_;
+    _CP_OPT(std::wstring) loext_linked_style_name_;
+    _CP_OPT(odf_types::Bool) loext_primary_format_;
 
-    style_content				content_;
-    office_element_ptr_array	style_map_;
-
+    _CP_OPT(bool) style_auto_update_; // default = false
+    style_content content_;
+    office_element_ptr_array style_map_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style)
@@ -557,28 +558,15 @@ public:
     office_element_ptr_array	text_notes_configuration_;
     office_element_ptr			text_bibliography_configuration_; // < TODO
 	office_element_ptr_array	text_linenumbering_configuration_;
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(office_styles)
 
 //----------------------------------------------------------------------------------------------------
-class header_footer_content_common
-{
-public:
-    common_style_header_footer_attlist	common_style_header_footer_attlist_;
-    header_footer_content				header_footer_content_;
-};
-
 class header_footer_common
 {
 public:
-    header_footer_content_common & content() { return content_; }
-    const header_footer_content_common & content() const { return content_; }
-    virtual ~header_footer_common() {}
-
-private:
-    header_footer_content_common content_;
-
+    common_style_header_footer_attlist attlist_;
+    header_footer_content content_;
 };
 
 //----------------------------------------------------------------------------------------------------
@@ -594,8 +582,6 @@ public:
     virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
-
-    header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header)
@@ -613,8 +599,6 @@ public:
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
-
-    header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer)
@@ -633,8 +617,6 @@ public:
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
-
-    header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_header_first)
@@ -652,8 +634,6 @@ public:
     virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
-
-    header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_first)
@@ -671,8 +651,6 @@ public:
     virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
-  
-	header_footer_content_common content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(style_header_left)
 
@@ -689,8 +667,6 @@ public:
     virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
-
-	header_footer_content_common content_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_footer_left)

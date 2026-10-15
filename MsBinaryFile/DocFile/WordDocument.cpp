@@ -291,7 +291,7 @@ namespace DocFileFormat
 				FIB->m_CodePageSaved = DocProperties->cpgText;
 			}
 		}
-		if (nWordVersion == 0 && !bErrorFile)
+		if ((nWordVersion == 0 && !bErrorFile) || (nWordVersion > 0 && FIB->m_FibBase.fExtChar))
 		{
 			nDocumentCodePage = ENCODING_UTF16;
 			bDocumentCodePage = true;
@@ -534,7 +534,7 @@ namespace DocFileFormat
 
                 if ( ( bookmarkName != NULL ) && ( *bookmarkName == L"_PictureBullets" ) )
 				{
-					for (size_t j = BookmarkStartEndCPs[i].start, k = 0; j < Text->size(); ++j, ++k )
+					for (size_t j = BookmarkStartEndCPs[i].start, k = 0; j < (size_t)BookmarkStartEndCPs[i].end && j < Text->size(); ++j, ++k )
 					{
 						if ( Text->at( j ) == 1 )
 						{
@@ -552,11 +552,14 @@ namespace DocFileFormat
 		for (size_t i = 0; i < AllPapxFkps->size(); ++i)
 		{
 			FormattedDiskPagePAPX*& iter = AllPapxFkps->at(i);
-			for (unsigned int j = 0; j < (iter)->grppapxSize; ++j)
+			for (unsigned int j = 0; iter && j < iter->grppapxSize; ++j)
 			{
-				int nVal = (iter)->rgfc[j];
-				AllPapx->insert( std::pair<int, ParagraphPropertyExceptions*>( nVal, (iter)->grppapx[j] ) );
-				AllPapxVector->push_back(nVal);
+				if (iter->rgfc)
+				{
+					int nVal = iter->rgfc[j];
+					AllPapx->insert(std::pair<int, ParagraphPropertyExceptions*>(nVal, iter->grppapx[j]));
+					AllPapxVector->push_back(nVal);
+				}
 			}
 		}
 

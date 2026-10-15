@@ -35,19 +35,17 @@
 
 #include "Layer.h"
 
-#include "../../../OOXML/Base/Unit.h"
-
 #include "PageBlock.h"
 
 namespace OFD
 {
-CLayer::CLayer(CXmlReader& oLiteReader)
+CLayer::CLayer(CXmlReader& oLiteReader, IFolder* pFolder)
 	: IPageBlock(oLiteReader), m_eType(EType::Body)
 {
 	if (L"ofd:Layer" != oLiteReader.GetName())
 		return;
 
-	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks);
+	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks, pFolder);
 }
 
 CLayer::~CLayer()
@@ -64,4 +62,13 @@ void CLayer::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageTyp
 	for (const IPageBlock* pPageBlock : m_arPageBlocks)
 		pPageBlock->Draw(pRenderer, oCommonData, ePageType);
 }
+
+#ifdef BUILDING_WASM_MODULE
+void CLayer::GetLinks(NSWasm::CData& oRes) const
+{
+	for (const IPageBlock* pPageBlock : m_arPageBlocks)
+		pPageBlock->GetLinks(oRes);
+}
+#endif
+
 }

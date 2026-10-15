@@ -62,17 +62,17 @@ public:
 
     //const std::wstring toString() const;
 
-    _UINT16     ixti;
-    BYTE        columns;
-    BYTE        rowType;
-    bool        squareBracketSpace;
-    bool        commaSpace;
+	_UINT16     ixti = 0;
+	BYTE        columns = 0;
+	BYTE        rowType = 0;
+	bool        squareBracketSpace = false;
+	bool        commaSpace = false;
     BYTE        type_;
-    bool        invalid;
-    bool        nonresident;
+	bool        invalid = false;
+	bool        nonresident = false;
     _UINT32     listIndex;
-    _UINT16     colFirst;
-    _UINT16     colLast;
+	_UINT16     colFirst = 0;
+	_UINT16     colLast = 0;
 
 private:
     GlobalWorkbookInfoPtr	global_info;

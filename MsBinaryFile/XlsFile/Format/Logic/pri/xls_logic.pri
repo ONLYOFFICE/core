@@ -33,12 +33,10 @@
 
 LOGIC_DIR = $$PWD/..
 
-core_release {
+build_monolith_objects {
 SOURCES += \
 	$$PWD/xls_format_logic.cpp
-}
-
-core_debug {
+} else {
 SOURCES +=  \
 	$$LOGIC_DIR/Biff_records/AlRuns.cpp \
 	$$LOGIC_DIR/Biff_records/Area.cpp \
@@ -378,8 +376,8 @@ SOURCES +=  \
 	$$LOGIC_DIR/Biff_structures/ArrayParsedFormula.cpp \
 	$$LOGIC_DIR/Biff_structures/Bes.cpp \
 	$$LOGIC_DIR/Biff_structures/BiffString.cpp \
-        $$LOGIC_DIR/Biff_structures/BiffStructure.cpp \
-        $$LOGIC_DIR/Biff_structures/BookExt_Conditional11.cpp \
+	$$LOGIC_DIR/Biff_structures/BiffStructure.cpp \
+	$$LOGIC_DIR/Biff_structures/BookExt_Conditional11.cpp \
 	$$LOGIC_DIR/Biff_structures/BookExt_Conditional12.cpp \
 	$$LOGIC_DIR/Biff_structures/BorderFillInfo.cpp \
 	$$LOGIC_DIR/Biff_structures/BuiltInStyle.cpp \
@@ -452,7 +450,7 @@ SOURCES +=  \
 	$$LOGIC_DIR/Biff_structures/FrtRefHeaderNoGrbit.cpp \
 	$$LOGIC_DIR/Biff_structures/FrtRefHeaderU.cpp \
 	$$LOGIC_DIR/Biff_structures/Ftab_Cetab.cpp \
-        $$LOGIC_DIR/Biff_structures/FutureFunctionParser.cpp \
+	$$LOGIC_DIR/Biff_structures/FutureFunctionParser.cpp \
 	$$LOGIC_DIR/Biff_structures/FtCblsData.cpp \
 	$$LOGIC_DIR/Biff_structures/FtCf.cpp \
 	$$LOGIC_DIR/Biff_structures/FtCmo.cpp \
@@ -662,23 +660,23 @@ SOURCES +=  \
 	$$LOGIC_DIR/Biff_structures/CFDatabar.cpp \
 	$$LOGIC_DIR/Biff_structures/CFFilter.cpp \
 	$$LOGIC_DIR/Biff_structures/CFGradient.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/ColSpan.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/Color.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/DValStrings.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTFormula.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTFormulas.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTHeader12.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTParsedFormula.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRef.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRefs.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTRelID.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTSqref.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/FRTSqrefs.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/RelID.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/UncheckedSqRfX.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/SxOs.cpp \
-        $$LOGIC_DIR/Biff_structures/BIFF12/SxSu.cpp \
-        \
+	$$LOGIC_DIR/Biff_structures/BIFF12/ColSpan.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/Color.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/DValStrings.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTFormula.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTFormulas.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTHeader12.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTParsedFormula.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTRef.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTRefs.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTRelID.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTSqref.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/FRTSqrefs.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/RelID.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/UncheckedSqRfX.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/SxOs.cpp \
+	$$LOGIC_DIR/Biff_structures/BIFF12/SxSu.cpp \
+	\
 	$$LOGIC_DIR/Biff_unions/AI.cpp \
 	$$LOGIC_DIR/Biff_unions/ATTACHEDLABEL_bu.cpp \
 	$$LOGIC_DIR/Biff_unions/AUTOFILTER_bu.cpp \
@@ -817,7 +815,7 @@ SOURCES +=  \
 	../../../Common/SummaryInformation/PropertyFactory.cpp \
 	../../../Common/SummaryInformation/PropertySet.cpp \
 	../../../Common/SummaryInformation/PropertySetStream.cpp \
-	\	
+	\
 	$$LOGIC_DIR/AnyObject.cpp \
 	$$LOGIC_DIR/AnySubstream.cpp \
 	$$LOGIC_DIR/BinProcessor.cpp \
@@ -1146,6 +1144,7 @@ HEADERS +=  \
 	$$LOGIC_DIR/Biff_records/YMult.h \
 	$$LOGIC_DIR/Biff_records/IMDATA.h \
 	$$LOGIC_DIR/Biff_records/FrtWrapper.h \
+    $$PWD/../Biff_structures/AF12DateInfo.h \
         \
         $$LOGIC_DIR/Biff_structures/BIFF12/CellRangeRef.h \
         $$LOGIC_DIR/Biff_structures/BIFF12/CellRef.h \
@@ -1613,3 +1612,6 @@ HEADERS +=  \
 	$$LOGIC_DIR/WorksheetSubstream.h \
 	$$LOGIC_DIR/CommonSubstream.h \
 	$$LOGIC_DIR/XlsElementsType.h
+
+SOURCES += \
+    $$PWD/../Biff_structures/AF12DateInfo.cpp

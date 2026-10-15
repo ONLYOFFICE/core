@@ -49,6 +49,71 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+	CRichValueRelFile::CRichValueRelFile(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+	}
+	CRichValueRelFile::CRichValueRelFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		read(oRootPath, oPath);
+	}
+	CRichValueRelFile::~CRichValueRelFile()
+	{
+	}
+	void CRichValueRelFile::read(const CPath& oPath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	const OOX::FileType CRichValueRelFile::type() const
+	{
+		return OOX::Spreadsheet::FileTypes::RichValueRel;
+	}
+	const CPath CRichValueRelFile::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CRichValueRelFile::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CRichValueRelFile::GetReadPath()
+	{
+		return m_oReadPath;
+	}
+	void CRichValueRelFile::read(const CPath& oRootPath, const CPath& oPath)
+	{
+		m_oReadPath = oPath;
+		
+		IFileContainer::Read(oRootPath, oPath);
+
+		XmlUtils::CXmlLiteReader oReader;
+
+		if (!oReader.FromFile(oPath.GetPath()))
+			return;
+
+		if (!oReader.ReadNextNode())
+			return;
+
+		m_oRichValueRels = oReader;
+	}
+	void CRichValueRelFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		if (false == m_oRichValueRels.IsInit()) return;
+
+		NSStringUtils::CStringBuilder sXml;
+
+		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+
+		m_oRichValueRels->toXML(sXml);
+
+		std::wstring sPath = oPath.GetPath();
+		NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
+		oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
+		IFileContainer::Write(oPath, oDirectory, oContent);
+	}
+//---------------------------------------------------------------------------------------------------------------------------
 	CRdRichValueFile::CRdRichValueFile(OOX::Document* pMain) : OOX::File(pMain)
 	{
 	}
@@ -391,7 +456,6 @@ std::to_wstring(m_arrItems.size()) + L"\">");
 			WritingElement_ReadAttributes_ReadSingle(oReader, L"s", m_oS)
 		WritingElement_ReadAttributes_End(oReader)
 	}
-//-------------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
 	CRichValueStructures::CRichValueStructures() {}
 	CRichValueStructures::~CRichValueStructures() {}
@@ -888,7 +952,92 @@ xmlns:x=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 
 		writer.WriteString(L"</global>");
 	}
+//-----------------------------------------------------------------------------------
+	CRichValueRels::CRichValueRels() {}
+	CRichValueRels::~CRichValueRels() {}
+	void CRichValueRels::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
+	std::wstring CRichValueRels::toXML() const
+	{
+		return L"";
+	}
+	EElementType CRichValueRels::getType() const
+	{
+		return et_x_RichValueRels;
+	}
+	void CRichValueRels::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		if (oReader.IsEmptyNode())
+			return;
 
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+			if (L"rel" == sName)
+			{
+				CRichRel* pRichRel = new CRichRel();
+				if (pRichRel)
+				{
+					pRichRel->fromXML(oReader);
+					m_arrItems.push_back(pRichRel);
+				}
+			}
+		}
+	}
+	void CRichValueRels::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		if (m_arrItems.empty()) return;
+
+		writer.WriteString(L"<richValueRels \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns=\"http://schemas.microsoft.com/office/spreadsheetml/2022/richvaluerel\" count=\"" +
+			std::to_wstring(m_arrItems.size()) + L"\">");
+
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+		{
+			if (m_arrItems[i])
+			{
+				m_arrItems[i]->toXML(writer);
+			}
+		}
+		writer.WriteString(L"</richValueRels>");
+	}
+//-------------------------------------------------------------------------------------
+	CRichRel::CRichRel() {}
+	CRichRel::~CRichRel() {}
+	void CRichRel::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
+	std::wstring CRichRel::toXML() const
+	{
+		return L"";
+	}
+	EElementType CRichRel::getType() const
+	{
+		return et_x_RichRel;
+	}
+	void CRichRel::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<rel");
+		WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+		writer.WriteString(L"/>");
+	}
+	void CRichRel::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
+	}
+	void CRichRel::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_Start(oReader)
+			WritingElement_ReadAttributes_ReadSingle(oReader, L"r:id", m_oRid)
+		WritingElement_ReadAttributes_End(oReader)
+	}
 }
 }
 

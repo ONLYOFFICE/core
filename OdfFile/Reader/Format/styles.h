@@ -101,7 +101,7 @@ public:
     style_table_properties*			get_style_table_properties()const;
     style_section_properties*		get_style_section_properties()const;
     style_table_row_properties*		get_style_table_row_properties()const;
-    style_table_column_properties* get_style_table_column_properties() const;
+    style_table_column_properties*  get_style_table_column_properties() const;
     style_chart_properties*			get_style_chart_properties()const;
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
     style_table_cell_properties*	get_style_table_cell_properties(bool always = false);
@@ -110,6 +110,8 @@ public:
 	odf_types::style_family style_family_;
 
     bool bDefault = false;
+
+    office_element_ptr_array style_map_;
 private:
     office_element_ptr		style_text_properties_;
     office_element_ptr		style_paragraph_properties_;
@@ -353,19 +355,19 @@ public:
     
 	_CP_OPT(std::wstring) style_display_name_;
 
-	_CP_OPT(std::wstring) style_parent_style_name_;
-	_CP_OPT(std::wstring) style_next_style_name_;
-	_CP_OPT(std::wstring) style_list_style_name_;
-	_CP_OPT(int) style_list_level_;
-	_CP_OPT(std::wstring) style_master_page_name_;
-	_CP_OPT(std::wstring) style_data_style_name_;
-	_CP_OPT(std::wstring) style_percentage_data_style_name_;
-	_CP_OPT(std::wstring) style_class_;
-	_CP_OPT(int) style_default_outline_level_;
+    _CP_OPT(std::wstring) style_parent_style_name_;
+    _CP_OPT(std::wstring) style_next_style_name_;
+    _CP_OPT(std::wstring) style_list_style_name_;
+    _CP_OPT(int) style_list_level_;
+    _CP_OPT(std::wstring) style_master_page_name_;
+    _CP_OPT(std::wstring) style_data_style_name_;
+    _CP_OPT(std::wstring) style_percentage_data_style_name_;
+    _CP_OPT(std::wstring) style_class_;
+    _CP_OPT(int) style_default_outline_level_;
+    _CP_OPT(std::wstring) loext_linked_style_name_;
+    _CP_OPT(bool) loext_primary_format_;
 
-    style_content content_;
-	
-	office_element_ptr_array style_map_;
+    style_content content_;	
 };
 CP_REGISTER_OFFICE_ELEMENT2(style);
 

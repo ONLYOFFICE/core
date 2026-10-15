@@ -80,6 +80,7 @@
 #include "../../../OOXML/PPTXFormat/Presentation/PresentationChildElements.h"
 #include "../../../OOXML/DocxFormat/Core.h"
 #include "../../../OOXML/DocxFormat/App.h"
+#include "../../../OOXML/Common/SimpleTypes_Shared.h"
 
 #include "../Format/odp_conversion_context.h"
 
@@ -211,6 +212,11 @@ bool PptxConverter::convertDocument()
 		
 	odp_context->start_document();
 
+	if (presentation && presentation->attrRtl.IsInit())
+	{
+		current_bidi_set = *presentation->attrRtl;
+	}
+
 	convert_styles();
 	convert_settings(); 
 	
@@ -241,52 +247,70 @@ void PptxConverter::convert_styles()
 
 	odp_context->styles_context()->create_default_style(odf_types::style_family::Graphic);					
 	
-	odf_writer::paragraph_format_properties	* paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
-	odf_writer::text_format_properties		* text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
+	odf_writer::paragraph_format_properties*	paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
+	odf_writer::text_format_properties*			text_properties			= odp_context->styles_context()->last_state()->get_text_properties();
+	odf_writer::graphic_format_properties*		graphic_properties		= odp_context->styles_context()->last_state()->get_graphic_properties();
 
-	if (presentation->defaultTextStyle.IsInit())
+	//if (current_bidi_set)
+	//{ 
+	//	graphic_properties->style_writing_mode_ = odf_types::writing_mode::RlTb;
+	//}
+
+	bool default_text_style = presentation->defaultTextStyle.IsInit();
+
+	if (default_text_style || current_bidi_set) //rtl must be written even without defaultTextStyle
 	{
-		OoxConverter::convert(presentation->defaultTextStyle->levels[9].GetPointer(), paragraph_properties, text_properties); //defPPr
-		OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
-		
+		if (default_text_style)
+		{
+			OoxConverter::convert(presentation->defaultTextStyle->levels[9].GetPointer(), paragraph_properties, text_properties); //defPPr
+			OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
+		}
 		odp_context->styles_context()->create_default_style(odf_types::style_family::Paragraph);		
-		paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
+		paragraph_properties = odp_context->styles_context()->last_state()->get_paragraph_properties();
 		
-		OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
+		if (default_text_style)
+			OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
 		
-		odp_context->styles_context()->create_default_style(odf_types::style_family::Text);
-		text_properties			= odp_context->styles_context()->last_state()->get_text_properties();
+		if (current_bidi_set)
+		{
+			paragraph_properties->style_writing_mode_ = odf_types::writing_mode::RlTb;
+		}
 
-		OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
+		odp_context->styles_context()->create_default_style(odf_types::style_family::Text);
+		text_properties = odp_context->styles_context()->last_state()->get_text_properties();
+
+		if (default_text_style)
+			OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
 	}
 	//convert(presentation->defaultTextStyle.GetPointer()); // default list styles
 	
 ///////////////////////////////////////////////////////////////////////////
 
 	odp_context->styles_context()->create_default_style(odf_types::style_family::Table);					
-	odf_writer::style_table_properties	* table_properties	= odp_context->styles_context()->last_state()->get_table_properties();
+	odf_writer::style_table_properties* table_properties	= odp_context->styles_context()->last_state()->get_table_properties();
 	// for nice rendering in editors - allow merging styles of overlapping borders
 	table_properties->content_.table_border_model_ = odf_types::border_model(odf_types::border_model::Collapsing);
 
+	if (current_bidi_set)
+	{ 
+		table_properties->content_.common_writing_mode_attlist_.style_writing_mode_ = odf_types::writing_mode::RlTb;
+	}
 	odp_context->styles_context()->create_default_style(odf_types::style_family::TableRow);					
-	odf_writer::style_table_row_properties	* row_properties	= odp_context->styles_context()->last_state()->get_table_row_properties();
+	odf_writer::style_table_row_properties* row_properties	= odp_context->styles_context()->last_state()->get_table_row_properties();
 	row_properties->style_table_row_properties_attlist_.fo_keep_together_ = odf_types::keep_together(odf_types::keep_together::Auto);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 	// for some reason?! OpenOffice needs base style for inserts/frames - without it different geometry type o_O !!!
 	odp_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic, false, true);		
 	
-	odf_writer::graphic_format_properties	* frame_graphic_properties	= odp_context->styles_context()->last_state()->get_graphic_properties();
-	odf_writer::text_format_properties		* frame_text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
+	odf_writer::graphic_format_properties* frame_graphic_properties	= odp_context->styles_context()->last_state()->get_graphic_properties();
+	odf_writer::text_format_properties* frame_text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
 
 	if (frame_text_properties && text_properties)
 		frame_text_properties->apply_from(*text_properties);
 
 	odp_context->page_layout_context()->create_layer_sets();
 }
-
-
-
 void PptxConverter::convert_settings()
 {
 	OoxConverter::convert(presentation->m_pJsaProject.operator ->());
@@ -2284,6 +2308,23 @@ void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 		}
 	}
 
+	if (oox_table_pr->Rtl.IsInit())
+	{	//rtl="0" must reset the direction inherited from the global (presentation) rtl
+		odf_writer::odf_style_state_ptr table_style_state = odp_context->styles_context()->last_state(odf_types::style_family::Table);
+
+		if (table_style_state)
+		{
+			odf_writer::style_table_properties *table_properties = table_style_state->get_table_properties();
+
+			if (table_properties)
+			{
+				table_properties->content_.common_writing_mode_attlist_.style_writing_mode_ = *oox_table_pr->Rtl
+					? odf_types::writing_mode(odf_types::writing_mode::RlTb)
+					: odf_types::writing_mode(odf_types::writing_mode::LrTb);
+			}
+		}
+	}
+
 	if (oox_table_pr->Fill.is_init())
 	{
 		odp_context->styles_context()->create_style(L"", odf_types::style_family::TableCell, true, false, -1);
@@ -2300,8 +2341,7 @@ void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 		}
 		odp_context->slide_context()->table_context()->set_default_cell_properties(style_state->get_name());
 	}
-	//EffectProperties			Effects;
-	//nullable_bool				Rtl;
+	//EffectProperties Effects;
 }
 
 void PptxConverter::convert(PPTX::Logic::Table *oox_table)

@@ -61,7 +61,7 @@ namespace OOX
 		{
 			writer.WriteString(L"<person");
 				WritingStringNullableAttrEncodeXmlString(L"displayName", displayName, *displayName);
-				WritingStringNullableAttrString(L"id", id, *id);
+				WritingStringNullableAttrString(L"id", id, id->ToString());
 				WritingStringNullableAttrEncodeXmlString(L"userId", userId, *userId);
 				WritingStringNullableAttrEncodeXmlString(L"providerId", providerId, *providerId);
 			writer.WriteString(L"/>");
@@ -227,7 +227,7 @@ namespace OOX
 			{
 				if (m_arrItems[i]->id.IsInit())
 				{
-					(*mapPersonList)[m_arrItems[i]->id.get()] = m_arrItems[i];
+					(*mapPersonList)[m_arrItems[i]->id->ToString()] = m_arrItems[i];
 				}
 			}
 			return mapPersonList;
@@ -399,7 +399,7 @@ namespace OOX
 		{
 			if(dT.IsInit() && elem.dT.IsInit())
 			{
-				return dT->GetValue() < elem.dT->GetValue();
+				return dT->ToString() < elem.dT->ToString();
 			}
 			return true;
 		}
@@ -434,7 +434,7 @@ namespace OOX
 				//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
 				if(id.IsInit() && id->IsZero())
 				{
-					id = L"{" + XmlUtils::GenerateGuid() + L"}";
+					id->Generate();
 				}
 			}
 

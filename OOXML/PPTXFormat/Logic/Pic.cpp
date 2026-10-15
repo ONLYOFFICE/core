@@ -938,7 +938,8 @@ namespace PPTX
 						pWriter->WriteString1(0, mediaFile->filename().GetPath());
 
 					pWriter->WriteBool1(1, mediaFile->IsExternal());
-				//todoo start, end positions ..
+					pWriter->WriteDoubleReal2(2, mediaFile->start);
+					pWriter->WriteDoubleReal2(3, mediaFile->end);
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 				pWriter->EndRecord();
@@ -1139,6 +1140,8 @@ namespace PPTX
 					{
 						bool isExternal = false;
 						std::wstring strMediaFileMask;
+						nullable_double start;
+						nullable_double end;
 
 						LONG _end_rec1 = pReader->GetPos() + pReader->GetRecordSize() + 4;
 						pReader->Skip(1); // start attributes
@@ -1148,21 +1151,22 @@ namespace PPTX
 							if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 								break;
 
-							if (0 == _at)		
+							switch(_at)
 							{
-								strMediaFileMask = pReader->GetString2();
-							}
-							else if (1 == _at)		
-							{
-								isExternal = pReader->GetBool();
-							}
-							else
+							case 0:strMediaFileMask = pReader->GetString2(); break;
+							case 1: isExternal = pReader->GetBool(); break;
+							case 2: start = pReader->GetDoubleReal(); break;
+							case 3: end = pReader->GetDoubleReal(); break;
+							default:
 								break;
+							}
 						}
 						smart_ptr<OOX::Media> mediaFile = blipFill.additionalFiles.back().smart_dynamic_cast<OOX::Media>();
 						if (mediaFile.IsInit())
 						{
 							mediaFile->set_filename(strMediaFileMask, isExternal);
+							mediaFile->start = start;
+							mediaFile->end = end;
 						}
 						pReader->Seek(_end_rec1);
 					}break;
@@ -1217,6 +1221,8 @@ namespace PPTX
 								additionalFile->type() == OOX::FileTypes::Video)
 							{
 								ext.link_media = OOX::RId(blipFill.blip->mediaRid);
+								ext.st = mediaFile->start;
+								ext.end = mediaFile->end;
 								nvPicPr.nvPr.extLst.push_back(ext);
 
 								if (nvPicPr.cNvPr.hlinkClick.IsInit() == false)
@@ -1356,6 +1362,12 @@ namespace PPTX
 					{
 						//todo - why is it always zero? - implement search through all URIs
 						file = pRels->Find(nvPicPr.nvPr.extLst[0].link_media.get());
+						smart_ptr<OOX::Media> mediaFileUpdate = file.smart_dynamic_cast<OOX::Media>();
+						if (mediaFileUpdate.IsInit())
+						{
+							mediaFileUpdate->start = nvPicPr.nvPr.extLst[0].st;
+							mediaFileUpdate->end = nvPicPr.nvPr.extLst[0].end;
+						}
 					}		
 				}
 
@@ -1403,62 +1415,6 @@ namespace PPTX
 			if (spPr.ln.IsInit())
 				spPr.ln->Merge(line);
 			return BGRA;
-		}
-		double Pic::GetStTrim () const
-		{
-			double trim = 0.0;
-			
-			if (parentFileIs<FileContainer>())
-			{
-				if (nvPicPr.nvPr.media.is<MediaFile>())
-				{
-					if ((nvPicPr.nvPr.media.as<MediaFile>().name == _T("videoFile")) ||
-						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")) ||
-						(nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile")) )
-					{
-						if (std::wstring (_T("NULL")) == parentFileAs<FileContainer>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()) )	//	HAVE TRIM
-						{
-							if (nvPicPr.nvPr.extLst.size())
-							{
-								if (nvPicPr.nvPr.extLst[0].st.is_init())
-									trim = nvPicPr.nvPr.extLst[0].st.get();
-							}
-						}		
-					}
-				}
-			}
-
-			return trim;
-		}
-		double Pic::GetEndTrim () const
-		{
-			double trim = -1.0;
-			
-			if (nvPicPr.nvPr.media.is<MediaFile>())
-			{
-				if ((nvPicPr.nvPr.media.as<MediaFile>().name == _T("videoFile")) ||
-					(nvPicPr.nvPr.media.as<MediaFile>().name == _T("quickTimeFile")) ||
-					(nvPicPr.nvPr.media.as<MediaFile>().name == _T("audioFile")) )
-				{
-					if (parentFileIs<FileContainer>())
-					{
-						if (std::wstring (_T("NULL")) == parentFileAs<FileContainer>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()))	//	HAVE TRIM
-						{
-							if (nvPicPr.nvPr.extLst.size())
-							{
-								if (nvPicPr.nvPr.extLst[0].end.is_init())
-									trim = nvPicPr.nvPr.extLst[0].end.get();
-							}
-						}		
-					}
-				}
-			}
-
-			return trim;
-		}
-		long Pic::GetRefId() const
-		{
-			return (long) nvPicPr.cNvPr.id;
 		}
 		std::wstring CorrentCropString(const std::wstring val)
 		{
@@ -1517,10 +1473,11 @@ namespace PPTX
 				oStylesWriter.WriteAttributeCSS (L"position", L"absolute");
 				if (in_group)
 				{
-					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / 100);
+					const int nDivider = pWriter->m_nGroupCoordDivider;
+					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / nDivider);
+					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / nDivider);
+					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / nDivider);
+					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / nDivider);
 				}
 				else
 				{

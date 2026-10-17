@@ -55,6 +55,7 @@
 #include "odfcontext.h"
 
 #include "style_text_properties.h"
+#include "number_style.h"
 
 #include "../../DataTypes/targetframename.h"
 
@@ -211,14 +212,15 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		Context.get_delete_text_state()) 
 			return; //MS doesn't have notes revision tracking
 
-	bool add_del_run = false;
+	bool add_run = false;
+	bool add_del = false;
 	if (Context.get_drawing_state_content() && Context.get_delete_text_state())
 	{	//0503IG-AddingFormattingText.odt - deleted text in deleted object
 
 		oox::text_tracked_context::_state  &state = Context.get_text_tracked_context().get_tracked_change(L"");
 		if (state.type == 2)
 		{
-			add_del_run = true;
+			add_del = true;
 			Context.output_stream() << L"<w:del>";
 		}
 	}  
@@ -229,7 +231,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		{
 		}
 	}	
-	Context.add_element_to_run();
+	add_run = Context.add_element_to_run();
   
 	std::wstring textNode = L"w:t";
 
@@ -243,9 +245,12 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 	Context.output_stream() << XmlUtils::EncodeXmlString( text_, true );//0xf4 0x80 0x80 0x81-??? - Gangs_Aff-Neg.odt
     Context.output_stream() << L"</" << textNode << L">";
 
-	if (add_del_run)
+	if (add_run)
 	{
 		Context.finish_run();
+	}
+	if (add_del)
+	{
 		Context.output_stream() << L"</w:del>";
 	}
 
@@ -601,12 +606,7 @@ void span::add_space(const std::wstring & Text)
 void span::docx_convert(oox::docx_conversion_context & Context)
 {
 	bool addNewRun = false;
-    bool pushed = false;
-
-	if (!content_.empty() && (content_[0]->get_type() == typeTextNote))
-	{
-		pushed = pushed;
-	}
+    bool pushed_text_properties = false;
 
     std::wostream & _Wostream = Context.output_stream();
 
@@ -627,7 +627,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 					}
                     
 					Context.push_text_properties(text_props);
-                    pushed = true;
+                    pushed_text_properties = true;
                     Context.get_styles_context().start_process_style(styleInst);
 					Context.add_new_run();
                     Context.get_styles_context().end_process_style();
@@ -647,8 +647,8 @@ void span::docx_convert(oox::docx_conversion_context & Context)
                                      
     }
 
-
-    if (!addNewRun)Context.add_new_run();
+    if (false == addNewRun) 
+		Context.add_new_run();
 
     for (size_t i = 0; i < content_.size(); i++)
     {
@@ -657,7 +657,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.finish_run();
 	
-	if (pushed)
+	if (pushed_text_properties)
         Context.pop_text_properties();
 }
 
@@ -1318,7 +1318,7 @@ const wchar_t * text_date::name = L"date";
 
 std::wostream & text_date::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_, bXmlEncode);
+    CP_SERIALIZE_TEXT(content_, bXmlEncode);
     return _Wostream;
 }
 
@@ -1328,12 +1328,15 @@ void text_date::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"text:fixed", text_fixed_);
     CP_APPLY_ATTR(L"text:date-value", text_date_value_);
 }
-
-void text_date::add_text(const std::wstring & Text)
+void text_date::add_text(const std::wstring& Text)
 {
-    text_ = text::create(Text) ;
+	office_element_ptr text = text::create(Text);
+	content_.push_back(text);
 }
-
+void text_date::add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
 void text_date::docx_convert(oox::docx_conversion_context & Context)
 {
 	//bool bLock = text_fixed_ ? text_fixed_->get() : false;
@@ -1349,6 +1352,17 @@ void text_date::docx_convert(oox::docx_conversion_context & Context)
 				std::wstring format;
 				if (style_data_style_name_)
 				{
+					styles_lite_container& number_styles = Context.root()->odf_context().numberStyles();
+
+					office_element_ptr elm = number_styles.find_by_style_name(*style_data_style_name_);
+					number_style_base* number_style = dynamic_cast<number_style_base*>(elm.get());
+
+					if (number_style)
+					{
+						number_style->oox_convert(Context.get_num_format_context());
+
+						format = Context.get_num_format_context().get_last_date_format();
+					}
 				}
 				Context.output_stream() << L"<w:dateFormat w:val=\"" << format << L"\"/>";
 
@@ -1358,10 +1372,13 @@ void text_date::docx_convert(oox::docx_conversion_context & Context)
 			Context.output_stream() << L"</w:date>";
 		}
 		Context.output_stream() << L"</w:sdtPr>";
-		Context.output_stream() << L"<w:sdtContent>";
-	
-		docx_serialize_run(text_, Context);
-
+		Context.output_stream() << L"<w:sdtContent>";	
+		{
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->docx_convert(Context);
+			}
+		}
 		Context.output_stream() << L"</w:sdtContent>";
 	Context.output_stream() << L"</w:sdt>";
 }
@@ -1372,10 +1389,10 @@ void text_date::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_c
 void text_date::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_field(oox::date, style_data_style_name_.get_value_or(L""));
-    if (text_)
-    {
-        text_->pptx_convert(Context);
-    }
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->pptx_convert(Context);
+	}
     Context.get_text_context().end_field();
 }
 
@@ -1407,8 +1424,8 @@ const wchar_t * text_time::name = L"time";
 
 std::wostream & text_time::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    CP_SERIALIZE_TEXT(text_, bXmlEncode);
-    return _Wostream;
+	CP_SERIALIZE_TEXT(content_, bXmlEncode);
+	return _Wostream;
 }
 
 void text_time::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -1420,14 +1437,34 @@ void text_time::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void text_time::add_text(const std::wstring & Text)
 {
-    text_ = text::create(Text) ;
+	office_element_ptr text = text::create(Text);
+	content_.push_back(text);
 }
-
+void text_time::add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name)
+{
+	CP_CREATE_ELEMENT(content_);
+}
 void text_time::docx_convert(oox::docx_conversion_context & Context)
 {
+	std::wstring sInstruction = L"TIME";
 	bool bLock = text_fixed_ ? text_fixed_->get() : false;
 
-	docx_serialize_field(L"TIME", text_, Context, bLock);
+	if (style_data_style_name_)
+	{
+		styles_lite_container& number_styles = Context.root()->odf_context().numberStyles();
+
+		office_element_ptr elm = number_styles.find_by_style_name(*style_data_style_name_);
+		number_style_base* number_style = dynamic_cast<number_style_base*>(elm.get());
+
+		if (number_style)
+		{
+			number_style->oox_convert(Context.get_num_format_context());
+
+			sInstruction += L" \\@ \"" + Context.get_num_format_context().get_last_time_format() + L"\"";
+		}
+	}
+
+	docx_serialize_field(sInstruction, content_, Context, bLock);
 }
 void text_time::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_context & Context)
 {
@@ -1436,10 +1473,10 @@ void text_time::xlsx_serialize(std::wostream & _Wostream, oox::xlsx_conversion_c
 void text_time::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_field(oox::time, style_data_style_name_.get_value_or(L""));
-	if (text_)
-    {
-        text_->pptx_convert(Context);
-    }
+	for (size_t i = 0; i < content_.size(); i++)
+	{
+		content_[i]->pptx_convert(Context);
+	}
     Context.get_text_context().end_field();
 }
 

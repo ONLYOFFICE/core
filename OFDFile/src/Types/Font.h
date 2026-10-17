@@ -38,16 +38,26 @@
 
 #include "../IOFDElement.h"
 
-#include "../../../DesktopEditor/graphics/IRenderer.h"
+class IFolder;
+class IRenderer;
+
+#ifdef BUILDING_WASM_MODULE
+#define FONTS_USE_ONLY_MEMORY_STREAMS
+namespace NSFonts { class IFontManager; }
+#endif
 
 namespace OFD
 {
 class CFont : public IOFDElement
 {
 public:
-	CFont(CXmlReader& oXmlReader, const std::wstring& wsRootPath);
+	CFont(CXmlReader& oXmlReader, const std::wstring& wsRootPath, IFolder *pFolder);
 
 	void Apply(IRenderer* pRenderer) const;
+
+	#ifdef BUILDING_WASM_MODULE
+	NSFonts::IFontManager* GetFontManager() const;
+	#endif
 private:
 	std::wstring m_wsFontName;
 	std::wstring m_wsFamilyName;
@@ -58,6 +68,15 @@ private:
 	bool         m_bFixedWidth;
 
 	std::wstring m_wsFilePath;
+
+	#ifdef BUILDING_WASM_MODULE
+	std::wstring           m_wsSelectedFont;
+	NSFonts::IFontManager* m_pFontManager;
+	#else
+	bool         m_bSupportExternalFont;
+	#endif
+
+	friend class CFontChecker;
 };
 }
 

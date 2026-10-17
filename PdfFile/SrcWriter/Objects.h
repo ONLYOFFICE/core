@@ -109,6 +109,7 @@ namespace PdfWriter
 		{
 			return pOut ? pOut : new CObjectBase();
 		}
+		virtual void GetChildRefs(std::vector<CObjectBase*>& arrOut) const {}
 		bool IsHidden() const;
 		bool IsDirect() const;
 		bool IsIndirect() const;
@@ -433,10 +434,11 @@ namespace PdfWriter
 		CObjectBase* Get(unsigned int unIndex, bool bCheckProxy = true) const;
 		CObjectBase* Remove(unsigned int unIndex);
 		void         Clear();
-		EObjectType  GetType() const
+		virtual EObjectType  GetType() const
 		{
 			return object_type_ARRAY;
 		}
+		virtual void GetChildRefs(std::vector<CObjectBase*>& arrOut) const;
 		static CArrayObject* CreateBox(const TBox& oBox);
 		static CArrayObject* CreateBox(double dL, double dB, double dR, double dT);
 		static CArrayObject* CreateMatrix(double* m);
@@ -456,6 +458,7 @@ namespace PdfWriter
 		{
 			return object_type_DICT;
 		}
+		virtual void GetChildRefs(std::vector<CObjectBase*>& arrOut) const;
 		CObjectBase* Get(const std::string& sKey) const;
 		void         Add(const std::string& sKey, CObjectBase* pObject);
 		void         Remove(const std::string& sKey);
@@ -486,7 +489,6 @@ namespace PdfWriter
 		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true);
 
 		virtual void      BeforeWrite(){}
-		virtual void      Write(CStream* pStream){}
 		virtual void      AfterWrite(CStream* pStream){}
 		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const;
 		virtual EDictType GetDictType() const
@@ -496,7 +498,7 @@ namespace PdfWriter
 
 		virtual void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
 		unsigned int GetSize() { return m_mList.size(); }
-		std::map<std::string, CObjectBase*> GetDict() { return m_mList; }
+		const std::map<std::string, CObjectBase*>& GetDict() const { return m_mList; }
 		void FromXml(const std::wstring& sXml);
 		void ClearStream();
 
@@ -530,6 +532,7 @@ namespace PdfWriter
 		void         Add(CObjectBase* pObject);
 		void         Add(CObjectBase* pObject, unsigned int unObjectGen);
 		void         Remove(CObjectBase* pObject);
+		static void  Free(CObjectBase* pObject);
 		void         WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
 		void         SetPrev(CXref* pPrev)
 		{
@@ -559,7 +562,8 @@ namespace PdfWriter
 		{
 			return m_pTrailer;
 		}
-		bool         IsPDFA() const;
+		bool         IsPDFA()  const;
+		bool         IsPDFUA() const;
 
 	private:
 

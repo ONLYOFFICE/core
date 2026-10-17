@@ -1457,5 +1457,6 @@
     <ClCompile Include="..\..\..\PptFile\Drawing\Theme.cpp">
       <Filter>OOXElements</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Common\MediaFileFormatChecker.cpp" />
   </ItemGroup>
 </Project>

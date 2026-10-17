@@ -203,7 +203,14 @@ namespace PdfWriter
 			return;
 
 		time_t oTime = time(0);
-		struct tm* oNow = gmtime(&oTime);
+		struct tm oNowBuf;
+
+#if defined(_WIN32) || defined(_MSC_VER)
+        gmtime_s(&oNowBuf, &oTime);
+#else
+        gmtime_r(&oTime, &oNowBuf);
+#endif
+        struct tm* oNow = &oNowBuf;
 
 		TDate oDate;
 

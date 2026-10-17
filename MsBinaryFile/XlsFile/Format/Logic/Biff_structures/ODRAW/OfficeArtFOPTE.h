@@ -79,10 +79,10 @@ public:
 	virtual void ReadComplexData(XLS::CFRecord& record);	
 	virtual void ReadComplexData(IBinaryReader* reader);
 
-	unsigned short opid;
-	bool fBid;
-	bool fComplex;
-    _INT32 op;
+	unsigned short opid = 0;
+	bool fBid = false;
+	bool fComplex = false;
+	_INT32 op = 0;
 };
 
 class FillColor : public OfficeArtFOPTE
@@ -1071,25 +1071,28 @@ public:
 			{
 				case ODRAW::rtLineTo:
 				{
-                    if (valuePointer + 1 > m_arPoints.size())
+                    for (_UINT16 j = 0; j < m_arSegments[i].m_nCount; j++)
                     {
-                        break;
+                        if (valuePointer + 1 > m_arPoints.size())
+                        {
+                            break;
 
-                        strVmlPath += L"l";
-                        strVmlPath += std::to_wstring(m_arPoints[0].x);
-                        strVmlPath += L",";
-                        strVmlPath += std::to_wstring(m_arPoints[0].y);
+                            strVmlPath += L"l";
+                            strVmlPath += std::to_wstring(m_arPoints[0].x);
+                            strVmlPath += L",";
+                            strVmlPath += std::to_wstring(m_arPoints[0].y);
 							
-                        ++valuePointer;
-                    }
-                    else
-                    {
-                        strVmlPath += L"l";
-                        strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
-                        strVmlPath += L",";
-                        strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
+                            ++valuePointer;
+                        }
+                        else
+                        {
+                            strVmlPath += L"l";
+                            strVmlPath += std::to_wstring(m_arPoints[valuePointer].x );
+                            strVmlPath += L",";
+                            strVmlPath += std::to_wstring(m_arPoints[valuePointer].y );
 							
-                        ++valuePointer;
+                            ++valuePointer;
+                        }
                     }
 				}break;
 				case ODRAW::rtCurveTo:

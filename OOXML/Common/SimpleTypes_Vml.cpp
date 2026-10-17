@@ -40,6 +40,23 @@
 // Here are simple types Vml from spec Office Open Xml Part4 14
 namespace SimpleTypes
 {
+	static void ReplaceAll(std::wstring& str, const std::wstring& from, const std::wstring& to)
+	{
+		size_t start_pos = 0;
+		while ((start_pos = str.find(from, start_pos)) != std::wstring::npos)
+		{
+			str.replace(start_pos, from.length(), to);
+			start_pos += to.length();
+		}
+	}
+	static void CorrectXmlString(std::wstring& strText)
+	{
+		ReplaceAll(strText, L"&apos;", L"'");
+		ReplaceAll(strText, L"&lt;", L"<");
+		ReplaceAll(strText, L"&gt;", L">");
+		ReplaceAll(strText, L"&quot;", L"\"");
+		ReplaceAll(strText, L"&amp;", L"&");
+	}
 	EEditAs CEditAs::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = editasCanvas;
@@ -2950,6 +2967,8 @@ namespace SimpleTypes
 			Clear();
 
 			m_sCss = sValue;
+			CorrectXmlString(m_sCss);
+
 			ParseProperties();
 
 			return m_sCss;

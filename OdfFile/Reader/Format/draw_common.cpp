@@ -501,6 +501,9 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 				}
 				else if (opacity_style->draw_start_) fill.opacity = opacity_style->draw_start_->get_value();
 				else if (opacity_style->draw_end_) fill.opacity = opacity_style->draw_end_->get_value();
+
+				if(opacity_style->draw_start_) fill.opacity_start = opacity_style->draw_start_->get_value();
+				if(opacity_style->draw_end_) fill.opacity_end = opacity_style->draw_end_->get_value();
 			}
 		}
 	}
@@ -645,12 +648,16 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 
 				Compute_GradientFill(gradient_style, fill.gradient);
 
-				if (fill.opacity)
+				if (fill.opacity_start || fill.opacity_end || fill.opacity)
 				{
 					for (size_t i = 0; i < fill.gradient->colors.size(); i++)
 					{
-						if (!fill.gradient->colors[i].opacity)
-							fill.gradient->colors[i].opacity = fill.opacity;
+						if(fill.gradient->colors[i].pos == 0.0 && fill.opacity_start)
+								fill.gradient->colors[i].opacity = fill.opacity_start;
+						else if(fill.gradient->colors[i].pos == 100.0 && fill.opacity_end)
+								fill.gradient->colors[i].opacity = fill.opacity_end;
+						else if (!fill.gradient->colors[i].opacity)
+								fill.gradient->colors[i].opacity = fill.opacity;
 					}
 				}
 			}

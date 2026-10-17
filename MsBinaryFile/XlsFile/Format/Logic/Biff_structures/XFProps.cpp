@@ -211,17 +211,26 @@ int XFProps::serialize(std::wostream & strm, bool dxf)
 		}
 		if (arXFPropNumFmt.size() > 0)
 		{
-			CP_XML_NODE(L"numFmt")
-			{	
-				for (size_t i = 0; i < arXFPropNumFmt.size(); i++)
+			bool ValidProp = false;
+			for(auto numFmtProp : arXFPropNumFmt)
+			{
+				if(numFmtProp && numFmtProp->xfPropType == 0x0029)
+					ValidProp = true;
+			}
+			if(ValidProp)
+			{
+				CP_XML_NODE(L"numFmt")
 				{
-					if (dxf)
+					for (size_t i = 0; i < arXFPropNumFmt.size(); i++)
 					{
-						arXFPropNumFmt[i]->serialize_attr(CP_GET_XML_NODE());
-					}
-					else
-					{
-						arXFPropNumFmt[i]->serialize(CP_XML_STREAM());
+						if (dxf)
+						{
+							arXFPropNumFmt[i]->serialize_attr(CP_GET_XML_NODE());
+						}
+						else
+						{
+							arXFPropNumFmt[i]->serialize(CP_XML_STREAM());
+						}
 					}
 				}
 			}

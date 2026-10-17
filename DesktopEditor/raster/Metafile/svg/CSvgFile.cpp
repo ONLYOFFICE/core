@@ -80,7 +80,15 @@ bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 
 bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
 {
-	return CalculateFinalSize(true, dX, dY, dWidth, dHeight);
+	if (!CalculateFinalSize(true, dX, dY, dWidth, dHeight))
+		return false;
+
+	if (DBL_EPSILON > dWidth)
+		dWidth  = SVG_FILE_WIDTH;
+	if (DBL_EPSILON > dHeight)
+		dHeight = SVG_FILE_HEIGHT;
+
+	return true;
 }
 
 const SVG::CSvgCalculator *CSvgFile::GetSvgCalculator() const
@@ -170,6 +178,11 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	if (!CalculateFinalSize(false, dFileX, dFileY, dFileWidth, dFileHeight))
 		return false;
 
+	const SVG::TRect oViewBox{m_pContainer->GetViewBox()};
+
+	if (SVG::Equals(0, dFileWidth) || SVG::Equals(0, dFileHeight) || oViewBox.m_oWidth.Zero() || oViewBox.m_oHeight.Zero())
+		return false;
+
 	double oldTransform[6];
 
 	pRenderer->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);
@@ -183,15 +196,13 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	double dTranslateX = dFileX * dM11,
 	       dTranslateY = dFileY * dM22;
 
-	const SVG::TRect oViewBox{m_pContainer->GetViewBox()};
-
 	if (!oViewBox.m_oWidth.Empty() && !oViewBox.m_oHeight.Empty())
 	{
 		dScaleX = dFileWidth  / oViewBox.m_oWidth .ToDouble(NSCSS::Pixel, SVG_FILE_WIDTH );
 		dScaleY = dFileHeight / oViewBox.m_oHeight.ToDouble(NSCSS::Pixel, SVG_FILE_HEIGHT);
 
-		dTranslateX -= oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;
-		dTranslateY -= oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
+		dTranslateX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScaleX * dM11;
+		dTranslateY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScaleY * dM22;
 	}
 
 	pRenderer->SetTransform(dM11 * dScaleX, 0, 0, dM22 * dScaleY, dTranslateX, dTranslateY);
@@ -221,7 +232,13 @@ bool CSvgFile::CalculateFinalSize(bool bUseViewBox, double& dX, double& dY, doub
 		return false;
 
 	const SVG::TRect oWindow  = m_pContainer->GetWindow();
-	const SVG::TRect oViewBox = m_pContainer->GetViewBox();
+	SVG::TRect oViewBox = m_pContainer->GetViewBox();
+
+	if (oViewBox.m_oWidth.Zero() || oViewBox.m_oHeight.Zero())
+	{
+		oViewBox.m_oWidth.Clear();
+		oViewBox.m_oHeight.Clear();
+	}
 
 	const double dViewBoxWidth {oViewBox.m_oWidth .ToDouble()};
 	const double dViewBoxHeigth{oViewBox.m_oHeight.ToDouble()};

@@ -106,7 +106,7 @@ const std::map<std::wstring, HtmlTag> m_HTML_TAGS
 	ADD_TAG(L"acronym", ACRONYM),
 	ADD_TAG(L"address", ADDRESS),
 	ADD_TAG(L"applet", APPLET),
-	 ADD_TAG(L"area", AREA),
+	ADD_TAG(L"area", AREA),
 	ADD_TAG(L"article", ARTICLE),
 	ADD_TAG(L"aside", ASIDE),
 	ADD_TAG(L"audio", AUDIO),
@@ -1534,7 +1534,7 @@ std::wstring StandardizeHeaderId(const std::wstring& header)
 	return finalResult;
 }
 
-bool ElementInHeader(const std::vector<NSCSS::CNode> arSelsectors)
+bool ElementInHeader(const std::vector<NSCSS::CNode>& arSelsectors)
 {
 	for (const NSCSS::CNode& oNode : arSelsectors)
 	{
@@ -1590,10 +1590,12 @@ bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsSrcPath, c
 	if (!wsCorePath.empty())
 	{
 		const std::wstring wsFullPath = NSSystemPath::ShortenPath(NSSystemPath::Combine(wsSrcPath, wsPath));
-		return boost::starts_with(wsFullPath, wsCorePath);
+		return NSSystemPath::IsPathInDirectory(wsCorePath, wsFullPath);
 	}
 
-	if (wsPath.length() >= 3 && L"../" == wsPath.substr(0, 3))
+	const std::wstring wsShortenPath = NSSystemPath::ShortenPath(wsPath);
+
+	if (wsShortenPath.length() >= 3 && L"../" == wsShortenPath.substr(0, 3))
 		return false;
 
 	return true;
@@ -4441,15 +4443,11 @@ private:
 		bool bRes = false;
 		bool bAllow = true;
 
-		std::wstring wsSrc = wscSrc;
 		if (!bIsAllowExternalLocalFiles)
-		{
-			wsSrc = NSSystemPath::NormalizePath(wsSrc);
-			std::wstring wsStartSrc = NSSystemPath::NormalizePath(m_sSrc);
-			bAllow = wsSrc.substr(0, wsStartSrc.length()) == wsStartSrc;
-		}
+			bAllow = NSSystemPath::IsPathInDirectory(m_sSrc, wscSrc);
+
 		if (bAllow)
-			bRes = NSFile::CFileBinary::Copy(wsSrc, wsDst);
+			bRes = NSFile::CFileBinary::Copy(wscSrc, wsDst);
 
 		return bRes;
 	}

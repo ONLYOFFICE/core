@@ -5,6 +5,7 @@
 #include "../CCompiledStyle.h"
 #include "CXmlElement.h"
 #include <list>
+#include <map>
 
 namespace NSCSS
 {
@@ -13,13 +14,16 @@ namespace NSCSS
 		CCompiledStyle m_oStyle;
 		bool m_bIsPStyle;
 		std::wstring m_wsFinalId;
+		std::vector<std::wstring> m_arStandardParents;
 
 	public:
 		CStyleUsed(const CCompiledStyle& oStyle, bool bIsPStyle);
 
 		void SetFinalId(const std::wstring& wsFinalId);
 
-		bool operator==(const CStyleUsed& oUsedStyle) const;
+		static std::vector<std::wstring> GetStandardParents(const CCompiledStyle& oStyle);
+
+		bool Equals(const CCompiledStyle& oStyle, bool bIsPStyle, const std::vector<std::wstring>& arStandardParents) const;
 
 		std::wstring GetId() const;
 	};
@@ -35,9 +39,12 @@ namespace NSCSS
 		std::vector<std::wstring> m_arStandardStylesUsed;
 		std::vector<std::wstring> m_arStandardStyles;
 		std::vector<CStyleUsed>   m_arStyleUsed;
+		std::map<std::wstring, std::wstring> m_mWrittenStyles;
 
 		std::wstring m_sStyle;
 		std::wstring m_sId;
+
+		bool AppendStyle(const CXmlElement& oXmlElement, bool bIsPStyle);
 
 		bool CombineStandardStyles(const std::vector<std::wstring>& arStandartedStyles, CXmlElement& oElement);
 		bool CreateStandardStyle  (const std::wstring& sNameStyle, CXmlElement& oElement);

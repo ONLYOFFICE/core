@@ -207,15 +207,8 @@ void paragraph_format_properties::add_attributes( const xml::attributes_wc_ptr &
     CP_APPLY_ATTR(L"style:writing-mode", style_writing_mode_);
     CP_APPLY_ATTR(L"style:writing-mode-automatic", style_writing_mode_automatic_);
     CP_APPLY_ATTR(L"style:snap-to-layout-grid", style_snap_to_layout_grid_);
-	_CP_OPT(std::wstring) style_page_number_str_;
-    CP_APPLY_ATTR(L"style:page-number", style_page_number_str_);
-
-	if (style_page_number_str_)
-	{
-		int res =0;
-		if ((res=style_page_number_str_.get().find(L"auto"))<0)
-			style_page_number_=  boost::lexical_cast<int>(style_page_number_str_.get());
-	}
+   
+    common_page_number_attlist_.add_attributes(Attributes);
 
     CP_APPLY_ATTR(L"style:background-transparency", style_background_transparency_);
 
@@ -341,9 +334,10 @@ void paragraph_format_properties::apply_from(const paragraph_format_properties &
     _CP_APPLY_PROP(style_writing_mode_, Other.style_writing_mode_);
     _CP_APPLY_PROP(style_writing_mode_automatic_, Other.style_writing_mode_automatic_);
     _CP_APPLY_PROP(style_snap_to_layout_grid_, Other.style_snap_to_layout_grid_);
-    _CP_APPLY_PROP(style_page_number_, Other.style_page_number_);
     _CP_APPLY_PROP(style_background_transparency_, Other.style_join_border_);
     _CP_APPLY_PROP(style_join_border_, Other.style_join_border_);
+
+    common_page_number_attlist_.apply_from(Other.common_page_number_attlist_);
 }
 
 

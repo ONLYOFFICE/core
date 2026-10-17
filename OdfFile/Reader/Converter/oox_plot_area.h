@@ -38,6 +38,7 @@
 
 #include "oox_types_chart.h"
 #include "oox_chart_axis.h"
+#include "oox_layout.h"
             
 namespace cpdoccore {
 namespace oox {
@@ -63,12 +64,23 @@ public:
 	void oox_serialize_view3D(std::wostream & _Wostream);
 
 	void add_chart	(int type);
-	void add_axis	(odf_reader::chart::axis & content);
+	void add_axis	(odf_reader::chart::axis & content, const _CP_OPT(double)& rel_x,
+		const _CP_OPT(double)& rel_y, const _CP_OPT(double)& rel_w, const _CP_OPT(double)& rel_h);
 
 	void set_no_local_table (bool val); //whithout embedded tables
 	//void set_content_series	(odf_reader::chart::series & content);
 	void set_data_table(odf_reader::chart::simple & content);
+
+	void set_layout(const _CP_OPT(double) & rel_x, const _CP_OPT(double) & rel_y,
+	                const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h, bool inner)
+	{
+		layout_.set_rect(rel_x, rel_y, rel_w, rel_h);
+
+		if (inner && false == layout_.empty())
+			layout_.target = std::wstring(L"inner");
+	}
 private:
+	oox_layout layout_;
 	odf_reader::chart::simple data_table_content_;
 	void reset_cross_axis(); //must be called after all additions
  	bool no_used_local_tables_;

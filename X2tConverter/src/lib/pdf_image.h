@@ -260,10 +260,6 @@ namespace NExtractTools
 			{
 				imageWriter.SetSaveType(*oThumbnail->aspect);
 			}
-			if (NULL != oThumbnail->first)
-			{
-				imageWriter.SetIsOnlyFirst(*oThumbnail->first);
-			}
 			if (NULL != oThumbnail->width)
 			{
 				imageWriter.SetRasterW(*oThumbnail->width);
@@ -273,15 +269,18 @@ namespace NExtractTools
 				imageWriter.SetRasterH(*oThumbnail->height);
 			}
 		}
+		imageWriter.SetSavePage((NULL != params.m_oThumbnail && NULL != params.m_oThumbnail->page)
+			? *params.m_oThumbnail->page : 0);
+
 		std::wstring sThumbnailDir;
-		if (imageWriter.GetIsOnlyFirst())
+		if (imageWriter.GetSavePage() != -1)
 		{
 			imageWriter.SetFileName(sTo);
 		}
 		else
 		{
 			std::wstring sFileAddon = L"image" + getExtentionByRasterFormat(imageWriter.GetRasterFormat());
-			if (NULL == params.m_oThumbnail->zip || *(params.m_oThumbnail->zip))
+			if (NULL == params.m_oThumbnail || NULL == params.m_oThumbnail->zip || *(params.m_oThumbnail->zip))
 			{
 				sThumbnailDir = combinePath(convertParams.m_sTempDir, L"thumbnails");
 				NSDirectory::CreateDirectory(sThumbnailDir);
@@ -356,6 +355,8 @@ namespace NExtractTools
 		std::wstring sPdfBinFile      = combinePath(convertParams.m_sTempDir, L"pdf.bin");
 
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		convertParams.InitDoctRenderer(&oDoctRenderer);
+
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
@@ -427,6 +428,8 @@ namespace NExtractTools
 		std::wstring sPdfBinFile      = combinePath(convertParams.m_sTempDir, L"pdf.bin");
 
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		convertParams.InitDoctRenderer(&oDoctRenderer);
+
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
@@ -737,10 +740,10 @@ namespace NExtractTools
 			// default as in CMetafileToRenderterRaster
 			int nRasterFormat = 4;
 			int nSaveType = 2;
-			bool bIsOnlyFirst = true;
 			bool bIsZip = true;
 			int nRasterW = 100;
 			int nRasterH = 100;
+			int nSavePage = 0;
 			if (NULL != params.m_oThumbnail)
 			{
 				InputParamsThumbnail *oThumbnail = params.m_oThumbnail;
@@ -751,10 +754,6 @@ namespace NExtractTools
 				if (NULL != oThumbnail->aspect)
 				{
 					nSaveType = *oThumbnail->aspect;
-				}
-				if (NULL != oThumbnail->first)
-				{
-					bIsOnlyFirst = *oThumbnail->first;
 				}
 				if (NULL != oThumbnail->zip)
 				{
@@ -768,10 +767,14 @@ namespace NExtractTools
 				{
 					nRasterH = *oThumbnail->height;
 				}
+				if (NULL != oThumbnail->page)
+				{
+					nSavePage = *oThumbnail->page;
+				}
 			}
 			std::wstring sThumbnailDir;
 			std::wstring sFileToExt;
-			if (!bIsOnlyFirst)
+			if (nSavePage == -1)
 			{
 				if (bIsZip)
 				{
@@ -791,9 +794,13 @@ namespace NExtractTools
 			nSaveType = nSaveType & 0x0F;
 
 			int nPagesCount = pReader->GetPagesCount();
-			if (bIsOnlyFirst)
-				nPagesCount = 1;
-			for (int i = 0; i < nPagesCount; ++i)
+			int i = 0;
+			if (nSavePage != -1 && nSavePage < nPagesCount)
+			{
+				i = nSavePage;
+				nPagesCount = nSavePage + 1;
+			}
+			for (; i < nPagesCount; ++i)
 			{
 				int nRasterWCur = nRasterW;
 				int nRasterHCur = nRasterH;
@@ -829,7 +836,7 @@ namespace NExtractTools
 					nRasterHCur = -1;
 				}
 				std::wstring sFileTo;
-				if (bIsOnlyFirst)
+				if (nSavePage != -1)
 				{
 					sFileTo = sTo;
 				}
@@ -840,7 +847,7 @@ namespace NExtractTools
 				pReader->ConvertToRaster(i, sFileTo, nRasterFormat, nRasterWCur, nRasterHCur);
 			}
 			// zip
-			if (!bIsOnlyFirst && bIsZip)
+			if (bIsZip && nSavePage == -1)
 			{
 				COfficeUtils oCOfficeUtils(NULL);
 				nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
@@ -945,6 +952,7 @@ namespace NExtractTools
 			if (!bIsCompiledChanges)
 			{
 				NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+				convertParams.InitDoctRenderer(&oDoctRenderer);
 
 				std::wstring sPdfFileCompiledChanges = NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
 				if (NSFile::CFileBinary::Exists(sPdfFileCompiledChanges))
@@ -1135,6 +1143,7 @@ namespace NExtractTools
 				else
 				{
 					NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+					convertParams.InitDoctRenderer(&oDoctRenderer);
 
 					std::wstring sWatermarkTmp = NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"WWW_");
 					if (NSFile::CFileBinary::Exists(sWatermarkTmp))
@@ -1184,6 +1193,11 @@ namespace NExtractTools
 						NSFile::CFileBinary::Remove(sWatermarkTmp);
 				}
 				sFrom = sFromSrc;
+
+				if (0 == nRes && !params.getSigningKeyStorePath().empty())
+				{
+					nRes = pdfSign(sTo, pApplicationFonts, params, convertParams);
+				}
 			}
 			else
 			{

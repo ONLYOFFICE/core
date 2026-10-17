@@ -36,30 +36,40 @@
 #include "TextObject.h"
 
 #include "../Utils/Utils.h"
+#include "../Utils/CFontChecker.h"
+
+#include "../../../DesktopEditor/graphics/IRenderer.h"
+
+#ifdef BUILDING_WASM_MODULE
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../PdfFile/SrcReader/FontsWasm.h"
+#endif
+
+#include <functional>
 
 namespace OFD
 {
-CTextCode::CTextCode(CXmlReader& oLiteReader)
+CTextCode::CTextCode(CXmlReader& oReader)
 {
-	if (L"ofd:TextCode" != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid())
+	if (L"ofd:TextCode" != oReader.GetName() || oReader.IsEmptyElement() || !oReader.IsValid())
 		return;
 
-	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
+	if (0 != oReader.GetAttributesCount() && oReader.MoveToFirstAttribute())
 	{
 		std::wstring wsAttributeName;
 
 		do
 		{
-			wsAttributeName = oLiteReader.GetName();
+			wsAttributeName = oReader.GetName();
 
 			if (L"X" == wsAttributeName)
-				m_dX = oLiteReader.GetDouble(true);
+				m_dX = oReader.GetDouble(true);
 			else if (L"Y" == wsAttributeName)
-				m_dY = oLiteReader.GetDouble(true);
+				m_dY = oReader.GetDouble(true);
 			else if (L"DeltaX" == wsAttributeName ||
 			         L"DeltaY" == wsAttributeName)
 			{
-				const std::vector<std::string> arValues{oLiteReader.GetArrayStrings(true)};
+				const std::vector<std::string> arValues{oReader.GetArrayStrings(true)};
 
 				std::vector<double>& arDelta{L"DeltaX" == wsAttributeName ? m_arDeltaX : m_arDeltaY};
 
@@ -85,41 +95,112 @@ CTextCode::CTextCode(CXmlReader& oLiteReader)
 						arDelta.push_back(0.);
 				}
 			}
-		} while (oLiteReader.MoveToNextAttribute());
+			} while (oReader.MoveToNextAttribute());
 	}
 
-	oLiteReader.MoveToElement();
+		oReader.MoveToElement();
 
-	m_wsText = oLiteReader.GetText2();
+		m_wsText = oReader.GetText2();
 }
 
-void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vector<TCGTransform>& arCGTransforms) const
+HRESULT DrawGlyphWithFontUpdate(IRenderer* pRenderer, NSFonts::IFontManager* pFontManager, unsigned int unUnicode, std::function<HRESULT()> CommandDrawTextCHAR)
+{
+	if (nullptr == pRenderer)
+		return S_FALSE;
+
+	std::wstring sFontPath;
+	double dSize{0.};
+	bool bReplace{false};
+
+	pRenderer->get_FontPath(&sFontPath);
+	pRenderer->get_FontSize(&dSize);
+
+	#ifdef BUILDING_WASM_MODULE
+	if (nullptr != pFontManager && !sFontPath.empty())
+	{
+		long lStyle;
+		double dDpiX, dDpiY;
+		pRenderer->get_FontStyle(&lStyle);
+		pRenderer->get_DpiX(&dDpiX);
+		pRenderer->get_DpiY(&dDpiY);
+		pFontManager->SetStringGID(FALSE);
+		pFontManager->LoadFontFromFile(sFontPath, 0, dSize, dDpiX, dDpiY);
+
+		NSFonts::IFontFile* pFontFile{pFontManager->GetFile()};
+
+		if (nullptr != pFontFile)
+		{
+			int nCMapIndex = 0;
+			int GID = pFontFile->SetCMapForCharCode(unUnicode, &nCMapIndex);
+			if (GID <= 0 && unUnicode < 0xF000)
+				GID = pFontFile->SetCMapForCharCode(unUnicode + 0xF000, &nCMapIndex);
+
+			if (GID <= 0)
+			{
+				std::wstring sName{pFontManager->GetApplication()->GetFontBySymbol(unUnicode)};
+				int bBold   = lStyle & 0x01 ? 1 : 0;
+				int bItalic = lStyle & 0x02 ? 1 : 0;
+
+				if (!sName.empty())
+				{
+					if (!NSWasm::IsJSEnv())
+					{
+						NSFonts::CFontSelectFormat oFormat;
+						oFormat.wsName  = new std::wstring(sName);
+						oFormat.bBold   = new INT(bBold);
+						oFormat.bItalic = new INT(bItalic);
+						NSFonts::CFontInfo* pFontInfo = pFontManager->GetFontInfoByParams(oFormat);
+
+						sName = pFontInfo->m_wsFontPath;
+					}
+
+					std::wstring wsFileName{NSWasm::LoadFont(sName, bBold, bItalic)};
+
+					if (wsFileName.empty())
+						return S_FALSE;
+
+					pRenderer->put_FontPath(wsFileName);
+					pFontManager->LoadFontFromFile(wsFileName, 0, dSize, dDpiX, dDpiY);
+					bReplace = true;
+				}
+			}
+		}
+	}
+	#endif
+
+	HRESULT res{CommandDrawTextCHAR()};
+
+	if(bReplace)
+		pRenderer->put_FontPath(sFontPath);
+
+	return res;
+}
+
+void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vector<TCGTransform>& arCGTransforms, double dScale, NSFonts::IFontManager* pFontManager) const
 {
 	if (nullptr == pRenderer || m_wsText.empty())
 		return;
 
 	double dX = m_dX, dY = m_dY, dDeltaX = 0, dDeltaY = 0;
-	bool bDrawed = false;
 
 	for (unsigned int unGlyphIndex = 0; unGlyphIndex < m_wsText.length(); ++unGlyphIndex)
 	{
-		if (!arCGTransforms.empty())
+		const double dGlyphX = dX * dScale, dGlyphY = dY * dScale;
+		bool bDrawed = false;
+
+		for (const TCGTransform& oCGTransform : arCGTransforms)
 		{
-			for (const TCGTransform& oCGTransform : arCGTransforms)
+			if (oCGTransform.Draw(pRenderer, m_wsText[unGlyphIndex], unIndex, dGlyphX, dGlyphY, pFontManager))
 			{
-				if (oCGTransform.Draw(pRenderer, m_wsText[unGlyphIndex], unIndex, dX, dY))
-				{
-					bDrawed = true;
-					break;
-				}
+				bDrawed = true;
+				break;
 			}
 		}
 
 		if (!bDrawed)
-		{
-			pRenderer->CommandDrawTextCHAR(m_wsText[unGlyphIndex], dX, dY, 0, 0);
-			++unIndex;
-		}
+			DrawGlyphWithFontUpdate(pRenderer, pFontManager, m_wsText[unGlyphIndex], [pRenderer, chChar = m_wsText[unGlyphIndex], dGlyphX, dGlyphY](){ return pRenderer->CommandDrawTextCHAR(chChar, dGlyphX, dGlyphY, 0, 0); });
+
+		++unIndex;
 
 		if (unGlyphIndex < m_arDeltaX.size())
 			dDeltaX = m_arDeltaX[unGlyphIndex];
@@ -132,72 +213,74 @@ void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vec
 	}
 }
 
-CTextObject::CTextObject(CXmlReader& oLiteReader)
-	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader),
+CTextObject::CTextObject(CXmlReader& oReader)
+	: IPageBlock(oReader), CGraphicUnit(oReader),
 	  m_bStroke(false), m_bFill(true), m_dHScale(1.),
 	  m_unReadDirection(0), m_unCharDirection(0), m_unWeight(400),
 	  m_bItalic(false),
 	  m_pFillColor(nullptr), m_pStrokeColor(nullptr), m_unFontID(0)
 {
-	if (L"ofd:TextObject" != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid())
+	if (L"ofd:TextObject" != oReader.GetName() || oReader.IsEmptyElement() || !oReader.IsValid())
 		return;
 
-	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
+	if (0 != oReader.GetAttributesCount() && oReader.MoveToFirstAttribute())
 	{
 		std::wstring wsAttributeName;
 
 		do
 		{
-			wsAttributeName = oLiteReader.GetName();
+			wsAttributeName = oReader.GetName();
 
 			if (L"Font" == wsAttributeName)
-				m_unFontID = oLiteReader.GetUInteger(true);
+				m_unFontID = oReader.GetUInteger(true);
 			else if (L"Size" == wsAttributeName)
-				m_dSize = oLiteReader.GetDouble(true);
+				m_dSize = oReader.GetDouble(true);
 			else if (L"Stroke" == wsAttributeName)
-				m_bStroke = oLiteReader.GetBoolean(true);
+				m_bStroke = oReader.GetBoolean(true);
 			else if (L"Fill" == wsAttributeName)
-				m_bFill = oLiteReader.GetBoolean(true);
+				m_bFill = oReader.GetBoolean(true);
 			else if (L"HScale" == wsAttributeName)
-				m_dHScale = oLiteReader.GetDouble(true);
+				m_dHScale = oReader.GetDouble(true);
 			else if (L"ReadDirection" == wsAttributeName)
-				m_unReadDirection = oLiteReader.GetUInteger(true);
+				m_unReadDirection = oReader.GetUInteger(true);
 			else if (L"CharDirection" == wsAttributeName)
-				m_unCharDirection =oLiteReader.GetUInteger(true);
+				m_unCharDirection =oReader.GetUInteger(true);
 			else if (L"Weight" == wsAttributeName)
-				m_unWeight = oLiteReader.GetUInteger(true);
+				m_unWeight = oReader.GetUInteger(true);
 			else if (L"Italic" == wsAttributeName)
-				m_bItalic = oLiteReader.GetBoolean(true);
-		} while (oLiteReader.MoveToNextAttribute());
+				m_bItalic = oReader.GetBoolean(true);
+		} while (oReader.MoveToNextAttribute());
 	}
 
-	oLiteReader.MoveToElement();
+	oReader.MoveToElement();
 
-	const int nDepth = oLiteReader.GetDepth();
+	const int nDepth = oReader.GetDepth();
 	std::wstring wsNodeName;
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	while (oReader.ReadNextSiblingNode(nDepth))
 	{
-		wsNodeName = oLiteReader.GetName();
+		wsNodeName = oReader.GetName();
 
 		if (L"ofd:FillColor" == wsNodeName)
 		{
 			if (nullptr != m_pFillColor)
 				delete m_pFillColor;
 
-			m_pFillColor = new CColor(oLiteReader);
+			m_pFillColor = new CColor(oReader);
 		}
 		else if (L"ofd:StrokeColor" == wsNodeName)
 		{
 			if (nullptr != m_pStrokeColor)
 				delete m_pStrokeColor;
 
-			m_pStrokeColor = new CColor(oLiteReader);
+			m_pStrokeColor = new CColor(oReader);
 		}
 		else if (L"ofd:TextCode" == wsNodeName)
-			m_arTextCodes.push_back(new CTextCode(oLiteReader));
+			m_arTextCodes.push_back(new CTextCode(oReader));
 		else if (L"ofd:CGTransform" == wsNodeName)
-			m_arCGTransforms.push_back(TCGTransform::Read(oLiteReader));
+			m_arCGTransforms.push_back(TCGTransform::Read(oReader));
+		else
+			ReadChildren(oReader);
 	}
 }
 
@@ -220,7 +303,10 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 
 	const CRes* pPublicRes{oCommonData.GetPublicRes()};
 
-	const CFont* pFont = pPublicRes->GetFont(m_unFontID);
+	if (nullptr == pPublicRes)
+		return;
+
+	const CFont* pFont{pPublicRes->GetFont(m_unFontID)};
 
 	if (nullptr == pFont)
 		return;
@@ -229,6 +315,16 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 
 	TMatrix oOldTransform;
 	CGraphicUnit::Apply(pRenderer, oOldTransform);
+
+	double dM11, dM12, dM21, dM22, dDx, dDy;
+	pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
+
+	double dTextScale = std::min(std::sqrt(dM11 * dM11 + dM12 * dM12), std::sqrt(dM21 * dM21 + dM22 * dM22));
+
+	if (IsZeroValue(dTextScale))
+		dTextScale = 1.;
+	else
+		pRenderer->SetTransform(dM11 / dTextScale, dM12 / dTextScale, dM21 / dTextScale, dM22 / dTextScale, dDx, dDy);
 
 	std::vector<const CDrawParam*> arDrawParams{pPublicRes->GetDrawParams()};
 
@@ -243,7 +339,8 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 		}
 		else
 		{
-			pRenderer->put_BrushColor1(0);
+			pRenderer->put_BrushColor1(BLACK_COLOR_INT);
+			pRenderer->put_BrushAlpha1(255);
 
 			if (EPageType::TemplatePage == ePageType)
 				for (const CDrawParam* pDrawParam : arDrawParams)
@@ -254,66 +351,88 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPa
 	else
 		pRenderer->put_BrushType(c_BrushTypeNotSet);
 
-	pRenderer->put_FontSize(m_dSize * 72. / 25.4);
+	pRenderer->put_FontSize(m_dSize * dTextScale * 72. / 25.4);
 
 	unsigned int unGlyphsIndex = 0;
 
 	for (const CTextCode* pTextCode : m_arTextCodes)
-		pTextCode->Draw(pRenderer, unGlyphsIndex, m_arCGTransforms);
+		#ifdef BUILDING_WASM_MODULE
+		pTextCode->Draw(pRenderer, unGlyphsIndex, m_arCGTransforms, dTextScale, pFont->GetFontManager());
+		#else
+		pTextCode->Draw(pRenderer, unGlyphsIndex, m_arCGTransforms, dTextScale);
+		#endif
 
 	pRenderer->SetTransform(oOldTransform.m_dM11, oOldTransform.m_dM12, oOldTransform.m_dM21, oOldTransform.m_dM22, oOldTransform.m_dDx, oOldTransform.m_dDy);
 }
 
-TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)
+#ifdef BUILDING_WASM_MODULE
+void CTextObject::GetLinks(NSWasm::CData& oRes) const
+{
+	CGraphicUnit::GetLinks(oRes);
+}
+#endif
+
+TCGTransform TCGTransform::Read(CXmlReader& oReader)
 {
 	TCGTransform oCGTransform;
 
-	if (L"ofd:CGTransform" != oLiteReader.GetName() || oLiteReader.IsEmptyElement())
+	if (L"ofd:CGTransform" != oReader.GetName() || oReader.IsEmptyElement())
 		return oCGTransform;
 
-	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
+	if (0 != oReader.GetAttributesCount() && oReader.MoveToFirstAttribute())
 	{
 		std::wstring wsAttributeName;
 
 		do
 		{
-			wsAttributeName = oLiteReader.GetName();
+			wsAttributeName = oReader.GetName();
 
 			if (L"CodePosition" == wsAttributeName)
-				oCGTransform.m_unCodePosition = oLiteReader.GetUInteger(true);
+				oCGTransform.m_unCodePosition = oReader.GetUInteger(true);
 			else if (L"CodeCount" == wsAttributeName)
-				oCGTransform.m_unCodeCount = oLiteReader.GetUInteger(true);
+				oCGTransform.m_unCodeCount = oReader.GetUInteger(true);
 			else if (L"GlyphCount" == wsAttributeName)
-				oCGTransform.m_unGlyphCount = oLiteReader.GetUInteger(true);
-		} while (oLiteReader.MoveToNextAttribute());
+				oCGTransform.m_unGlyphCount = oReader.GetUInteger(true);
+		} while (oReader.MoveToNextAttribute());
 	}
 
-	oLiteReader.MoveToElement();
+	oReader.MoveToElement();
 
-	const int nDepth = oLiteReader.GetDepth();
+	const int nDepth = oReader.GetDepth();
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	while (oReader.ReadNextSiblingNode(nDepth))
 	{
-		if ("ofd:Glyphs" != oLiteReader.GetNameA())
+		if ("ofd:Glyphs" != oReader.GetNameA())
 			continue;
 
-		const std::vector<unsigned int> arValues{oLiteReader.GetArrayUInteger()};
+		const std::vector<unsigned int> arValues{oReader.GetArrayUInteger()};
 		oCGTransform.m_arGlyphs.insert(oCGTransform.m_arGlyphs.end(), arValues.begin(), arValues.end());
 	}
 
 	return oCGTransform;
 }
 
-bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int& unIndex, double dX, double dY) const
+bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int unIndex, double dX, double dY, NSFonts::IFontManager* pFontManager) const
 {
-	if (m_unCodePosition + m_arGlyphs.size() > unIndex || 0 == m_unCodeCount || m_arGlyphs.empty())
+	if (nullptr == pRenderer || 0 == m_unCodeCount || m_arGlyphs.empty())
 		return false;
 
-	for (unsigned int unGlyphCount = 0; unGlyphCount < m_arGlyphs.size(); ++unGlyphCount)
-		pRenderer->CommandDrawTextExCHAR(lUnicode, m_arGlyphs[unGlyphCount], dX, dY, 0, 0);
+	if (unIndex < m_unCodePosition || unIndex >= m_unCodePosition + m_unCodeCount)
+		return false;
 
-	unIndex += m_unCodeCount;
+	if (m_arGlyphs.size() != m_unCodeCount)
+		return false;
 
-	return true;
+	std::wstring wsFontPath;
+	pRenderer->get_FontPath(&wsFontPath);
+
+	if (wsFontPath.empty())
+		return false;
+
+	const HRESULT hRes{pRenderer->CommandDrawTextExCHAR(lUnicode, (LONG)m_arGlyphs[unIndex - m_unCodePosition], dX, dY, 0, 0)};
+
+	pRenderer->put_FontStringGID(FALSE);
+
+	return S_OK == hRes;
 }
 }

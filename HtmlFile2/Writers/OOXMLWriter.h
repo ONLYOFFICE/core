@@ -42,11 +42,12 @@
 #include "IWriter.h"
 
 #include <stack>
-
-namespace NSFonts { class IApplicationFonts; }
+#include <set>
 
 namespace HTML
 {
+#define BACKGROUND_IMAGE_ID_BASE 100000
+
 struct TImageData
 {
 	UINT m_unWidth;
@@ -58,7 +59,7 @@ struct TImageData
 	std::wstring m_wsAlign;
 
 	TImageData()
-	    : m_unWidth(0), m_unHeight(0), m_nHSpace(0), m_nVSpace(0), m_wsAlign(L"left")
+		: m_unWidth(0), m_unHeight(0), m_nHSpace(0), m_nVSpace(0), m_wsAlign(L"left")
 	{}
 
 	bool ZeroSize() const
@@ -75,10 +76,6 @@ struct TImageData
 class COOXMLWriter : public IWriter
 {
 	const std::wstring *m_pDstPath;  // Destination directory
-	const std::wstring *m_pTempDir;  // Temp folder
-	const std::wstring *m_pSrcPath;  // Source directory
-	const std::wstring *m_pBasePath; // Full base address
-	const std::wstring *m_pCorePath; // Path to root file (used for working with Epub)
 
 	XmlString m_oStylesXml;   // styles.xml
 	XmlString m_oDocXmlRels;  // document.xml.rels
@@ -88,11 +85,27 @@ class COOXMLWriter : public IWriter
 	XmlString m_oNumberXml;   // numbering.xml
 	XmlString m_oWebSettings; // webSettings.xml
 
+	struct TCustomProperties
+	{
+		XmlString m_oXml;     // custom.xml
+		UINT m_unIds;
+		std::set<std::wstring> m_arNames;
+		std::set<std::pair<std::wstring, std::wstring>> m_arMetadata;
+	} m_oCustom;
+
 	NSCSS::CDocumentStyle m_oXmlStyle;      // OOXML style
 	NSCSS::NSProperties::CPage m_oPageData; // Page styles
 
 	NSCSS::CCssCalculator *m_pStylesCalculator;
 	THTMLParameters *m_pHTMLParameters;
+
+	struct TTooltipField
+	{
+		std::wstring m_wsBookmark;
+		std::wstring m_wsTooltip;
+		bool m_bInHyperlink;
+		bool m_bOpen;
+	};
 
 	struct TState
 	{
@@ -108,6 +121,8 @@ class COOXMLWriter : public IWriter
 		std::wstring m_wsFootnote;
 		bool m_bIsFootnote;
 		bool m_bISCrossHyperlink;
+
+		std::vector<TTooltipField> m_arTooltipFields;
 
 		XmlString *m_pCurrentDocument; //Current write location
 		bool m_bRemoveCurrentDocument;
@@ -138,6 +153,7 @@ class COOXMLWriter : public IWriter
 	int m_nHyperlinkId; // Hyperlink ID
 	int m_nListId;      // List ID
 	int m_nElementId;   // ID for other elements
+	int m_nBackgroundImageId; // ID for images produced from background-image
 
 	bool m_bBanUpdatePageData; // Prohibit page data update?
 
@@ -148,16 +164,11 @@ class COOXMLWriter : public IWriter
 	std::map<std::wstring, UINT>         m_mBookmarks; // Bookmarks
 	using anchors_map = std::map<std::wstring, std::wstring>;
 	anchors_map                          m_mAnchors; // Map of anchors with individual ids
-
-	NSFonts::IApplicationFonts*          m_pFonts;     // Needed for font handling optimization
+	std::set<std::wstring>               m_arFiles;
 public:
 	COOXMLWriter(THTMLParameters* pHTMLParameters = nullptr, NSCSS::CCssCalculator* pCSSCalculator = nullptr);
 
-	void SetSrcDirectory (const std::wstring& wsPath);
 	void SetDstDirectory (const std::wstring& wsPath);
-	void SetTempDirectory(const std::wstring& wsPath);
-	void SetBaseDirectory(const std::wstring& wsPath);
-	void SetCoreDirectory(const std::wstring& wsPath);
 
 	void Begin(const std::wstring& wsDst) override;
 	void End(const std::wstring& wsDst) override;
@@ -171,6 +182,12 @@ public:
 	void CloseR();
 	void CloseT();
 	void CloseHyperlink();
+	void CloseClearedHyperlink();
+
+	void OpenTooltipField(const std::wstring& wsTooltip);
+	void CloseTooltipField();
+	void BeginTooltipFields(bool bInHyperlink);
+	void EndTooltipFields(bool bInHyperlink);
 
 	void PageBreak() override;
 
@@ -185,7 +202,7 @@ public:
 
 	void SetCurrentDocument(XmlString* pNewDocument);
 
-	void Break(const std::vector<NSCSS::CNode>& arSelectors);
+	void Break(const NSCSS::CNode& oTagNode);
 
 	void SetHyperlinkData(const std::wstring& wsRef, const std::wstring& wsTooltip, bool bIsCross, const std::wstring& wsFootnote, bool bIsFootnote);
 	void ClearHyperlinkData();
@@ -200,6 +217,7 @@ public:
 
 	bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
+	void WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue) override;
 	void WriteSpace();
 
 	void WriteEmptyBookmark(const std::wstring& wsId);
@@ -207,10 +225,16 @@ public:
 	std::wstring WriteBookmark(const std::wstring& wsId);
 	std::wstring AddAnchor(const std::wstring& wsAnchorValue);
 
+	void AddFile(const std::wstring& wsPath);
+	void WriteFileBookmark(const std::wstring& wsPath);
+	std::wstring FindFile(const std::wstring& wsRef) const;
+
 	void WriteImage(const TImageData& oImageData, const std::wstring& wsId);
 	void WriteAlternativeImage(const std::wstring& wsAlt, const std::wstring& wsSrc, const TImageData& oImageData);
 	void WriteEmptyImage(int nWidth, int nHeight, const std::wstring& wsName = L"", const std::wstring& wsDescr = L"");
 	void WriteImageRels(const std::wstring& wsImageId, const std::wstring& wsImageName);
+
+	int GetNextBackgroundImageId();
 
 	std::wstring GetStyle(const NSCSS::CCompiledStyle& oStyle, bool bParagraphStyle);
 
@@ -235,16 +259,9 @@ public:
 	XmlString& GetWebSettingsXml();
 	XmlString* GetCurrentDocument() const override;
 
-	bool SupportNestedTables() const override;
-
 	const NSCSS::NSProperties::CPage* GetPageData() const;
-	NSFonts::IApplicationFonts* GetFonts();
 
 	std::wstring GetMediaDir() const;
-	std::wstring GetTempDir()  const;
-	std::wstring GetSrcPath()  const;
-	std::wstring GetBasePath() const;
-	std::wstring GetCorePath() const;
 };
 }
 

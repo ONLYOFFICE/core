@@ -58,8 +58,8 @@ void oox_chart_legend::oox_serialize(std::wostream & _Wostream)
 				CP_XML_ATTR(L"val", content_.position);
 
 			}
-            layout_.oox_serialize(CP_XML_STREAM());		
-			
+            layout_.oox_serialize(CP_XML_STREAM());
+
 			CP_XML_NODE(L"c:overlay")
 			{
 				CP_XML_ATTR(L"val", 0);

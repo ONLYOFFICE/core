@@ -110,3 +110,4 @@
 #include "../../Reader/Converter/xlsx_pivots_context.cpp"
 #include "../../Reader/Converter/xlsx_data_validation.cpp"
 #include "../../Reader/Converter/StarMath2OOXML/cooxml2odf.cpp"
+#include "../../Reader/Converter/StarMath2OOXML/shakey.cpp"

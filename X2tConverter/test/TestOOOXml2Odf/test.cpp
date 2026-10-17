@@ -342,8 +342,23 @@ TEST(OOXml2OdfTest,sPre)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mmultiscripts><mn>10</mn><mprescripts /><mn>9</mn><mn>8</mn></mmultiscripts>";
-	StCorrect.m_wsAnnotation = L"10 lsup { 9 } lsub { 8 } ";
+	StCorrect.m_wsSemantic = L"<mmultiscripts><mn>10</mn><mprescripts /><mn>8</mn><mn>9</mn></mmultiscripts>";
+	StCorrect.m_wsAnnotation = L"10 lsub { 8 } lsup { 9 } ";
+	EXPECT_EQ(StResult,StCorrect);
+}
+TEST(OOXml2OdfTest,sPreWithPlaceholder)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::CSPre();
+	if(oReader.FromString(L"<m:sPre> <m:sPrePr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsiaTheme=\"minorEastAsia\" w:hAnsi=\"Cambria Math\"/> <w:i/> </w:rPr> </m:ctrlPr> </m:sPrePr> <m:sub> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsiaTheme=\"minorEastAsia\" w:hAnsi=\"Cambria Math\"/> </w:rPr> <m:t>\u00A0</m:t> </m:r> </m:sub> <m:sup> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsiaTheme=\"minorEastAsia\" w:hAnsi=\"Cambria Math\"/> </w:rPr> <m:t>9</m:t> </m:r> </m:sup> <m:e> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsiaTheme=\"minorEastAsia\" w:hAnsi=\"Cambria Math\"/> </w:rPr> <m:t>1</m:t> </m:r> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsiaTheme=\"minorEastAsia\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>0</m:t> </m:r> </m:e> </m:sPre>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.NodeDefinition(pElement);
+	StMath StCorrect,StResult;
+	StResult.m_wsSemantic = oTest.GetOdf();
+	StResult.m_wsAnnotation = oTest.GetAnnotation();
+	StCorrect.m_wsSemantic = L"<mmultiscripts><mn>10</mn><mprescripts /><none /><mn>9</mn></mmultiscripts>";
+	StCorrect.m_wsAnnotation = L"10 lsup { 9 } ";
 	EXPECT_EQ(StResult,StCorrect);
 }
 TEST(OOXml2OdfTest,EqArr)

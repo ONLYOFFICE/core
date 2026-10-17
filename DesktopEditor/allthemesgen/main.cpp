@@ -540,7 +540,7 @@ int main(int argc, char** argv)
             imageWriter.SetApplication(pApplicationFonts);
             imageWriter.SetRasterFormat(4);
             imageWriter.SetSaveType(0);
-            imageWriter.SetIsOnlyFirst(true);
+			imageWriter.SetSavePage(0);
 
             if (sPostfix.empty())
             {

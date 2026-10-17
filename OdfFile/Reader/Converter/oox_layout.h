@@ -32,9 +32,10 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
-#pragma once 
+#pragma once
 
 #include <iosfwd>
+#include <string>
 
 #include "../Format/chart_objects.h"
                     
@@ -52,6 +53,18 @@ public:
     //size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp, bool & is_default);
 
     void oox_serialize(std::wostream & _Wostream);/* const;*/
+
+    void set_rect(const _CP_OPT(double) & rel_x, const _CP_OPT(double) & rel_y,
+                  const _CP_OPT(double) & rel_w, const _CP_OPT(double) & rel_h);
+
+    bool empty() const { return !x && !y && !w && !h; }
+
+    _CP_OPT(double) x;
+    _CP_OPT(double) y;
+    _CP_OPT(double) w;
+    _CP_OPT(double) h;
+    
+    _CP_OPT(std::wstring) target; // for plot area only
 };
 
 }

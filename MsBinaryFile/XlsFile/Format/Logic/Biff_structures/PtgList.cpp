@@ -167,21 +167,30 @@ Ptg* PtgList::toArea()
 	auto tableRefIndex = XLS::GlobalWorkbookInfo::mapTableRefsStatic.find(listIndex);
 	if(tableRefIndex != XLS::GlobalWorkbookInfo::mapTableRefsStatic.end())
 	{
-		tableRef.fromString(tableRefIndex->second);
+		tableRef.fromString(std::get<0>(tableRefIndex->second));
 		tableRef.columnFirst += colFirst;
-		tableRef.columnLast = tableRef.columnFirst + (colLast - colFirst);
+		tableRef.columnLast = tableRef.columnFirst;
+		if(colLast > colFirst)
+			tableRef.columnLast += (colLast - colFirst);
 		if(rowType == 0x2) //headers
 			tableRef.rowLast = tableRef.rowFirst;
 		else if(rowType == 0x0) //data
-			tableRef.rowFirst++;
+		{
+			tableRef.rowFirst+= std::get<1>(tableRefIndex->second);
+			tableRef.rowLast-= std::get<2>(tableRefIndex->second);
+		}
 		else if(rowType == 0x6) //dataheaders
-			tableRef.rowLast--;
+			tableRef.rowLast-= std::get<2>(tableRefIndex->second);
 		else if(rowType == 0x0C) // datatotals
-			tableRef.rowFirst--;
+			tableRef.rowFirst+= std::get<1>(tableRefIndex->second);
 		else if(rowType == 0x8) //totals
 			tableRef.rowFirst = tableRef.rowLast;
 	}
-	PtgArea3d* listArea = new PtgArea3d(0x3B, CellRef());
+	unsigned char ptgType = type_+1;
+	unsigned char areaType = 0x3B;
+	SETBITS(areaType,5,6, ptgType);
+
+	PtgArea3d* listArea = new PtgArea3d(areaType, CellRef());
 	listArea->ixti = ixti;
 	listArea->area = tableRef;
 	listArea->area.rowFirstRelative = false;

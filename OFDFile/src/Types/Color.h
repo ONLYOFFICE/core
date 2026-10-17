@@ -40,6 +40,8 @@
 
 namespace OFD
 {
+#define BLACK_COLOR_INT 0xFF000000
+
 class CRes;
 class CColor
 {

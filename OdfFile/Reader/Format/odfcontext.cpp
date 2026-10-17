@@ -67,12 +67,14 @@ namespace cpdoccore {
 			bool IsDefault,
 			const std::wstring& ParentStyleName,
 			const std::wstring& NextStyleName,
+			const std::wstring& LinkStyleName,
 			const std::wstring& DataStyleName,
 			const std::wstring& PercentageDataStyleName,
 			const std::wstring& StyleClass,
-			_CP_OPT(std::wstring)	ListStyleName,
-			_CP_OPT(int)			ListLevel,
-			_CP_OPT(int)			OutlineLevel
+			_CP_OPT(bool) PrimaryFormat,
+			_CP_OPT(std::wstring) ListStyleName,
+			_CP_OPT(int) ListLevel,
+			_CP_OPT(int) OutlineLevel
 		) :
 			container_(Container),
 			name_(Name),
@@ -82,13 +84,16 @@ namespace cpdoccore {
 			is_automatic_(IsAutomatic),
 			is_default_(IsDefault),
 			next_name_(NextStyleName),
+			link_name_(LinkStyleName),
 			style_class_(StyleClass),
 			next_(Container->style_by_name(NextStyleName, style_type_, false)),
+			link_(Container->style_by_name(LinkStyleName, style_type_, false)),
 			data_style_name_(DataStyleName),
 			percentage_data_style_name_(PercentageDataStyleName),
 			list_style_name_(ListStyleName),
 			list_level_(ListLevel),
-			outline_level_(OutlineLevel)
+			outline_level_(OutlineLevel),
+			primary_format_(PrimaryFormat)
 		{
 			parent_name_ = ParentStyleName;
 			if (parent_name_ == L"Textformatvorlage")//http://ask.libreoffice.org/en/question/35136/textformatvorlage-style/
@@ -113,12 +118,14 @@ namespace cpdoccore {
 			bool IsDefault,
 			const std::wstring& ParentStyleName_,
 			const std::wstring& NextStyleName,
+			const std::wstring& LinkStyleName,
 			const std::wstring& DataStyleName,
 			const std::wstring& PercentageDataStyleName,
 			const std::wstring& StyleClass,
-			_CP_OPT(std::wstring)	ListStyleName,
-			_CP_OPT(int)			ListLevel,
-			_CP_OPT(int)			OutlineLevel)
+			_CP_OPT(bool) PrimaryFormat,
+			_CP_OPT(std::wstring) ListStyleName,
+			_CP_OPT(int) ListLevel,
+			_CP_OPT(int) OutlineLevel)
 		{
 			std::wstring ParentStyleName = ParentStyleName_;
 
@@ -126,10 +133,10 @@ namespace cpdoccore {
 
 			if (Name == ParentStyleName)
 			{
-				ParentStyleName = L"";//otherwise an infinite loop is possible in code.
+				ParentStyleName.clear();//otherwise an infinite loop is possible in code.
 			}
 			style_instance_ptr newStyle = style_instance_ptr(new style_instance(this, Name, DisplayName, Type, Content, IsAutomatic, IsDefault,
-				ParentStyleName, NextStyleName, DataStyleName, PercentageDataStyleName, StyleClass, ListStyleName, ListLevel, OutlineLevel));
+				ParentStyleName, NextStyleName, LinkStyleName, DataStyleName, PercentageDataStyleName, StyleClass, PrimaryFormat, ListStyleName, ListLevel, OutlineLevel));
 
 			instances_.push_back(newStyle);
 			int pos = static_cast<int>(instances_.size() - 1);
@@ -199,12 +206,23 @@ namespace cpdoccore {
 
 			return next_;
 		}
+		style_instance* style_instance::link() const
+		{
+			if (link_)
+				return link_;
+			else if (container_ && link_name_.empty() == false)
+				link_ = container_->style_by_name(link_name_, type(), false);
 
+			return link_;
+		}
 		const std::wstring& style_instance::next_name() const
 		{
 			return next_name_;
 		}
-
+		const std::wstring& style_instance::link_name() const
+		{
+			return link_name_;
+		}
 		bool style_instance::is_automatic() const
 		{
 			return is_automatic_;
@@ -238,7 +256,10 @@ namespace cpdoccore {
 		{
 			return outline_level_;
 		}
-
+		_CP_OPT(bool) style_instance::primary_format() const
+		{
+			return primary_format_;
+		}
 		style_instance* styles_container::style_by_name(const std::wstring& Name, style_family::type Type, bool object_in_styles) const
 		{
 			std::wstring n = L"";

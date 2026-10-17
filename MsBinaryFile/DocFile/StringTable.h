@@ -160,6 +160,12 @@ namespace DocFileFormat
 				if (Data.size() == count_elements && count_elements > 0)
 					break; //1997 and newer
 
+				if (lcb > 0 && reader->GetPosition() >= fc + lcb)
+					break;
+
+				if (reader->GetPosition() >= reader->GetSize())
+					break;
+
 				int cchData = 0;
 				int cbData = 0;
         
@@ -175,8 +181,13 @@ namespace DocFileFormat
 				}
 
 				long posBeforeType = reader->GetPosition();
+				
+				ByteStructure* object = T().ConstructObject(reader, cbData);
 
-				Data.push_back( T().ConstructObject( reader, cbData ) );
+				if (!object)
+					break;
+
+				Data.push_back(object);
 
 				reader->Seek( (int)( posBeforeType + cbData ), 0/*STREAM_SEEK_SET */);
 	        
@@ -263,6 +274,9 @@ namespace DocFileFormat
 				if (cchData > 0)
 				{
 					ByteStructure* object = T().ConstructObject(reader, cchData);
+
+					if (!object) break;
+
 					StringTable<T>::Data.push_back(object);
 
 					if (bReadExta)
@@ -278,6 +292,9 @@ namespace DocFileFormat
 				else
 				{
 					ByteStructure* object = T().ConstructObject(reader, StringTable<T>::cbExtra);
+
+					if (!object) break;
+
 					StringTable<T>::Data.push_back(object);
 				}
 			}

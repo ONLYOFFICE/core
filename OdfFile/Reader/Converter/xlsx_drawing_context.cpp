@@ -535,6 +535,11 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 			drawing.owner_cx_ = obj.owner_cx_;
 			drawing.owner_cy_ = obj.owner_cy_;
 		}
+		else if (obj.svg_rect_ && obj.svg_rect_->x >= 0 && obj.svg_rect_->y >= 0)
+		{
+			drawing.type_anchor		= 1;
+			drawing.anchor_absolute	= true;
+		}
 		else
 			drawing.type_anchor = 2; // absolute
 	}

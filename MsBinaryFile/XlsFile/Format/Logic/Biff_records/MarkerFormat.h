@@ -53,7 +53,7 @@ public:
 	void readFields(CFRecord& record);
 	void writeFields(CFRecord& record);
 
-	int serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME);
+	int serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME, const std::wstring & spPr = L"");
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgbFore;
@@ -64,9 +64,9 @@ public:
 	bool fNotShowInt = false;
 	bool fNotShowBrd = false;
 	
-	IcvChart icvFore = 0;
-	IcvChart icvBack = 0;
-	_UINT32	miSize = 0;
+	IcvChart icvFore = 0x004D;
+	IcvChart icvBack = 0x004D;
+	_UINT32	miSize = 40;
 	
 	GlobalWorkbookInfoPtr global_info;
 };

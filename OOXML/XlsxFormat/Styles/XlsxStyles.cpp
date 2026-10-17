@@ -35,6 +35,7 @@
 #pragma once
 
 #include "Styles.h"
+#include "FeaturePropertyBag.h"
 
 #include "../../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
@@ -71,6 +72,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DXF.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/XF.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/XFExt.h"
 
 namespace OOX
 {
@@ -304,7 +306,7 @@ namespace OOX
 		}
 		void MapColors(const OOX::Spreadsheet::CColors &colors)
 		{
-			for(auto i = 8; i <= 56; i++)
+			for(auto i = 8; i <= 63; i++)
 			{
 				if(colors.m_oIndexedColors->mapIndexedColors.find(i) == colors.m_oIndexedColors->mapIndexedColors.end())
 				{
@@ -353,66 +355,13 @@ namespace OOX
 			workbookPtr->m_Formating = XLS::BaseObjectPtr(FormatPtr);
 			auto globalInfo = workbookPtr->global_info_;
 			//prepare colors
+			if(m_oColors.IsInit() &&(!m_oColors->m_oIndexedColors.IsInit()))
+				m_oColors.reset();
 			if(!m_oColors.IsInit())
 			{
 				m_oColors = OOX::Spreadsheet::CColors();
 				m_oColors->m_oIndexedColors.Init();
 				m_oColors->m_oMruColors.Init();
-				{
-					for(auto i : globalInfo->colors_palette)
-					{
-						nullable<CColor> tempColor;
-						tempColor.Init();
-						tempColor->m_oRgb.Init();
-						tempColor->m_oRgb->FromString(i.second);
-						SetColor(m_oColors.get(), tempColor);
-					}
-
-				}
-				if (m_oFonts.IsInit())
-				{
-					for(auto i : m_oFonts->m_arrItems)
-					{
-						SetColor(m_oColors.get(), i->m_oColor);
-					}
-				}
-				if(m_oFills.IsInit())
-				{
-					for(auto i : m_oFills->m_arrItems)
-					{
-						if(i->m_oPatternFill.IsInit())
-						{
-							auto pattern = &i->m_oPatternFill;
-							SetColor(m_oColors.get(), (*pattern)->m_oBgColor);
-							SetColor(m_oColors.get(), (*pattern)->m_oFgColor);
-						}
-					}
-				}
-				for(auto i : m_oBorders->m_arrItems)
-				{
-					if(i->m_oTop.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oTop->m_oColor);
-					}
-					if(i->m_oBottom.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oBottom->m_oColor);
-					}
-					if(i->m_oStart.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oStart->m_oColor);
-					}
-					if(i->m_oEnd.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oEnd->m_oColor);
-					}
-					if(i->m_oDiagonal.IsInit())
-					{
-						SetColor(m_oColors.get(), i->m_oDiagonal->m_oColor);
-					}
-
-				}
-
 				MapColors(m_oColors.get());
 			}
 			FormatPtr->m_Palette = m_oColors->toXLS();
@@ -423,15 +372,6 @@ namespace OOX
 					if(i->m_oColor.IsInit() && i->m_oColor->m_oRgb.IsInit())
 					{
 						i->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oColor->m_oRgb.get());
-					}
-					//finding registred theme clr
-					else if(i->m_oColor.IsInit() && i->m_oColor->m_oThemeColor.IsInit()
-					&& globalInfo->colors_palette.find(i->m_oColor->m_oThemeColor->GetValue()) != globalInfo->colors_palette.end())
-					{
-						auto rgb = globalInfo->colors_palette.find(i->m_oColor->m_oThemeColor->GetValue())->second;
-						SimpleTypes::Spreadsheet::CHexColor hexClr;
-						hexClr.FromString(rgb);
-						i->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), hexClr);
 					}
 				}
 				FormatPtr->m_arFonts = m_oFonts->toXLS();
@@ -471,6 +411,7 @@ namespace OOX
 					m_oCellXfs->toXLS(FormatPtr->m_XFS);
 				SetFillXLS(FormatPtr->m_XFS, globalsStreamPtr);
 				SetBordersXLS(FormatPtr->m_XFS, globalsStreamPtr);
+				SetExtPropsXLS(FormatPtr->m_XFS);
 			}
 			if(m_oDxfs.IsInit())
 			{
@@ -498,14 +439,6 @@ namespace OOX
 			{
 				if(color.IsInit() && !color->m_oIndexed.IsInit() && color->m_oRgb.IsInit())
 					color->m_oIndexed = GetClrIndex(colors.get(), color->m_oRgb.get());
-				else if(color.IsInit() && color->m_oThemeColor.IsInit()
-				&& globInfo->colors_palette.find(color->m_oThemeColor->GetValue()) != globInfo->colors_palette.end())
-				{
-					auto rgb = globInfo->colors_palette.find(color->m_oThemeColor->GetValue())->second;
-					SimpleTypes::Spreadsheet::CHexColor hexClr;
-					hexClr.FromString(rgb);
-					color->m_oIndexed = GetClrIndex(colors.get(), hexClr);
-				}
 				return 0;
 			};
 			//preparing clr indexes
@@ -671,14 +604,6 @@ namespace OOX
 				if(border.IsInit() && border->m_oColor.IsInit() &&
 				!border->m_oColor->m_oIndexed.IsInit() &&  border->m_oColor->m_oRgb.IsInit())
 					border->m_oColor->m_oIndexed = GetClrIndex(colors.get(), border->m_oColor->m_oRgb.get());
-				else if(border.IsInit() && border->m_oColor.IsInit() && border->m_oColor->m_oThemeColor.IsInit()
-				&& globInfo->colors_palette.find(border->m_oColor->m_oThemeColor->GetValue()) != globInfo->colors_palette.end())
-				{
-					auto rgb = globInfo->colors_palette.find(border->m_oColor->m_oThemeColor->GetValue())->second;
-					SimpleTypes::Spreadsheet::CHexColor hexClr;
-					hexClr.FromString(rgb);
-					border->m_oColor->m_oIndexed = GetClrIndex(colors.get(), hexClr);
-				}
 				return 0;
 			};
 			for(auto i : m_oBorders->m_arrItems)
@@ -690,6 +615,7 @@ namespace OOX
 				setBorderClr(i->m_oDiagonal, m_oColors, globalInfo);
 			}
 			auto CastedPtr = static_cast<XLS::XFS*>(XFSPtr.get());
+			if(m_oCellXfs.IsInit())
 			for(auto i = 0; i < m_oCellXfs->m_arrItems.size(); i++)
 			{
 				if(CastedPtr->m_arCellXFs.size() > i)
@@ -718,9 +644,166 @@ namespace OOX
 						if(xfBorder->m_oDiagonal.IsInit())
 						{
 							ProcessBorderProp(xfBorder->m_oDiagonal.GetPointer(), xf->border.dgDiag, xf->border.icvDiag);
+							if(xfBorder->m_oDiagonalUp.IsInit() && xfBorder->m_oDiagonalUp->GetValue()
+								&& xfBorder->m_oDiagonalDown.IsInit() && xfBorder->m_oDiagonalDown->GetValue())
+								xf->border.grbitDiag = 3;
+							else if(xfBorder->m_oDiagonalUp.IsInit() && xfBorder->m_oDiagonalUp->GetValue() )
+								xf->border.grbitDiag = 2;
+							else if(xfBorder->m_oDiagonalDown.IsInit() && xfBorder->m_oDiagonalDown->GetValue() )
+								xf->border.grbitDiag = 1;
 						}
 					}
 				}
+			}
+		}
+		XLS::FullColorExt getXLSColor(const CColor &inputClr)
+		{
+			XLS::FullColorExt color;
+
+			if(inputClr.m_oRgb.IsInit())
+			{
+				color.xclrType = 2;
+				SETBITS(color.xclrValue, 0, 7, inputClr.m_oRgb->Get_R())
+				SETBITS(color.xclrValue, 8, 15, inputClr.m_oRgb->Get_G())
+				SETBITS(color.xclrValue, 16, 23, inputClr.m_oRgb->Get_B())
+				SETBITS(color.xclrValue, 24, 31, inputClr.m_oRgb->Get_A())
+			}
+			else if(inputClr.m_oThemeColor.IsInit())
+			{
+				color.xclrType = 3;
+				color.xclrValue = inputClr.m_oThemeColor->m_eValue;
+			}
+			else if(inputClr.m_oIndexed.IsInit())
+			{
+				color.xclrType = 1;
+				color.xclrValue = inputClr.m_oIndexed->GetValue();
+			}
+			if(inputClr.m_oTint.IsInit())
+			{
+				color.nTintShade = (inputClr.m_oTint->GetValue() * 32767);//maxshort
+			}
+
+			return color;
+		}
+		void CStyles::SetExtPropsXLS(XLS::BaseObjectPtr XFSPtr)
+		{
+			auto CastedPtr = static_cast<XLS::XFS*>(XFSPtr.get());
+			for(auto i = 0; i < CastedPtr->m_arCellXFs.size(); i++)
+			{
+				if(m_oCellXfs->m_arrItems.size() < i)
+					return;
+				auto ext = new XLS::XFExt;
+				ext->ixfe = i + CastedPtr->m_arCellStyles.size()+16;
+				auto cellXf = m_oCellXfs->m_arrItems.at(i);
+				if(cellXf->m_oFillId.IsInit() && m_oFills->m_arrItems.size() > cellXf->m_oFillId->GetValue())
+				{
+					auto cellFill = m_oFills->m_arrItems.at(cellXf->m_oFillId->GetValue());
+					if(cellFill->m_oPatternFill.IsInit())
+					{
+						if(cellFill->m_oPatternFill->m_oFgColor.IsInit())
+						{
+							auto fillProp = new XLS::ExtProp;
+							fillProp->extType = XLS::ExtProp::_type::ForeColor;
+							fillProp->extPropData.color = getXLSColor(cellFill->m_oPatternFill->m_oFgColor.get());
+							ext->rgExt.push_back(XLS::BiffStructurePtr(fillProp));
+						}
+						if(cellFill->m_oPatternFill->m_oBgColor.IsInit())
+						{
+							auto fillProp = new XLS::ExtProp;
+							fillProp->extType = XLS::ExtProp::_type::BackColor;
+							fillProp->extPropData.color = getXLSColor(cellFill->m_oPatternFill->m_oBgColor.get());
+							ext->rgExt.push_back(XLS::BiffStructurePtr(fillProp));
+						}
+					}
+					else if(cellFill->m_oGradientFill.IsInit())
+					{
+						auto fillProp = new XLS::ExtProp;
+						fillProp->extType = XLS::ExtProp::_type::GradientColor;
+						if(cellFill->m_oGradientFill->m_oDegree.IsInit())
+							fillProp->extPropData.gradient_fill.gradient.numDegree = cellFill->m_oGradientFill->m_oDegree->GetValue();
+						if(cellFill->m_oGradientFill->m_oType.IsInit())
+							fillProp->extPropData.gradient_fill.gradient.type1 = cellFill->m_oGradientFill->m_oType->GetValue();
+
+						if(cellFill->m_oGradientFill->m_oLeft.IsInit())
+							fillProp->extPropData.gradient_fill.gradient.numFillToLeft = cellFill->m_oGradientFill->m_oLeft->GetValue();
+						if(cellFill->m_oGradientFill->m_oRight.IsInit())
+							fillProp->extPropData.gradient_fill.gradient.numFillToRight = cellFill->m_oGradientFill->m_oRight->GetValue();
+						if(cellFill->m_oGradientFill->m_oTop.IsInit())
+							fillProp->extPropData.gradient_fill.gradient.numFillToTop = cellFill->m_oGradientFill->m_oTop->GetValue();
+						if(cellFill->m_oGradientFill->m_oBottom.IsInit())
+							fillProp->extPropData.gradient_fill.gradient.numFillToBottom = cellFill->m_oGradientFill->m_oBottom->GetValue();
+
+						fillProp->extPropData.gradient_fill.cGradStops = cellFill->m_oGradientFill->m_arrItems.size();
+						for(auto i : cellFill->m_oGradientFill->m_arrItems)
+						{
+							XLS::GradStop gradStop;
+							if(i->m_oColor.IsInit())
+							{
+								auto tempClr =  getXLSColor(i->m_oColor.get());
+								gradStop.xclrType = tempClr.xclrType;
+								gradStop.numTint.data.value = tempClr.nTintShade;
+								gradStop.xclrValue = tempClr.xclrValue;
+							}
+							if(i->m_oPosition.IsInit())
+								gradStop.numPosition.data.value = i->m_oPosition->GetValue();
+							fillProp->extPropData.gradient_fill.rgGradStops.push_back(gradStop);
+						}
+						ext->rgExt.push_back(XLS::BiffStructurePtr(fillProp));
+					}
+				}
+				if(cellXf->m_oFontId.IsInit() && m_oFonts->m_arrItems.size() > cellXf->m_oFontId->GetValue())
+				{
+					auto cellFont = m_oFonts->m_arrItems.at(cellXf->m_oFontId->GetValue());
+					if(cellFont->m_oColor.IsInit())
+					{
+						auto textClrProp = new XLS::ExtProp;
+						textClrProp->extType = XLS::ExtProp::_type::TextColor;
+						textClrProp->extPropData.color = getXLSColor(cellFont->m_oColor.get());
+						ext->rgExt.push_back(XLS::BiffStructurePtr(textClrProp));
+					}
+				}
+				if(cellXf->m_oBorderId.IsInit() && m_oBorders->m_arrItems.size() > cellXf->m_oBorderId->GetValue())
+				{
+					auto Bdr = m_oBorders->m_arrItems.at(cellXf->m_oBorderId->GetValue());
+					if(Bdr->m_oBottom.IsInit() && Bdr->m_oBottom->m_oColor.IsInit())
+					{
+						auto BdrProp = new XLS::ExtProp;
+						BdrProp->extType = XLS::ExtProp::_type::BottomBorderColor;
+						BdrProp->extPropData.color = getXLSColor(Bdr->m_oBottom->m_oColor.get());
+						ext->rgExt.push_back(XLS::BiffStructurePtr(BdrProp));
+					}
+					if(Bdr->m_oTop.IsInit() && Bdr->m_oTop->m_oColor.IsInit())
+					{
+						auto BdrProp = new XLS::ExtProp;
+						BdrProp->extType = XLS::ExtProp::_type::TopBorderColor;
+						BdrProp->extPropData.color = getXLSColor(Bdr->m_oTop->m_oColor.get());
+						ext->rgExt.push_back(XLS::BiffStructurePtr(BdrProp));
+					}
+					if(Bdr->m_oStart.IsInit() && Bdr->m_oStart->m_oColor.IsInit())
+					{
+						auto BdrProp = new XLS::ExtProp;
+						BdrProp->extType = XLS::ExtProp::_type::LeftBorderColor;
+						BdrProp->extPropData.color = getXLSColor(Bdr->m_oStart->m_oColor.get());
+						ext->rgExt.push_back(XLS::BiffStructurePtr(BdrProp));
+					}
+					if(Bdr->m_oEnd.IsInit() && Bdr->m_oEnd->m_oColor.IsInit())
+					{
+						auto BdrProp = new XLS::ExtProp;
+						BdrProp->extType = XLS::ExtProp::_type::RightBorderColor;
+						BdrProp->extPropData.color = getXLSColor(Bdr->m_oEnd->m_oColor.get());
+						ext->rgExt.push_back(XLS::BiffStructurePtr(BdrProp));
+					}
+					if(Bdr->m_oDiagonal.IsInit() && Bdr->m_oDiagonal->m_oColor.IsInit())
+					{
+						auto BdrProp = new XLS::ExtProp;
+						BdrProp->extType = XLS::ExtProp::_type::DiagonalBorderColor;
+						BdrProp->extPropData.color = getXLSColor(Bdr->m_oDiagonal->m_oColor.get());
+						ext->rgExt.push_back(XLS::BiffStructurePtr(BdrProp));
+					}
+				}
+				XLS::BaseObjectPtr objPtr = XLS::BaseObjectPtr(ext);
+				if(!ext->rgExt.empty())
+					CastedPtr->m_arXFext.push_back(objPtr);
 			}
 		}
 		void CStyles::read(const CPath& oPath)
@@ -1309,7 +1392,414 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 		{
 			return m_oReadPath;
 		}
+//---------------------------------------------------------------------------------------------------------------------------
+		CFeaturePropertyBagFile::CFeaturePropertyBagFile(OOX::Document* pMain) : OOX::File(pMain)
+		{
+		}
+		CFeaturePropertyBagFile::CFeaturePropertyBagFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain)
+		{
+			read(oRootPath, oPath);
+		}
+		CFeaturePropertyBagFile::~CFeaturePropertyBagFile()
+		{
+		}
+		void CFeaturePropertyBagFile::read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		const OOX::FileType CFeaturePropertyBagFile::type() const
+		{
+			return OOX::Spreadsheet::FileTypes::FeaturePropertyBag;
+		}
+		const CPath CFeaturePropertyBagFile::DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		const CPath CFeaturePropertyBagFile::DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+		const CPath& CFeaturePropertyBagFile::GetReadPath()
+		{
+			return m_oReadPath;
+		}
+		void CFeaturePropertyBagFile::read(const CPath& oRootPath, const CPath& oPath)
+		{
+			m_oReadPath = oPath;
 
+			XmlUtils::CXmlLiteReader oReader;
+
+			if (!oReader.FromFile(oPath.GetPath()))
+				return;
+
+			if (!oReader.ReadNextNode())
+				return;
+
+			m_oPropertyBags = oReader;
+		}
+		void CFeaturePropertyBagFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
+		{
+			if (false == m_oPropertyBags.IsInit()) return;
+
+			NSStringUtils::CStringBuilder sXml;
+
+			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+
+			m_oPropertyBags->toXML(sXml);
+
+			std::wstring sPath = oPath.GetPath();
+			NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
+			oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
+		}
+//-----------------------------------------------------------------------------------
+		CFeaturePropertyBags::CFeaturePropertyBags(OOX::Document* pMain) {}
+		CFeaturePropertyBags::~CFeaturePropertyBags() {}
+		EElementType CFeaturePropertyBags::getType() const
+		{
+			return et_x_FeaturePropertyBags;
+		}
+		void CFeaturePropertyBags::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (L"bag" == sName)
+				{
+					CFeaturePropertyBag* pBag = new CFeaturePropertyBag();
+					if (pBag)
+					{
+						pBag->fromXML(oReader);
+						m_arrItems.push_back(pBag);
+					}
+				}
+			}
+		}
+		void CFeaturePropertyBags::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			if (m_arrItems.empty()) return;
+
+			writer.WriteString(L"<FeaturePropertyBags xmlns=\"http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag\" count=\"" +
+				std::to_wstring(m_arrItems.size()) + L"\">");
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteString(L"</FeaturePropertyBags>");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CFeaturePropertyBag::getType() const
+		{
+			return et_x_FeaturePropertyBag;
+		}
+		void CFeaturePropertyBag::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"type", m_oType)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"extRef", m_oExtRef)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"bagExtId", m_oBagExtId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"att", m_oAtt)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CFeaturePropertyBag::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = oReader.GetName();
+
+				WritingElement* pItem = NULL;
+				if (L"a" == sName)
+				{
+					pItem = new CArrayFeatureProperty();
+				}
+				else if (L"bagId" == sName)
+				{
+					pItem = new CBagFeatureProperty();
+				}
+				else if (L"i" == sName)
+				{
+					pItem = new CIntFeatureProperty();
+				}
+				else if (L"s" == sName)
+				{
+					pItem = new CStringFeatureProperty();
+				}
+				else if (L"b" == sName)
+				{
+					pItem = new CBoolFeatureProperty();
+				}
+				else if (L"d" == sName)
+				{
+					pItem = new CDoubleFeatureProperty();
+				}
+				if (pItem)
+				{
+					pItem->fromXML(oReader);
+					m_arrItems.push_back(pItem);
+				}
+			}
+		}
+		void CFeaturePropertyBag::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"bag");
+			writer.StartAttributes();
+			if (m_oType.IsInit()) writer.WriteAttribute(L"type", *m_oType);
+			if (m_oExtRef.IsInit()) writer.WriteAttribute(L"extRef", *m_oExtRef);
+			if (m_oBagExtId.IsInit()) writer.WriteAttribute(L"bagExtId", *m_oBagExtId);
+			if (m_oAtt.IsInit()) writer.WriteAttribute(L"att", *m_oAtt);
+			writer.EndAttributes();
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteNodeEnd(L"bag");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CArrayFeatureProperty::getType() const
+		{
+			return et_x_ArrayFeatureProperty;
+		}
+		void CArrayFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CArrayFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = oReader.GetName();
+
+				WritingElement* pItem = NULL;
+				if (L"bagId" == sName)
+				{
+					pItem = new CBagFeatureProperty();
+				}
+				else if (L"i" == sName)
+				{
+					pItem = new CIntFeatureProperty();
+				}
+				else if (L"s" == sName)
+				{
+					pItem = new CStringFeatureProperty();
+				}
+				else if (L"b" == sName)
+				{
+					pItem = new CBoolFeatureProperty();
+				}
+				else if (L"d" == sName)
+				{
+					pItem = new CDoubleFeatureProperty();
+				}
+				if (pItem)
+				{
+					pItem->fromXML(oReader);
+					m_arrItems.push_back(pItem);
+				}
+			}
+		}
+		void CArrayFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"a");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteNodeEnd(L"a");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CBagFeatureProperty::getType() const
+		{
+			return et_x_BagFeatureProperty;
+		}
+		void CBagFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CBagFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CBagFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"bagId");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.AddUInt(*m_oContent);
+			}
+			writer.WriteNodeEnd(L"bagId");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CIntFeatureProperty::getType() const
+		{
+			return et_x_IntFeatureProperty;
+		}
+		void CIntFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CIntFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CIntFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"i");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.AddUInt(*m_oContent);
+			}
+			writer.WriteNodeEnd(L"i");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CStringFeatureProperty::getType() const
+		{
+			return et_x_StringFeatureProperty;
+		}
+		void CStringFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CStringFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CStringFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"s");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.WriteEncodeXmlString(*m_oContent);
+			}
+			writer.WriteNodeEnd(L"s");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CBoolFeatureProperty::getType() const
+		{
+			return et_x_BoolFeatureProperty;
+		}
+		void CBoolFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CBoolFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CBoolFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"b");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.AddUInt(*m_oContent);
+			}
+			writer.WriteNodeEnd(L"b");
+		}
+//-----------------------------------------------------------------------------------
+		EElementType CDoubleFeatureProperty::getType() const
+		{
+			return et_x_DoubleFeatureProperty;
+		}
+		void CDoubleFeatureProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"k", m_oK)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+		}
+		void CDoubleFeatureProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+			if (oReader.IsEmptyNode())
+				return;
+
+			m_oContent = oReader.GetText2();
+		}
+		void CDoubleFeatureProperty::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.StartNode(L"d");
+			writer.StartAttributes();
+			if (m_oK.IsInit()) writer.WriteAttribute(L"k", *m_oK);
+			writer.EndAttributes();
+
+			if (m_oContent.IsInit())
+			{
+				writer.AddDouble(*m_oContent, 5);
+			}
+			writer.WriteNodeEnd(L"d");
+		}
 	} //Spreadsheet
 } // namespace OOX
 

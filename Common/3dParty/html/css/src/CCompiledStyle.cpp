@@ -418,6 +418,21 @@ namespace NSCSS
 					m_oBackground.SetBackground(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
+				CASE(L"background-image"):
+				{
+					m_oBackground.SetImage(pPropertie.second, unLevel, bHardMode);
+					break;
+				}
+				CASE(L"background-position"):
+				{
+					m_oBackground.SetPosition(pPropertie.second, unLevel, bHardMode);
+					break;
+				}
+				CASE(L"background-repeat"):
+				{
+					m_oBackground.SetRepeat(pPropertie.second, unLevel, bHardMode);
+					break;
+				}
 				//DISPLAY
 				CASE(L"display"):
 				{

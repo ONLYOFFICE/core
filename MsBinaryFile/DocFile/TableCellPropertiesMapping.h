@@ -74,9 +74,17 @@ namespace DocFileFormat
 			return _bCoverCell;
 		}
 
+		inline void SetCellPosition(bool bFirstRow, bool bLastRow, bool bLastCell)
+		{
+			_bFirstRow	= bFirstRow;
+			_bLastRow	= bLastRow;
+			_bLastCell	= bLastCell;
+		}
+
 	private:
 
 		void apppendCellShading (unsigned char* sprmArg, int size, int cellIndex);
+		void applyTableBorders (unsigned char* sprmArg, int size, int brcSize);
 		bool IsTableBordersDefined (const std::vector<SinglePropertyModifier>* grpprl) const;
 		bool IsTableCellWidthDefined (const std::vector<SinglePropertyModifier>* grpprl) const;
 		
@@ -102,5 +110,9 @@ namespace DocFileFormat
 
 		int		_gridSpan;
 		bool	_bCoverCell;
+
+		bool	_bFirstRow;
+		bool	_bLastRow;
+		bool	_bLastCell;
 	};
 }

@@ -339,10 +339,13 @@ _buf GenerateHashKey(_buf & salt, _buf & password, int hashSize, int keySize, in
         pHashBuf = HashAppend(iterator, pHashBuf, algorithm);
 	}
 
-    pHashBuf = HashAppend( pHashBuf, block, algorithm);
-	
+	pHashBuf = HashAppend(pHashBuf, block, algorithm);
+
 	if (spin == 0)
 	{
+		CorrectHashSize(pHashBuf, keySize, 0);
+		if (keySize == 5)
+			CorrectHashSize(pHashBuf, 16, 0); //40-bit crypt key !!!
 		return _buf(pHashBuf.ptr, pHashBuf.size);
 	}
 
@@ -622,14 +625,14 @@ bool ECMADecryptor::SetPassword(std::wstring _password)
 	}
 	else
 	{
-		_buf verifierKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);		
+		_buf verifierKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm);
 
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
 		{
-			rc4Decryption.SetKey(verifierKey.ptr, cryptData.keySize);
+			rc4Decryption.SetKey(verifierKey.ptr, verifierKey.size);
 		}
 //--------------------------------------------
-		_buf decryptedVerifierHashInputBytes;		
+		_buf decryptedVerifierHashInputBytes;
 		DecryptCipher(verifierKey, pSalt, pEncVerInput, decryptedVerifierHashInputBytes, cryptData.cipherAlgorithm);
 
 	//--------------------------------------------
@@ -689,8 +692,8 @@ void ECMADecryptor::Decrypt(char* data	, const size_t size, const unsigned long 
 			_buf pSalt		(cryptData.saltValue);			
 			
 			_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm, block_index);
-			
-			rc4Decryption.SetKey(hashKey.ptr, cryptData.keySize);
+
+			rc4Decryption.SetKey(hashKey.ptr, hashKey.size);
 		}
 
 		const long offset = nCurrPos % block_size;
@@ -817,10 +820,10 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int size, unsigned char*& d
 	else
 	{				
 		_buf hashKey = GenerateHashKey(pSalt, pPassword, cryptData.hashSize, cryptData.keySize, cryptData.spinCount, cryptData.hashAlgorithm, start_iv_block);
-		
+
 		if (cryptData.cipherAlgorithm == CRYPT_METHOD::RC4)
-		{			
-			rc4Decryption.SetKey(hashKey.ptr, cryptData.keySize);
+		{
+			rc4Decryption.SetKey(hashKey.ptr, hashKey.size);
 		}
 	
 		_buf pInp(data_inp, size, false);

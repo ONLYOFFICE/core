@@ -453,7 +453,7 @@ namespace OOX
 		}
 		COleObjects::~COleObjects()
 		{
-			for(boost::unordered_map<unsigned int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
+			for(std::map<unsigned int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
 			{
 				delete it->second;
 			}
@@ -471,7 +471,7 @@ namespace OOX
 			if(m_mapOleObjects.size() > 0)
 			{
 				writer.WriteString(L"<oleObjects>");
-				for(boost::unordered_map<unsigned int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
+				for(std::map<unsigned int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
 				{
 					it->second->toXML(writer);
 				}

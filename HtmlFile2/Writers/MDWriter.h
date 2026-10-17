@@ -56,10 +56,6 @@ class CMDWriter : public IWriter
 
 		UINT m_unLevelBlockquote{0};
 
-		bool m_bBold{false};
-		bool m_bItalic{false};
-		bool m_bStrike{false};
-
 		bool m_bInTable{false};
 		bool m_bInPreformatted{false};
 		bool m_bInCode{false};
@@ -69,11 +65,46 @@ class CMDWriter : public IWriter
 		UINT m_unLevelList{0};
 		UINT m_unIndexListElement{1};
 
-		std::wstring m_wsLastSpecialString;
+		struct TSpecialString
+		{
+			std::wstring m_wsLastSpecialString;
+			bool m_bClosed{false};
+		}m_oSpecialString;
+
+		struct TTextRun
+		{
+			XmlString *m_pDocument{nullptr};
+			size_t m_unTextEnd{0};
+			size_t m_unEnd{0};
+			std::vector<std::wstring> m_arDelimiters;
+			std::vector<size_t> m_arOpeners;
+			std::wstring m_wsTrailing;
+			unsigned int m_unLastCode{0};
+			size_t m_unLastLength{0};
+			bool m_bCode{false};
+			size_t m_unCodeBegin{0};
+			std::wstring m_wsCodeContent;
+		}m_oTextRun;
+
+		struct TCodeSpan
+		{
+			XmlString *m_pDocument{nullptr};
+			size_t m_unBegin{0};
+			std::vector<std::wstring> m_arDelimiters;
+			std::wstring m_wsOpenTags;
+			std::wstring m_wsCloseTags;
+			bool m_bOpened{false};
+			bool m_bSpace{false};
+		}m_oCodeSpan;
+
+		bool m_bPendingSpace{false};
+		bool m_bAfterSpace{true};
 	};
 
 	std::stack<TState> m_arStates;
 	TMarkdownParameters m_oMDParametrs;
+
+	XmlString m_oMetadata;
 public:
 	CMDWriter(const TMarkdownParameters& oMDParametrs);
 
@@ -83,6 +114,8 @@ public:
 	bool WriteText(std::wstring wsText, const std::vector<NSCSS::CNode>& arSelectors) override;
 
 	void WriteEmptyParagraph(bool bVahish = false, bool bInP = false) override;
+
+	void WriteMetadata(const std::wstring& wsName, const std::wstring& wsValue) override;
 
 	void PageBreak() override;
 
@@ -100,21 +133,7 @@ public:
 
 	XmlString* GetCurrentDocument() const override;
 
-	bool SupportNestedTables() const override;
-
 	void WriteBreakLine(bool bNeedChecked = true);
-
-	void EnteredBold();
-	void OutBold();
-	bool IsBold();
-
-	void EnteredItalic();
-	void OutItalic();
-	bool IsItalic();
-
-	void EnteredStrike();
-	void OutStrike();
-	bool IsStrike();
 
 	void EnteredBlockquote();
 	void OutBlockquote();
@@ -147,7 +166,24 @@ private:
 	void SaveState();
 	void RollBackState();
 
-	void ApplyAlternativeTags(const NSCSS::CCompiledStyle* pCompiledStyle, bool bIsCloseTag = false);
+	void WriteContent(const std::wstring& wsString, bool bSpecialString = false);
+	void WriteSpaces(const std::wstring& wsSpaces, bool bPreserve);
+	void FlushPendingSpace();
+
+	bool IsTextRunEnd() const;
+	bool AtBlockStart(bool bAfterNumber) const;
+
+	void ShrinkTextRun(size_t unFirstClosed);
+	void RemoveStrikethrough(size_t unFirstClosed);
+
+	void WriteRun(const std::wstring& wsLeadingSpaces, std::wstring wsCore, const std::wstring& wsTrailingSpaces, const std::vector<std::wstring>& arDelimiters,
+	              const std::wstring& wsOpenTags, const std::wstring& wsCloseTags, bool bPreformatted, bool bCode);
+
+	void WriteCode(std::wstring wsText, bool bPreformatted, const NSCSS::CCompiledStyle* pCompiledStyle);
+	void OpenCodeSpan(const std::vector<std::wstring>& arDelimiters, const std::wstring& wsOpenTags, const std::wstring& wsCloseTags);
+	void CloseCodeSpan();
+
+	std::wstring GetAlternativeTags(const NSCSS::CCompiledStyle* pCompiledStyle, bool bIsCloseTag) const;
 };
 }
 

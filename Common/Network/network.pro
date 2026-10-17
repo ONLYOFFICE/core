@@ -51,6 +51,12 @@ support_web_socket {
     include(./WebSocket/websocket.pri)
 }
 
+# LOCAL IPC (loopback request-response).
+INCLUDEPATH += $$PWD/../3dParty/socketio/socket.io-client-cpp/lib/asio/asio/include
+HEADERS += $$PWD/WebSocket/include/localipc.h
+SOURCES += $$PWD/WebSocket/src/localipc/localipc.cpp
+core_linux:LIBS += -lpthread   # asio/std::thread (idempotent if websocket also added it)
+
 # DOWNLOAD/UPLOAD
 include(./FileTransporter/filetransporter.pri)
 

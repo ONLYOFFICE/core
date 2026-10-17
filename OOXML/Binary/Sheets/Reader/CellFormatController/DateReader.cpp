@@ -422,7 +422,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
 bool DateReader::parseIsoDate(const std::wstring &date, tm &result)
 {
     std::wregex iso_regex(
-    LR"(^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,3}))?)?(?:(Z)|([+-])(\d{2})(?::?(\d{2}))?)?)?$)"                        // timezone: Z or ±h:min
+	LR"(^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,9}))?)?(?:(Z)|([+-])(\d{2})(?::?(\d{2}))?)?)?$)"                        // timezone: Z or ±h:min
     );
 
     std::wsmatch match;

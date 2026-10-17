@@ -74,33 +74,36 @@ const bool THEME::loadContent(BinProcessor& proc)
 const bool THEME::saveContent(BinProcessor& proc)
 {
 	if(m_Theme == nullptr)
-		return false;
-	proc.mandatory(*m_Theme);
-	const auto maxSize = 8208;
-	auto castedPtr = static_cast<Theme*>(m_Theme.get());
-	if(castedPtr->nThemeDataSize > maxSize)
+		proc.mandatory<Theme>();
+	else
 	{
-		auto currentPos = maxSize;
-		while(currentPos+1 < castedPtr->nThemeDataSize)
+		proc.mandatory(*m_Theme);
+		const auto maxSize = 8208;
+		auto castedPtr = static_cast<Theme*>(m_Theme.get());
+		if(castedPtr->nThemeDataSize > maxSize)
 		{
-			auto fragmentSize = 0;
-			ContinueFrt12 continueRecord;
-			if(currentPos + maxSize >= castedPtr->nThemeDataSize)
+			auto currentPos = maxSize;
+			while(currentPos+1 < castedPtr->nThemeDataSize)
 			{
-				fragmentSize = castedPtr->nThemeDataSize - currentPos;
+				auto fragmentSize = 0;
+				ContinueFrt12 continueRecord;
+				if(currentPos + maxSize >= castedPtr->nThemeDataSize)
+				{
+					fragmentSize = castedPtr->nThemeDataSize - currentPos;
+				}
+				else
+				{
+					fragmentSize = maxSize;
+				}
+				continueRecord.rgb.resize(fragmentSize);
+				memcpy(continueRecord.rgb.data(), (castedPtr->pThemeData.get() + currentPos), fragmentSize);
+				proc.mandatory(continueRecord);
+				if(currentPos + maxSize >= castedPtr->nThemeDataSize)
+				{
+					break;
+				}
+				currentPos += maxSize;
 			}
-			else
-			{
-				fragmentSize = maxSize;
-			}
-			continueRecord.rgb.reserve(fragmentSize);
-			memcpy(continueRecord.rgb.data(), (castedPtr->pThemeData.get() + currentPos), fragmentSize);
-			proc.mandatory(continueRecord);
-			if(currentPos + maxSize >= castedPtr->nThemeDataSize)
-			{
-				break;
-			}
-			currentPos += maxSize;
 		}
 	}
 	return true;

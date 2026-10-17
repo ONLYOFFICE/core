@@ -39,10 +39,17 @@
 #include <cmath>
 #include <regex>
 #include <sstream>
+#include <iomanip>
 
 const std::wstring DefaultPercentFormat = L"0.0%";
 const auto NonDigitcellLimit = 1000;
-
+std::wstring Double2wstr(double dValue)
+{
+	std::wostringstream oss;
+	oss << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+	oss << dValue;
+	return oss.str();
+}
 bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std::wstring &format)
 {
     size_t length = value.length();
@@ -87,7 +94,8 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 				CurrencyReader currency{};
 				if (postfix[0] == L'%')
 				{
-					digit =  std::to_wstring(dValue / 100.);
+					double PercentValue = dValue / 100.;
+					digit = Double2wstr(PercentValue);
 					format = DefaultPercentFormat;
                     return true;
 				}
@@ -126,16 +134,23 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 			}
 			else
 			{
-				digit = std::to_wstring(dValue);
+				digit = Double2wstr(dValue);
 				format = data_format;
 			}
 		}
 		else
-        {   if(value.find(L'.') == std::wstring::npos)
-                digit = std::to_wstring((_INT64)dValue);
-            else
-                digit = std::to_wstring(dValue);
-            format = data_format;
+		{
+
+			if(value.find(L'.') == std::wstring::npos)
+			{
+				std::wostringstream oss;
+				oss << (_INT64)dValue;
+				oss << std::setprecision(std::numeric_limits<double>::digits10 + 1);
+				digit = oss.str();
+			}
+			else
+				digit = Double2wstr(dValue);
+			format = data_format;
         }
         return true;
     }

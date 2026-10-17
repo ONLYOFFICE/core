@@ -35,65 +35,12 @@
 #ifndef _FONTS_WASM_H
 #define _FONTS_WASM_H
 
-#ifndef TEST_CPP_BINARY
-#include "emscripten.h"
-EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
-	return self.AscViewer.CheckStreamId(data, status);
-});
-EM_JS(int, js_free_id, (unsigned char* data), {
-	self.AscViewer.Free(data);
-	return 1;
-});
-#endif
-
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
 
 namespace NSWasm
 {
-	bool IsJSEnv()
-	{
-#ifdef TEST_CPP_BINARY
-		return false;
-#else
-		return true;
-#endif
-	}
-
-	std::wstring LoadFont(const std::wstring& sFontPath, int bBold, int bItalic)
-	{
-	#ifndef TEST_CPP_BINARY
-		BYTE nStatus = 0;
-		NSWasm::CData oRes;
-		oRes.SkipLen();
-		std::string sNameA = U_TO_UTF8(sFontPath);
-		oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
-		oRes.AddInt(bBold);
-		oRes.AddInt(bItalic);
-		oRes.WriteLen();
-		char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
-		std::wstring sRes;
-		if (nStatus)
-		{
-			std::string wsFileNameA(pFontId);
-			sRes = UTF8_TO_U(wsFileNameA);
-		}
-		js_free_id((unsigned char*)pFontId);
-		return sRes;
-	#else
-		// stub for now - need to read into stream to properly work with encodings later
-		if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFontPath))
-		{
-			DWORD dwSize = 0;
-			BYTE* pData = NULL;
-			if (NSFile::CFileBinary::ReadAllBytes(sFontPath, &pData, dwSize))
-				NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(sFontPath, pData, (LONG)dwSize, true);
-			else
-				return std::wstring();
-		}
-		return sFontPath;
-	#endif
-	}
+	bool IsJSEnv();
+	std::wstring LoadFont(const std::wstring& sFontPath, int bBold, int bItalic);
 }
 
 #endif // _FONTS_WASM_H

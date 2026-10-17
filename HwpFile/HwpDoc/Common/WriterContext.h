@@ -66,8 +66,11 @@ public:
 	VECTOR<const CHWPSection*> GetSections();
 	static EHanType DetectHancom(const HWP_STRING& sPathToFile);
 	bool Detect();
-	bool Open(const HWP_STRING& sPathToFile, EHanType eHanType);
+	bool Open(const HWP_STRING& sPathToFile, EHanType eHanType, const HWP_STRING& sPassword = HWP_STRING());
 	void Close();
+
+	bool Encrypted();
+	EHwpxCryptResult GetCryptResult();
 
 	const CHWPDocInfo* GetDocInfo();
 	const CHWPRecordBorderFill* GetBorderFill(short shId);

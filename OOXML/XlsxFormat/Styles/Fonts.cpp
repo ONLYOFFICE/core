@@ -569,6 +569,18 @@ namespace OOX
 					m_arrItems.push_back( pFont );
 					m_mapFonts.insert(std::make_pair(index++, pFont));
 				}
+				else if (L"AlternateContent" == sName)
+				{
+					int nSubDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nSubDepth))
+					{
+						std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+						if (L"Choice" == sSubName)
+						{
+							fromXML(oReader);
+						}
+					}
+				}
 			}
 		}
 		void CFonts::fromBin(std::vector<XLS::BaseObjectPtr>& obj)

@@ -32,6 +32,7 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+
 #include "HTMLRendererText.h"
 #include "Text.h"
 
@@ -354,6 +355,17 @@ namespace NSHtmlRenderer
 	{
 		m_pInternal->GetUnicodes(bsUnicodeText);
 		m_pInternal->WriteText(m_pInternal->m_pTempUnicodes, (const int*)pGids, m_pInternal->m_nTempUnicodesLen, x, y);
+		return S_OK;
+	}
+
+	HRESULT CHTMLRendererText::CommandDrawType3CHAR(const std::wstring& wsUnicodeText, const double& x, const double& y, const double& w, const double& h, const double& ascent, const double& descent, const double& unitsPerEm)
+	{
+		m_pInternal->m_oSmartText.m_oFontManager.SetType3Metrics(ascent, descent, unitsPerEm, w);
+
+		m_pInternal->GetUnicodes(wsUnicodeText);
+		m_pInternal->WriteText(m_pInternal->m_pTempUnicodes, NULL, m_pInternal->m_nTempUnicodesLen, x, y);
+
+		m_pInternal->m_oSmartText.m_oFontManager.ClearType3();
 		return S_OK;
 	}
 

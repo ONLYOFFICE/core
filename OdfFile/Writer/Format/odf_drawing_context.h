@@ -131,7 +131,7 @@ public:
 		void set_group_name		(const std::wstring & name);
 		void set_group_xml_id	(const std::wstring& xml_id);
 
-		void set_group_rotate	(int iVal);
+		void set_group_rotate	(double iVal);
 		void set_group_size		(_CP_OPT(double) cx, _CP_OPT(double) cy, _CP_OPT(double) change_cx, _CP_OPT(double) change_cy);
 		void set_group_position	(_CP_OPT(double) x, _CP_OPT(double) y, _CP_OPT(double) change_x, _CP_OPT(double) change_y);
 
@@ -197,6 +197,11 @@ public:
 
 	bool isLineShape();
 	bool isCustomClosed();
+	bool isNonPrimitive();
+
+	void point_after_turning_the_corner(odf_types::length& x,odf_types::length& y, const double& new_center_x,const double& new_center_y, const double& angle);
+	bool CheckAngle(double angle);
+	void adjusting_offset();
 
 	void corrected_line_fill();
 
@@ -244,6 +249,7 @@ public:
 	void set_rotate			(double dVal);
 
 	void set_no_fill		();
+	void set_no_border		();
 	void set_group_fill		();
 	void set_type_fill		(int type);//for area - temp for objects
 	void set_solid_fill		(std::wstring hexColor);

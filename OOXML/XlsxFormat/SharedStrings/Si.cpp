@@ -215,7 +215,7 @@ namespace OOX
 					run.ich = StringPtr->str_.size();
 					StringPtr->str_ = StringPtr->str_ + crunPtr->toBin(ind);
 					if(ind != 0)
-						run.ifnt.value() = ind+1;
+						run.ifnt.value() = ind + 5;
 					if(run.ich != 0 || run.ifnt != 0)
 						StringPtr->rgRun.push_back(run);
 					continue;

@@ -39,9 +39,11 @@
 #include "PathObject.h"
 #include "ImageObject.h"
 
+#include "../../../DesktopEditor/graphics/IRenderer.h"
+
 namespace OFD
 {
-CPageBlock::CPageBlock(CXmlReader& oLiteReader)
+CPageBlock::CPageBlock(CXmlReader& oLiteReader, IFolder* pFolder)
 	: IPageBlock(oLiteReader)
 {
 	if (oLiteReader.MoveToFirstAttribute())
@@ -60,10 +62,10 @@ CPageBlock::CPageBlock(CXmlReader& oLiteReader)
 	if (oLiteReader.IsEmptyNode())
 		return;
 
-	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks);
+	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks, pFolder);
 }
 
-void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlock*>& arPageBlocks)
+void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlock*>& arPageBlocks, IFolder* pFolder)
 {
 	const int nDepth = oLiteReader.GetDepth();
 	std::wstring wsNodeName;
@@ -80,9 +82,9 @@ void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlo
 		else if (L"ofd:PathObject" == wsNodeName)
 			pPageBlock = new CPathObject(oLiteReader);
 		else if (L"ofd:PageBlock" == wsNodeName)
-			pPageBlock = new CPageBlock(oLiteReader);
+			pPageBlock = new CPageBlock(oLiteReader, pFolder);
 		else if (L"ofd:ImageObject" == wsNodeName)
-			pPageBlock = new CImageObject(oLiteReader);
+			pPageBlock = new CImageObject(oLiteReader, pFolder);
 
 		if (nullptr != pPageBlock)
 			arPageBlocks.push_back(pPageBlock);
@@ -104,4 +106,12 @@ void CPageBlock::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPag
 
 	pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
 }
+
+#ifdef BUILDING_WASM_MODULE
+void CPageBlock::GetLinks(NSWasm::CData& oRes) const
+{
+	for (const IPageBlock* pPageBlock : m_arPageBlocks)
+		pPageBlock->GetLinks(oRes);
+}
+#endif
 }

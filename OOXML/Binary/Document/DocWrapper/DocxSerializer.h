@@ -49,6 +49,7 @@ namespace BinDocxRW
 {
 	class BinaryFileWriter;
 	class ParamsWriter;
+	class IDocumentContentProvider;
 
 	class CDocxSerializer
 	{
@@ -68,6 +69,7 @@ namespace BinDocxRW
 
         bool loadFromFile   (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath);
         bool saveToFile     (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sTempPath);
+        bool saveToFile     (const std::wstring& sDstFileName, IDocumentContentProvider& oContentProvider, const std::wstring& sTempPath); // without docx folder
 		
 		bool unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath);
 		bool convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath, bool& bMacro, const std::wstring& sTempPath);
@@ -89,5 +91,8 @@ namespace BinDocxRW
 		
 		void setMacroEnabled	(bool val);
 		bool getMacroEnabled();
+
+	private:
+		bool saveToBinary(const std::wstring& sDstFileName, const std::wstring& sSrcPath, IDocumentContentProvider* pContentProvider, const std::wstring& sTempPath);
 	};
 }

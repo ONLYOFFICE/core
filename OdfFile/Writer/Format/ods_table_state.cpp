@@ -36,11 +36,11 @@
 #include "logging.h"
 
 #include <boost/algorithm/string.hpp>
-#include <boost/date_time.hpp>
 
 #include "../../Formulas/formulasconvert.h"
 
 #include "ods_table_state.h"
+#include "../../Common/odf_date_time_utils.h"
 #include "odf_text_context.h"
 #include "ods_conversion_context.h"
 
@@ -67,145 +67,6 @@ namespace odf_writer {
 	_INT32 ods_table_state::tmp_column_ =0;
 	_INT32 ods_table_state::tmp_row_ =0;
 
-namespace utils//////////////////////////////////////////// COMMON stuff.. maybe move to utils ???
-
-{
-	bool convert_date(__int64 date, std::wstring & date_str)
-	{
-		boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration( date - (date < 60 ? 1 : 2)); //29.02.1900
-
-		bool res = true;
-		try
-		{
-			date_str = boost::lexical_cast<std::wstring>(date_.year())
-				+ L"-" +
-				(date_.month() < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(date_.month().as_number())
-				+ L"-" +
-				(date_.day() < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(date_.day());
-		}
-		catch (...)
-		{
-			date_str = std::to_wstring(date);
-			res = false;
-		}
-		return res;
-	}
-	bool convert_date(const std::wstring & oox_date, std::wstring & odf_date)
-	{
-		__int64 iDate = 0;
-
-		bool res = true;
-		try
-		{
-			iDate = boost::lexical_cast<__int64>(oox_date);
-		}catch(...)
-		{
-			res = false;
-			odf_date =  oox_date;
-		}
-		res = convert_date(iDate, odf_date);
-		return res;
-	}
-	std::wstring convert_time(double dTime, bool bPT)
-	{
-		//12H15M42S - pt
-		int hours = 0, minutes = 0;
-		double sec = 0;
-
-		boost::posix_time::time_duration day(24, 0, 0);
-
-		double millisec = day.total_milliseconds() * dTime;
-
-		sec = millisec / 1000.;
-		hours = (int)(sec / 60. / 60.);
-		minutes = (int)((sec - (hours * (int)60 * (int)60)) / 60.);
-		sec = sec - (hours * (int)60 + minutes) * 60.;
-
-		int sec1 = (int)sec;
-
-		std::wstring time_str =
-			(hours < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(hours)
-			+ (bPT ? std::wstring(L"H") : std::wstring(L":")) +
-			(minutes < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(minutes)
-			+ (bPT ? std::wstring(L"M") : std::wstring(L":")) +
-			(sec1 < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(sec1)
-			+ (bPT ? std::wstring(L"S") : std::wstring(L""));
-
-		return time_str;
-	}
-	bool convert_date_time(const std::wstring & oox_date_time, office_value_type::type& odf_type, std::wstring& odf_date_time)
-	{
-		double dDateTime = 0, dTime = 0;
-		__int64 nDate = 0;
-
-		bool res = true;
-
-		if (std::wstring::npos != oox_date_time.find(L"."))
-		{
-			try
-			{
-				dDateTime = boost::lexical_cast<double>(oox_date_time);
-			}
-			catch (...)
-			{
-				odf_date_time = oox_date_time;
-				return false;
-			}
-			nDate = (int)dDateTime;
-			dTime = (dDateTime - nDate);
-		}
-		else
-		{
-			nDate = boost::lexical_cast<__int64>(oox_date_time);
-		}
-		bool bPT = (nDate < 1);
-		std::wstring sDate, sTime;
-		if (dTime > 0)
-		{
-			sTime = convert_time(dTime, bPT);
-		}
-		if (nDate > 0)
-		{
-			res = convert_date(nDate, sDate);
-			odf_type = office_value_type::Date;
-		}
-		else 
-			odf_type = office_value_type::Time;
-		
-		// "1899-12-31T05:37:46.66569
-		if (sDate.empty() && sTime.empty())
-		{
-			res = false;
-			odf_date_time = oox_date_time;
-		}
-		else
-		{
-			if (bPT)
-			{
-				odf_date_time = L"PT" + sTime;
-			}
-			else
-			{
-				odf_date_time = sDate + (sTime.empty() ? L"" : L"T" + sTime);
-			}
-		}
-		return res;
-	}
-
-	std::wstring convert_time(const std::wstring & oox_time)
-	{
-		double dTime = 0;
-		
-		try
-		{		
-			dTime = boost::lexical_cast<double>(oox_time);
-		}catch(...)
-		{
-			return oox_time;
-		}
-		return std::wstring(L"PT") + convert_time(dTime, true);
-	}
-};
 
 ///////////////////////////////////////////////////////////////
 static formulasconvert::oox2odf_converter formulas_converter_table;
@@ -347,7 +208,7 @@ void ods_table_state::set_table_tab_color(_CP_OPT(color) & _color)
 	style_table_properties *table_properties = office_table_style_->content_.add_get_style_table_properties();
 	if (table_properties == NULL)return;
 
-	table_properties->content_.tableooo_tab_color_ = _color;
+	table_properties->content_.table_tab_color_ = _color;
 }
 void ods_table_state::set_table_style(office_element_ptr & elm)
 {	
@@ -818,11 +679,11 @@ void ods_table_state::add_hyperlink(const std::wstring & ref, _INT32 col, _INT32
 
 	hyperlinks_.push_back(state);
 }
-void ods_table_state::start_comment(_INT32 col, _INT32 row, std::wstring & author)
+void ods_table_state::start_comment(_INT32 col, _INT32 row, std::wstring & author, std::wstring& date_time)
 {
 	ods_comment_state state;
 
-	state.row = row;  state.col = col; state.author = author;	
+	state.row = row;  state.col = col; state.author = author; state.date_time = date_time;
 	create_element(L"office", L"annotation", state.elm, context_);
 
 	office_annotation * annotation = dynamic_cast<office_annotation*>(state.elm.get());
@@ -884,14 +745,26 @@ void ods_table_state::end_comment(odf_text_context *text_context)
 			comments_.back().elm->add_child_element(text_context->text_elements_list_[i].elm);
 		}
 	}
-	if (comments_.back().author.length() > 0 && comments_.back().elm)
+	if (comments_.back().elm)
 	{
 		office_element_ptr dc_elm;
-		create_element(L"dc", L"creator", dc_elm, context_);
-		if (dc_elm)
+		if (false == comments_.back().author.empty())
 		{
-			dc_elm->add_text(comments_.back().author);
-			comments_.back().elm->add_child_element(dc_elm);
+			create_element(L"dc", L"creator", dc_elm, context_);
+			if (dc_elm)
+			{
+				dc_elm->add_text(comments_.back().author);
+				comments_.back().elm->add_child_element(dc_elm);
+			}
+		}
+		if (false == comments_.back().date_time.empty())
+		{
+			create_element(L"dc", L"date", dc_elm, context_);
+			if (dc_elm)
+			{
+				dc_elm->add_text(comments_.back().date_time);
+				comments_.back().elm->add_child_element(dc_elm);
+			}
 		}
 	}
 }
@@ -1382,7 +1255,7 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		case office_value_type::DateTime:	
 		{
 			std::wstring sVal;
-			bool result = utils::convert_date_time(value, type, sVal);
+			bool result = odf_datetime::convert_date_time(value, type, sVal);
 			
 			cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(type);
 

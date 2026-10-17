@@ -38,6 +38,10 @@
 
 #include <string>
 #include "../DesktopEditor/common/StringBuilder.h"
+#include "../DesktopEditor/common/ProcessEnv.h"
+#include "../DesktopEditor/common/Path.h"
+
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace HTML
 {
@@ -92,6 +96,22 @@ inline void WriteToStringBuilder(NSStringUtils::CStringBuilder& oSrcStringBuilde
 		ulSize -= ulCurrentBlockSize;
 		ulPosition += ulCurrentBlockSize;
 	}
+}
+
+inline bool GetStatusUsingExternalLocalFiles()
+{
+	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+	return true;
+}
+
+inline bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsRootPath, const std::wstring& wsSrcPath, bool bIsAllowExternalLocalFiles)
+{
+	if (bIsAllowExternalLocalFiles)
+		return true;
+
+	return !NSSystemPath::ResolveInDirectory(wsRootPath, wsSrcPath, wsPath).empty();
 }
 
 }

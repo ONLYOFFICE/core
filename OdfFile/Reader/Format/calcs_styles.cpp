@@ -35,6 +35,7 @@
 
 #include "calcs_styles.h"
 #include <algorithm>
+#include <map>
 
 namespace cpdoccore { 
 
@@ -60,8 +61,15 @@ text_format_properties_ptr calc_text_properties_content(const style_instance * s
 {
     std::vector<const style_text_properties*> textProps;
 
+    std::map<std::wstring, int> usedStyles;
     while (styleInstance)
     {
+        std::wstring style_name = styleInstance->name();
+        if (usedStyles.find(style_name) != usedStyles.end())
+            break;
+
+        usedStyles.insert(std::make_pair(style_name, 0));
+
 		if (const style_content * content = styleInstance->content())
 		{
 			const style_text_properties * textProp = content->get_style_text_properties();
@@ -155,13 +163,22 @@ paragraph_format_properties calc_paragraph_properties_content(const std::vector<
 paragraph_format_properties calc_paragraph_properties_content(const style_instance * styleInstance)
 {
     std::vector<const style_paragraph_properties*> parProps;
+    std::map<std::wstring, int> usedStyles;
     while (styleInstance)
     {
-        if (const style_content * content = styleInstance->content())
-            if (const style_paragraph_properties * parProp = content->get_style_paragraph_properties())
-			{
+        std::wstring style_name = styleInstance->name();
+        if (usedStyles.find(style_name) != usedStyles.end())
+            break;
+
+        usedStyles.insert(std::make_pair(style_name, 0));
+
+        if (const style_content* content = styleInstance->content())
+        {
+            if (const style_paragraph_properties* parProp = content->get_style_paragraph_properties())
+            {
                 parProps.insert(parProps.begin(), parProp);
-			}
+            }
+        }
         styleInstance = styleInstance->parent();
     }
     return calc_paragraph_properties_content(parProps);
@@ -180,8 +197,15 @@ _CP_OPT(int) calc_outline_level(_CP_OPT(int) value, const style_instance * style
 {
 	if (value) return value;
 
-	while (styleInstance)
+    std::map<std::wstring, int> usedStyles;
+    while (styleInstance)
     {
+        std::wstring style_name = styleInstance->name();
+        if (usedStyles.find(style_name) != usedStyles.end())
+            break;
+
+        usedStyles.insert(std::make_pair(style_name, 0));
+        
         if (styleInstance->outline_level())
 		{
 			return styleInstance->outline_level();
@@ -196,13 +220,22 @@ _CP_OPT(int) calc_outline_level(_CP_OPT(int) value, const style_instance * style
 void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & context)
 {
     std::vector<const style_paragraph_properties*> parProps;
+    std::map<std::wstring, int> usedStyles;
+    
     while (styleInstance)
     {
-        if (const style_content * content = styleInstance->content())
-            if (const style_paragraph_properties * parProp = content->get_style_paragraph_properties())
-			{
+        std::wstring style_name = styleInstance->name();
+        if (usedStyles.find(style_name) != usedStyles.end())
+            break;
+        
+        usedStyles.insert(std::make_pair(style_name, 0));
+        if (const style_content* content = styleInstance->content())
+        {
+            if (const style_paragraph_properties* parProp = content->get_style_paragraph_properties())
+            {
                 parProps.insert(parProps.begin(), parProp);
-			}
+            }
+        }
         styleInstance = styleInstance->parent();
     }
 	double margin_left = 0;
@@ -247,13 +280,22 @@ style_table_cell_properties_attlist calc_table_cell_properties(const std::vector
 style_table_cell_properties_attlist calc_table_cell_properties(const style_instance * styleInstance)
 {
     std::vector<const style_table_cell_properties*> props;
+    std::map<std::wstring, int> usedStyles;
     while (styleInstance)
     {
-        if (style_content * content = styleInstance->content())
-            if (style_table_cell_properties * prop = content->get_style_table_cell_properties())
-			{
+        std::wstring style_name = styleInstance->name();
+        if (usedStyles.find(style_name) != usedStyles.end())
+            break;
+
+        usedStyles.insert(std::make_pair(style_name, 0));
+
+        if (style_content* content = styleInstance->content())
+        {
+            if (style_table_cell_properties* prop = content->get_style_table_cell_properties())
+            {
                 props.insert(props.begin(), prop);
-			}
+            }
+        }
         styleInstance = styleInstance->parent();
     }
     return calc_table_cell_properties(props);        

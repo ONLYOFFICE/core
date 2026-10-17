@@ -39,6 +39,7 @@
 #include "WrapperWritingElement.h"
 #include "../Base/Unit.h"
 #include "Logic/TxBody.h"
+#include "../Common/SimpleTypes_Shared.h"
 
 namespace PPTX
 {
@@ -311,8 +312,8 @@ namespace PPTX
 			nullable_int timeZoneBias;
 //------------------------------------------------------------------------------------------
 //modern
-			nullable_string id;  //Guid
-			nullable_string	authorId; //Guid
+			nullable<SimpleTypes::CGuid> id;  
+			nullable<SimpleTypes::CGuid> authorId; 
 			nullable_string created;
 			nullable_string status;
 			nullable_string startDate;
@@ -324,9 +325,6 @@ namespace PPTX
 			nullable<TxBody> txBody;
 			nullable<CommentReplyList> replyLst;
 
-			//nullable<TextCharRangeMonikerList > txMkLst;
-			//nullable<SlideMonikerList> sldMkLst;
-			//nullable<DrawingElementMonikerList> deMkLst;
 			smart_ptr<AnyMonikerList> anyMkLst;
 
 			bool bModern = false;

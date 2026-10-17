@@ -445,6 +445,9 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 			CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
 
+			if (rtl_)
+				CP_XML_ATTR(L"rtl", 1);
+
             CP_XML_NODE(L"p:sldMasterIdLst")
             {
                 CP_XML_STREAM() << slideMastersData_.str();
@@ -467,7 +470,11 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
 
 			CP_XML_NODE(L"p:defaultTextStyle")//??
 			{
-				CP_XML_NODE(L"a:defPPr");
+				CP_XML_NODE(L"a:defPPr")
+				{
+					if (rtl_)
+						CP_XML_ATTR(L"rtl", 1);
+				}
 			}
         }
 	}

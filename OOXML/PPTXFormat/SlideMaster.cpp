@@ -66,38 +66,57 @@ namespace PPTX
 
 			XmlMacroReadAttributeBase(oNode, L"preserve", preserve);
 
-			cSld = oNode.ReadNode(_T("p:cSld"));
+			cSld = oNode.ReadNode(L"p:cSld");
 			cSld.SetParentFilePointer(this);
 
-			clrMap = oNode.ReadNode(_T("p:clrMap"));
+			clrMap = oNode.ReadNode(L"p:clrMap");
 			clrMap.SetParentFilePointer(this);
 
 			sldLayoutIdLst.clear();
 			XmlUtils::CXmlNode oNodeList;
-			if (oNode.GetNode(_T("p:sldLayoutIdLst"), oNodeList))
+			if (oNode.GetNode(L"p:sldLayoutIdLst", oNodeList))
 			{
-				XmlMacroLoadArray(oNodeList, _T("p:sldLayoutId"), sldLayoutIdLst, Logic::XmlId);
+				XmlMacroLoadArray(oNodeList, L"p:sldLayoutId", sldLayoutIdLst, Logic::XmlId);
 
 				size_t count = sldLayoutIdLst.size();
 				for (size_t i = 0; i < count; ++i)
 					sldLayoutIdLst[i].SetParentFilePointer(this);
 			}
 
-			transition = oNode.ReadNode(_T("p:transition"));
+			transition = oNode.ReadNode(L"p:transition");
 			if(transition.is_init())
 				transition->SetParentFilePointer(this);
 
-			timing = oNode.ReadNode(_T("p:timing"));
+			timing = oNode.ReadNode(L"p:timing");
 			if(timing.is_init())
 				timing->SetParentFilePointer(this);
 
-			hf = oNode.ReadNode(_T("p:hf"));
+			hf = oNode.ReadNode(L"p:hf");
 			if(hf.is_init())
 				hf->SetParentFilePointer(this);
 
-			txStyles = oNode.ReadNode(_T("p:txStyles"));
+			txStyles = oNode.ReadNode(L"p:txStyles");
 			if(txStyles.is_init())
 				txStyles->SetParentFilePointer(this);
+			
+			XmlUtils::CXmlNode oNodeExtLst = oNode.ReadNode(L"p:extLst");
+			if (oNodeExtLst.IsValid())
+			{
+				std::vector<XmlUtils::CXmlNode> oExtLstNodes;
+				if (oNodeExtLst.GetNodes(L"*", oExtLstNodes))
+				{
+					for (auto n : oExtLstNodes)
+					{
+						PPTX::Logic::Ext ext;
+						ext.fromXML(n);
+						if (ext.sldGuideLst.IsInit())
+						{
+							sldGuideLst = ext.sldGuideLst;
+							sldGuideLst->SetParentFilePointer(this);
+						}
+					}
+				}
+			}
 		}
 		void SlideMaster::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
 		{
@@ -131,10 +150,10 @@ namespace PPTX
 			if (!pNvPr) return;
 			if (pNvPr->ph.is_init() == false) return;
 
-			std::wstring idx = pNvPr->ph->idx.get_value_or(_T("0"));
-			std::wstring type = pNvPr->ph->type.get_value_or(_T("body"));
+			std::wstring idx = pNvPr->ph->idx.get_value_or(L"0");
+			std::wstring type = pNvPr->ph->type.get_value_or(L"body");
 
-			if (type == _T("ctrTitle")) type = _T("title");
+			if (type == L"ctrTitle") type = L"title";
 
 			for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
 			{
@@ -143,8 +162,8 @@ namespace PPTX
 				{
 					if (pMasterShape->nvSpPr.nvPr.ph.is_init())
 					{
-						std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(_T("0"));
-						std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
+						std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(L"0");
+						std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(L"body");
 
 						if (lType == L"ctrTitle")	lType = L"title";
 						if (type == lType)
@@ -216,30 +235,46 @@ namespace PPTX
 			pWriter->WriteRecord2(5, hf);
 			pWriter->WriteRecord2(6, txStyles);
 
+			pWriter->WriteRecord2(15, sldGuideLst);
+
 			pWriter->EndRecord();
 		}
 		void SlideMaster::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("p:sldMaster"));
+			pWriter->StartNode(L"p:sldMaster");
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
-			pWriter->WriteAttribute(_T("preserve"), preserve);
+			pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
+			pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+			pWriter->WriteAttribute(L"xmlns:m", PPTX::g_Namespaces.m.m_strLink);
+			pWriter->WriteAttribute(L"xmlns:w", PPTX::g_Namespaces.w.m_strLink);
+			if (sldGuideLst.IsInit())
+			{
+				pWriter->WriteAttribute(L"xmlns:p15", PPTX::g_Namespaces.p15.m_strLink);
+			}
+			pWriter->WriteAttribute(L"preserve", preserve);
 			pWriter->EndAttributes();
 
 			cSld.toXmlWriter(pWriter);
 			clrMap.toXmlWriter(pWriter);
 			pWriter->Write(transition);
 			pWriter->Write(timing);
-			pWriter->WriteArray(_T("p:sldLayoutIdLst"), sldLayoutIdLst);
+			pWriter->WriteArray(L"p:sldLayoutIdLst", sldLayoutIdLst);
 			pWriter->Write(hf);
 			pWriter->Write(txStyles);
 
-			pWriter->EndNode(_T("p:sldMaster"));
+			std::vector<Logic::Ext> extLst;
+			if (sldGuideLst.IsInit())
+			{
+				Logic::Ext exp;
+				exp.uri = L"{27BBF7A9-308A-43DC-89C8-2F10F3537804}";
+				exp.sldGuideLst = sldGuideLst;
+				extLst.push_back(exp);
+			}
+			pWriter->WriteArray(L"p:extLst", extLst);
+
+			pWriter->EndNode(L"p:sldMaster");
 		}
 		void SlideMaster::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -273,39 +308,40 @@ namespace PPTX
 				{
 					case 0:
 					{
-						cSld.fromPPTY(pReader);
-						break;
-					}
+						cSld.fromPPTY(pReader);						
+					}break;
 					case 1:
 					{
-						clrMap.m_name = _T("p:clrMap");
-						clrMap.fromPPTY(pReader);
-						break;
-					}
+						clrMap.m_name = L"p:clrMap";
+						clrMap.fromPPTY(pReader);						
+					}break;
 					case 2:
 					case 3:
 					case 4:
 					{
-						pReader->SkipRecord();
-						break;
-					}
+						pReader->SkipRecord();						
+					}break;
 					case 5:
 					{
 						hf = new Logic::HF();
-						hf->fromPPTY(pReader);
-						break;
-					}
+						hf->fromPPTY(pReader);						
+					}break;
 					case 6:
 					{
 						txStyles = new Logic::TxStyles();
-						txStyles->fromPPTY(pReader);
-						break;
-					}
+						txStyles->fromPPTY(pReader);						
+					}break;
+					case 15:
+					{
+						sldGuideLst = new nsPresentation::ExtendedGuideList();
+						sldGuideLst->fromPPTY(pReader);
+					}break;
 					default:
-						break;
+					{
+						pReader->SkipRecord();
+					}break;
 				}
 			}
-
 			pReader->Seek(end);
 		}
 

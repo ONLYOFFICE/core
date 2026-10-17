@@ -43,6 +43,7 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../DesktopEditor/common/StringExt.h"
+#include "../../DesktopEditor/graphics/pro/Image.h"
 
 #define DEFLATE_BUF_SIZ  ((int)(STREAM_BUF_SIZ * 1.1) + 13)
 
@@ -721,7 +722,6 @@ namespace PdfWriter
 
 		pDict->WriteToStream(this, pEncrypt);
 
-		pDict->Write(this);
 		WriteStr(">>");
 
 		CStream* pStream = pDict->GetStream();
@@ -805,7 +805,7 @@ namespace PdfWriter
 	}
 	void         CMemoryStream::Write(const BYTE* pBuffer, unsigned int unSize)
 	{
-		unsigned int unRemainBytes = m_nBufferSize - Tell();
+		unsigned int unRemainBytes = m_nBufferSize - RealTell();
 		if (unRemainBytes < unSize)
 		{
             unsigned int unShrinkSize = std::max(unSize, (unsigned int)STREAM_BUF_SIZ);
@@ -817,7 +817,7 @@ namespace PdfWriter
 	}
 	void         CMemoryStream::Read(BYTE* pBuffer, unsigned int* punSize)
 	{
-		unsigned int unRemainBytes = m_unSize - Tell();
+		unsigned int unRemainBytes = m_unSize - RealTell();
         unsigned int unReadedBytes = (punSize ? std::min(*punSize, unRemainBytes) : unRemainBytes);
 		MemCpy(pBuffer, m_pCur, unReadedBytes);
 		m_pCur += unReadedBytes;
@@ -830,12 +830,12 @@ namespace PdfWriter
 		{
 		case SeekCur: m_pCur += nPos; break;
 		case SeekEnd: m_pCur = m_pBuffer + m_unSize - nPos; break;
-		case SeekSet: m_pCur = m_pBuffer + nPos; break;
+		case SeekSet: m_pCur = m_pBuffer + nPos + (int)GetHeaderOffset(); break;
 		}
 	}
 	int          CMemoryStream::Tell()
 	{
-		return (int)(m_pCur - m_pBuffer);
+		return RealTell() - (int)GetHeaderOffset();
 	}
 	void         CMemoryStream::Close()
 	{
@@ -849,15 +849,16 @@ namespace PdfWriter
 		m_pBuffer     = NULL;
 		m_pCur        = NULL;
 		m_unSize      = 0;
+		m_bForWasm    = false;
 	}
 	unsigned int CMemoryStream::Size()
 	{
-		return m_unSize;
+		return m_unSize - GetHeaderOffset();
 	}
 	void CMemoryStream::Clear()
 	{
-		m_pCur   = m_pBuffer;
-		m_unSize = 0;
+		m_pCur   = m_pBuffer + GetHeaderOffset();
+		m_unSize = GetHeaderOffset();
 	}
 	BYTE* CMemoryStream::GetBuffer()
 	{
@@ -873,12 +874,13 @@ namespace PdfWriter
 		m_pBuffer     = NULL;
 		m_pCur        = NULL;
 		m_unSize      = 0;
+		m_bForWasm    = false;
 	}
 	void         CMemoryStream::Shrink(unsigned int unSize)
 	{
 		if (m_pBuffer)
 		{
-			long lPos = Tell();
+			long lPos = RealTell();
 
 			//BYTE* pNewBuffer = new BYTE[m_nBufferSize + unSize];
 			//MemCpy(pNewBuffer, m_pBuffer, m_unSize);
@@ -901,6 +903,27 @@ namespace PdfWriter
 			m_pCur = m_pBuffer;
 			m_nBufferSize = unSize;
 		}
+	}
+	void CMemoryStream::SetForWasm(bool bForWasm)
+	{
+		m_bForWasm = bForWasm;
+	}
+	unsigned int CMemoryStream::GetHeaderOffset() const
+	{
+		return m_bForWasm ? (unsigned int)sizeof(unsigned int) : 0;
+	}
+	int CMemoryStream::RealTell() const
+	{
+		return (int)(m_pCur - m_pBuffer);
+	}
+	void CMemoryStream::SkipLen()
+	{
+		unsigned int n = 0;
+		Write((BYTE*)&n, sizeof(unsigned int));
+	}
+	void CMemoryStream::WriteLen()
+	{
+		memcpy(m_pBuffer, &m_unSize, sizeof(unsigned int));
 	}
 	//----------------------------------------------------------------------------------------
 	// CFileStream
@@ -987,10 +1010,7 @@ namespace PdfWriter
 	}
 	bool         CImageFileStream::IsEof()
 	{
-		if (m_nFilePos >= m_nFileSize)
-			return true;
-
-		return false;
+		return m_nFilePos >= m_nFileSize;
 	}
 	void         CImageFileStream::Write(const BYTE* pBuffer, unsigned int unSize)
 	{
@@ -1064,5 +1084,95 @@ namespace PdfWriter
 	{
 		m_nFilePos = m_oFile.TellFile();
 		m_oFile.CloseFile();
+	}
+	//----------------------------------------------------------------------------------------
+	// CImageMemoryStream
+	//----------------------------------------------------------------------------------------
+	CImageMemoryStream::CImageMemoryStream()
+	{
+		m_pData    = NULL;
+		m_lLength  = 0;
+		m_nFilePos = 0;
+	}
+	CImageMemoryStream::~CImageMemoryStream()
+	{
+		Close();
+	}
+	bool CImageMemoryStream::IsEof()
+	{
+		return m_nFilePos >= (int)m_lLength;
+	}
+	void CImageMemoryStream::Write(const BYTE* pBuffer, unsigned int unSize)
+	{
+		// not used
+	}
+	void CImageMemoryStream::Read(BYTE* pBuffer, unsigned int* punSize)
+	{
+		if (!pBuffer || !punSize)
+			return;
+
+		if (!m_pData || m_nFilePos >= (int)m_lLength)
+		{
+			*punSize = 0;
+			return;
+		}
+
+		unsigned int unAvailable = (unsigned int)(m_lLength - m_nFilePos);
+		unsigned int unToRead    = (*punSize < unAvailable) ? *punSize : unAvailable;
+
+		memcpy(pBuffer, m_pData + m_nFilePos, unToRead);
+		m_nFilePos += unToRead;
+		*punSize = unToRead;
+	}
+	void CImageMemoryStream::Seek(int nPos, EWhenceMode eMode)
+	{
+		switch (eMode)
+		{
+		case SeekCur: m_nFilePos += nPos; break;
+		case SeekEnd: m_nFilePos = std::max(0, ((int)m_lLength - nPos)); break;
+		case SeekSet: m_nFilePos = nPos; break;
+		}
+	}
+	int CImageMemoryStream::Tell()
+	{
+		return m_nFilePos;
+	}
+	void CImageMemoryStream::Close()
+	{
+		m_pData    = NULL;
+		m_lLength  = 0;
+		m_nFilePos = 0;
+	}
+	unsigned int CImageMemoryStream::Size()
+	{
+		return (unsigned int)m_lLength;
+	}
+	bool CImageMemoryStream::OpenFile(const std::wstring& wsFilePath, bool bWrite)
+	{
+		Close();
+
+		if (bWrite)
+			return false;
+
+		NSImages::IImagesMemoryStorage* pMemoryStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (!pMemoryStorage)
+			return false;
+
+		NSImages::IImageStream* pStream = pMemoryStorage->Get(wsFilePath);
+		if (!pStream)
+			return false;
+
+		BYTE* pData = NULL;
+		LONG  lLength = 0;
+		pStream->GetMemory(pData, lLength);
+
+		if (!pData || lLength <= 0)
+			return false;
+
+		m_pData    = pData;
+		m_lLength  = lLength;
+		m_nFilePos = 0;
+
+		return true;
 	}
 }

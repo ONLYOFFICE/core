@@ -931,13 +931,6 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 		return true;
 	//------------------------------------------------------------------------------------------------
-	if (iXmlFile(fileName))
-	{
-		// nFileType inside
-		return true;
-	}
-	//// by Extension
-
 	std::wstring::size_type nExtPos = fileName.rfind(L'.');
 	std::wstring sExt = L"unknown";
 
@@ -945,6 +938,13 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		sExt = fileName.substr(nExtPos);
 
 	std::transform(sExt.begin(), sExt.end(), sExt.begin(), tolower);
+
+	if (0 != sExt.compare(L".md") && iXmlFile(fileName))
+	{
+		// nFileType inside
+		return true;
+	}
+	//// by Extension
 
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 		return true;
@@ -2026,7 +2026,7 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
 	if (L".xps" == ext || L".oxps" == ext)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
-	if (L"ofd" == ext)
+	if (L".ofd" == ext)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD;
 
 	if (L".jpg" == ext || L".jpeg" == ext || L".jpe" == ext || L".jfif" == ext)

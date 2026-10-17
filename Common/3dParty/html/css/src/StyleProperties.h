@@ -118,6 +118,11 @@ namespace NSCSS
 
 			return *this;
 		}
+
+		bool LessSignificantThen(const CValueBase& oValue) const
+		{
+			return oValue.m_unLevel >= m_unLevel && (!m_bImportant || oValue.m_bImportant) && !oValue.Empty();
+		}
 	};
 
 	template<typename T>
@@ -337,12 +342,14 @@ namespace NSCSS
 		using CValueOptional<CColorValue>::operator=;
 	private:
 		CDigit m_oOpacity;
+		double m_dAlpha;
 
 		void SetEmpty(unsigned int unLevel = 0);
 		void SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB);
 		void SetRGB(const TRGB& oRGB);
 		void SetHEX(const std::wstring& wsValue);
 		bool SetUrl(const std::wstring& wsValue);
+		void ClearValue();
 	};
 
 	typedef enum
@@ -394,6 +401,7 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
 		void SetMapping(const std::map<std::wstring, int>& mMap, int nDefaulvalue = -1);
+		void SetMapping(const std::map<std::wstring, int>&&, int = -1) = delete;
 
 		int ToInt() const override;
 
@@ -403,7 +411,7 @@ namespace NSCSS
 		std::wstring ToWString() const override;
 
 		int m_nDefaultValue;
-		std::map<std::wstring, int> m_mMap;
+		const std::map<std::wstring, int>* m_pMap;
 	};
 
 	// PROPERTIES
@@ -452,6 +460,8 @@ namespace NSCSS
 		bool Empty() const;
 		void Clear();
 
+		void InheritSize(const CDisplay& oDisplay);
+
 		CDisplay& operator+=(const CDisplay& oDisplay);
 		bool      operator==(const CDisplay& oDisplay) const;
 	private:
@@ -499,8 +509,18 @@ namespace NSCSS
 
 		bool SetColor     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetBackground(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetImage     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetPosition  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetRepeat    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
-		const CColor& GetColor() const;
+		const CColor&  GetColor()     const;
+		const CURL&    GetImage()     const;
+		const CDigit&  GetPositionX() const;
+		const CDigit&  GetPositionY() const;
+		const CString& GetRepeat()    const;
+
+		bool HaveImage() const;
+		bool NoRepeat()  const;
 
 		void Clear();
 		bool Empty()  const;
@@ -510,7 +530,11 @@ namespace NSCSS
 		CBackground& operator+=(const CBackground& oBackground);
 		bool         operator==(const CBackground& oBackground) const;
 	private:
-		CColor m_oColor;
+		CColor  m_oColor;
+		CURL    m_oImage;
+		CDigit  m_oPositionX;
+		CDigit  m_oPositionY;
+		CString m_oRepeat;
 	};
 
 	class CTransform

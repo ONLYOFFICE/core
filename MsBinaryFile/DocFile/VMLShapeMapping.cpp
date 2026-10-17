@@ -305,6 +305,9 @@ namespace DocFileFormat
 		bool bFilled = true;
 		bool hasTextbox = false;
 		bool layoutInCell = true; //anmeldebogenfos.doc
+        bool HorizRule = false;
+        bool StandardHR = false;
+        bool NoshadeHR = false;
 		bool b3D = false;
 		bool bShadow = false;
 		bool bPicturePresent = false;
@@ -403,6 +406,18 @@ namespace DocFileFormat
 				{
 					layoutInCell = booleans->fLayoutInCell;
 				}
+                if (booleans->fUsefHorizRule)
+                {
+                    HorizRule = booleans->fHorizRule;
+                }
+                if (booleans->fUsefStandardHR)
+                {
+                    StandardHR = booleans->fStandardHR;
+                }
+                if (booleans->fUsefNoshadeHR)
+                {
+                    NoshadeHR = booleans->fNoshadeHR;
+                }
 			}
 			break;
 			// GEOMETRY
@@ -750,6 +765,27 @@ namespace DocFileFormat
 					}
 				}
 			}break;
+            case ODRAW::pctHR:
+            {
+                int pctValue = (int)iter->op;
+
+                if (pctValue > 0)
+                {
+                    std::wstring pctStr = std::to_wstring(pctValue);
+                    m_pXmlWriter->WriteAttribute(L"o:hrpct", pctStr);
+                }
+
+            }break;
+            case ODRAW::alignHR:
+            {
+                switch (iter->op)
+                {
+                case 0:	m_pXmlWriter->WriteAttribute(L"o:hralign", L"left");	break;
+                case 1:	m_pXmlWriter->WriteAttribute(L"o:hralign", L"center");	break;
+                case 2:	m_pXmlWriter->WriteAttribute(L"o:hralign", L"right");	break;
+                }
+
+            }break;
 			// OLE
 			case ODRAW::pictureId:
 			{
@@ -1061,6 +1097,18 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute(L"coordsize", (FormatUtils::SizeTToWideString(*xCoord) + L"," + FormatUtils::SizeTToWideString(*yCoord)));
 			}
 		}
+        if (HorizRule)
+        {
+            m_pXmlWriter->WriteAttribute(L"o:hr", L"t");
+        }
+        if (StandardHR)
+        {
+            m_pXmlWriter->WriteAttribute(L"o:hrstd", L"t");
+        }
+        if (NoshadeHR)
+        {
+            m_pXmlWriter->WriteAttribute(L"o:hrnoshade", L"t");
+        }
 
 		int nCode = 0;
 		if (pShape->GetShapeType())
@@ -1230,6 +1278,10 @@ namespace DocFileFormat
 // write imagedata
 		if (m_imagedata.GetAttributeCount())
 		{
+			if (m_isBullete)
+			{
+				appendValueAttribute(&m_imagedata, L"o:title", L"");
+			}
 			m_pXmlWriter->WriteString(m_imagedata.GetXMLString());
 		}		
 		

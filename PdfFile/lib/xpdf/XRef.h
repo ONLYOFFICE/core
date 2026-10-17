@@ -10,6 +10,7 @@
 #define XREF_H
 
 #include <aconf.h>
+#include <vector>
 
 #ifdef USE_GCC_PRAGMAS
 #pragma interface
@@ -48,6 +49,21 @@ struct XRefCacheEntry {
   int num;
   int gen;
   Object obj;
+};
+
+struct XRefTempEntry {
+  GFileOffset offset;
+  int gen;
+  GBool used;
+};
+
+struct XRefTrailerCandidate {
+  GFileOffset trailerPos;
+  GFileOffset sectionStart;
+  GFileOffset sectionEnd;
+  GFileOffset rootObjPos; // Root object offset at the time the trailer was encountered
+  int rootNum;
+  int rootGen;
 };
 
 #define xrefCacheSize 16
@@ -179,6 +195,9 @@ private:
   void constructObjectStreamEntries(Object *objStr, int objStrObjNum);
   GBool constructXRefEntry(int num, int gen, GFileOffset pos,
 			   XRefEntryType type);
+  GBool constructXRefRepair();
+  GFileOffset findValidCutoff(XRefTempEntry *tempEntries, int tempSize, std::vector<XRefTrailerCandidate> &candidates);
+  static GBool quickCheckCatalog(BaseStream *str, GFileOffset pos);
   GBool getObjectStreamObject(int objStrNum, int objIdx,
 			      int objNum, Object *obj);
   ObjectStream *getObjectStream(int objStrNum);

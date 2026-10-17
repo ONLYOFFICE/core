@@ -187,6 +187,8 @@ const bool ATTACHEDLABEL::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_DataLabExtContents);
 	if(m_CrtLayout12 != nullptr)
 		proc.mandatory(*m_CrtLayout12);
+	if(m_TEXTPROPS != nullptr)
+		proc.mandatory(*m_TEXTPROPS);
 	proc.mandatory<End>();
 	return true;
 }

@@ -1566,8 +1566,10 @@ namespace OOX
 		et_x_xmlCellPr,
 		et_x_xmlPr,
 
+		et_x_RichValueRels,
 		et_x_RichValueData,
 		et_x_RichValue,
+		et_x_RichRel,
 		et_x_RichValueFallback,
 		et_x_RichValueStructures,
 		et_x_RichValueStructure,
@@ -1579,6 +1581,15 @@ namespace OOX
 		et_x_RichValueTypeKeyFlags,
 		et_x_RichValueTypeReservedKey,
 		et_x_RichValueTypeReservedKeyFlag,
+
+		et_x_FeaturePropertyBags,
+		et_x_FeaturePropertyBag,
+		et_x_ArrayFeatureProperty,
+		et_x_BagFeatureProperty,
+		et_x_IntFeatureProperty,
+		et_x_BoolFeatureProperty,
+		et_x_StringFeatureProperty,
+		et_x_DoubleFeatureProperty,
 
 		et_dr_Masters,
 		et_dr_Pages,

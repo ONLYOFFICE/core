@@ -85,7 +85,6 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-
 	office_element_ptr semantics_;
 };
 
@@ -104,18 +103,18 @@ public:
 	virtual void oox_convert(oox::math_context & Context);
 	virtual void oox_convert(oox::math_context & Context, int iTypeConversion);
 
+    office_element_ptr_array content_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    office_element_ptr_array	content_;
-	office_element_ptr			annotation_;
+	office_element_ptr annotation_;
+	office_element_ptr signature_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_semantics);
 CP_REGISTER_OFFICE_ELEMENT3(math_semantics);
 //-------------------------------------------------------------------------------------------
-
 class math_annotation : public office_math_element
 {
 public:
@@ -126,7 +125,7 @@ public:
 
     virtual void oox_convert(oox::math_context& Context) {}
 
-    _CP_OPT(std::wstring) text_;
+    std::wstring text_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -149,7 +148,7 @@ public:
 
     virtual void oox_convert(oox::math_context& Context) {}
 
-    _CP_OPT(std::wstring) text_;
+    std::wstring text_;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -162,5 +161,31 @@ private:
 CP_REGISTER_OFFICE_ELEMENT2(math_annotation_xml);
 CP_REGISTER_OFFICE_ELEMENT3(math_annotation_xml);
 //--------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------
+class math_signature : public office_math_element
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeMathSignatue;
+
+    virtual void oox_convert(oox::math_context& Context) {}
+
+    _CP_OPT(std::string) binData_;
+    
+    std::wstring alg_;
+    std::wstring shakey_;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element(xml::sax* Reader, const std::wstring& Ns, const std::wstring& Name) {}
+    virtual void add_text(const std::wstring& Text) {}
+
+    _CP_OPT(std::wstring) encoding_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(math_signature);
+CP_REGISTER_OFFICE_ELEMENT3(math_signature);
 }
 }

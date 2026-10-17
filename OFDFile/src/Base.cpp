@@ -36,6 +36,12 @@
 #include "Base.h"
 #include "Utils/Utils.h"
 
+#include "../../OfficeUtils/src/ZipFolder.h"
+
+#ifdef BUILDING_WASM_MODULE
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#endif
+
 namespace OFD
 {
 #define IF_CHECK_NODE(node_name, varible_name)\
@@ -64,14 +70,16 @@ CDocInfo::CDocInfo()
 
 bool CDocInfo::Read(CXmlReader& oLiteReader)
 {
-	if (L"ofd:DocInfo" != oLiteReader.GetName())
+	if ("ofd:DocInfo" != oLiteReader.GetNameA())
 		return false;
 
-	const int nDepth = oLiteReader.GetDepth();
+	const int nDepth{oLiteReader.GetDepth()};
 
 	std::string sNodeName;
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	const bool bHasChildNodes{!oLiteReader.IsEmptyElement()};
+
+	while (bHasChildNodes && oLiteReader.ReadNextSiblingNode(nDepth))
 	{
 		sNodeName = oLiteReader.GetNameA();
 
@@ -79,7 +87,7 @@ bool CDocInfo::Read(CXmlReader& oLiteReader)
 		ELSE_IF_CHECK_NODE("ofd:Title", m_wsTitle);
 		ELSE_IF_CHECK_NODE("ofd:Author", m_wsAuthor);
 		ELSE_IF_CHECK_NODE("ofd:Subject", m_wsSubject);
-		ELSE_IF_CHECK_NODE("ofd:Abstruct", m_wsAbstact);
+		ELSE_IF_CHECK_NODE("ofd:Abstruct", m_wsAbstruct);
 		ELSE_IF_CHECK_NODE("ofd:CreationDate", m_wsCreationDate);
 		ELSE_IF_CHECK_NODE("ofd:ModDate", m_wsModDate);
 		ELSE_IF_CHECK_NODE("ofd:Cover", m_wsCover);
@@ -87,19 +95,98 @@ bool CDocInfo::Read(CXmlReader& oLiteReader)
 		ELSE_IF_CHECK_NODE("ofd:CreatorVersion", m_wsCreatorVersion);
 		else if ("ofd:DocUsage" == sNodeName)
 			m_eDocUsage = GetDocUsage(oLiteReader.GetText2());
+		else if ("ofd:CustomDatas" == sNodeName)
+		{
+			const int nCustomDatasDepth{oLiteReader.GetDepth()};
+
+			std::wstring wsName, wsData;
+
+			while (oLiteReader.ReadNextSiblingNode(nCustomDatasDepth))
+			{
+				if ("ofd:CustomData" != oLiteReader.GetNameA() || !oLiteReader.MoveToFirstAttribute())
+					continue;
+
+				do
+				{
+					if ("Name" == oLiteReader.GetNameA())
+					{
+						wsName = oLiteReader.GetText();
+						break;
+					}
+				}while(oLiteReader.MoveToNextAttribute());
+
+				oLiteReader.MoveToElement();
+
+				wsData = oLiteReader.GetText2();
+
+				if (!wsName.empty() && !wsData.empty())
+					m_arCustomData.push_back(std::make_pair(wsName, wsData));
+
+				wsName.clear();
+				wsData.clear();
+			}
+		}
 	}
 
 	return true;
 }
 
-void CDocBody::ReadSignatures(const std::wstring& wsFilePath, IFolder* pFolder)
+std::wstring CDocInfo::GetInfo() const
+{
+	std::wstring wsInfo;
+
+	#define STRINGIFY(str) L###str
+	#define TO_WSTRING(str) STRINGIFY(str)
+	#define WRITE_INFO(info_name)\
+	if (!m_ws##info_name.empty())\
+		wsInfo += L"\"" + std::wstring(TO_WSTRING(info_name)) + L"\":\"" + m_ws##info_name + L"\","
+
+	WRITE_INFO(DocId);
+	WRITE_INFO(Title);
+	WRITE_INFO(Author);
+	WRITE_INFO(Subject);
+	WRITE_INFO(Abstruct);
+	WRITE_INFO(CreationDate);
+	WRITE_INFO(ModDate);
+	WRITE_INFO(Cover);
+	WRITE_INFO(Creator);
+	WRITE_INFO(CreatorVersion);
+
+	switch (m_eDocUsage)
+	{
+		case EDocUsege::Normal:     break;
+		case EDocUsege::EBook:      wsInfo += L"\"DocUsage\":\"Book\",";      break;
+		case EDocUsege::ENewsPaper: wsInfo += L"\"DocUsage\":\"NewsPaper\","; break;
+		case EDocUsege::EMagzine:   wsInfo += L"\"DocUsage\":\"Magzine\",";   break;
+	}
+
+	if (m_arCustomData.empty())
+	{
+		wsInfo.pop_back();
+		return wsInfo;
+	}
+
+	wsInfo += L"\"CustomDatas\":{";
+
+	for (const std::pair<std::wstring, std::wstring>& oCustomData : m_arCustomData)
+		wsInfo += L'"' + oCustomData.first + L"\":\"" + oCustomData.second + L"\",";
+
+	wsInfo.pop_back();
+
+	wsInfo += L'}';
+
+	return wsInfo;
+}
+
+bool CDocBody::ReadSignatures(const std::wstring& wsFilePath, IFolder* pFolder)
 {
 	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, pFolder->getFullFilePath(L"")))
-		return;
+		return false;
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(CombinePaths(pFolder->getFullFilePath(L""), wsFilePath)) || !oLiteReader.ReadNextNode() || L"ofd:Signatures" != oLiteReader.GetName())
-		return;
+
+	if (!pFolder->getReaderFromFile(wsFilePath, oLiteReader) || !oLiteReader.ReadNextNode() || L"ofd:Signatures" != oLiteReader.GetName())
+		return false;
 
 	const int nDepth = oLiteReader.GetDepth();
 	std::string sNodeName;
@@ -125,6 +212,8 @@ void CDocBody::ReadSignatures(const std::wstring& wsFilePath, IFolder* pFolder)
 			oLiteReader.MoveToElement();
 		}
 	}
+
+	return true;
 }
 
 CDocBody::CDocBody()
@@ -190,12 +279,34 @@ bool CDocBody::GetPageSize(int nPageIndex, double& dWidth, double& dHeight) cons
 	return m_oDocument.GetPageSize(nPageIndex, dWidth, dHeight);
 }
 
+void CDocBody::UpdateFonts(CFontChecker* pFontChecker)
+{
+	m_oDocument.UpdateFonts(pFontChecker);
+}
+
+std::wstring CDocBody::GetInfo() const
+{
+	return m_oDocInfo.GetInfo();
+}
+
+#ifdef BUILDING_WASM_MODULE
+void CDocBody::GetStructure(UINT& unMaxNumberPage, NSWasm::CData& oRes) const
+{
+	m_oDocument.GetStructure(unMaxNumberPage, oRes);
+}
+
+void CDocBody::GetLinks(UINT unPageIndex, NSWasm::CData& oRes) const
+{
+	m_oDocument.GetLinks(unPageIndex, oRes);
+}
+#endif
+
 CBase::CBase()
 {}
 
 CBase::~CBase()
 {
-	for (CDocBody* pDocBody : m_arDocBodies)
+	for (const CDocBody* pDocBody : m_arDocBodies)
 		RELEASEOBJECT(pDocBody);
 }
 
@@ -205,7 +316,8 @@ bool CBase::Read(IFolder* pFolder)
 		return false;
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(pFolder->getFullFilePath(L"OFD.xml")) || !oLiteReader.ReadNextNode() || L"ofd:OFD" != oLiteReader.GetName())
+
+	if (!pFolder->getReaderFromFile(L"OFD.xml", oLiteReader) || !oLiteReader.ReadNextNode() || L"ofd:OFD" != oLiteReader.GetName())
 		return false;
 
 	const int nDepth = oLiteReader.GetDepth();
@@ -245,4 +357,42 @@ void CBase::GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const
 		if (pDocBody->GetPageSize(nPageIndex, dWidth, dHeight))
 			return;
 }
+
+void CBase::UpdateFonts(CFontChecker* pFontChecker)
+{
+	for (CDocBody* pDocBody : m_arDocBodies)
+		pDocBody->UpdateFonts(pFontChecker);
+}
+
+std::wstring CBase::GetInfo() const
+{
+	if (m_arDocBodies.empty())
+		return std::wstring();
+
+	if (1 == m_arDocBodies.size())
+		return m_arDocBodies.front()->GetInfo();
+
+	std::wstring wsInfo;
+
+	for (size_t unIndex = 0; unIndex < m_arDocBodies.size(); ++unIndex)
+		wsInfo += L"\"Document " + std::to_wstring(unIndex + 1) + L"\":{" + m_arDocBodies[unIndex]->GetInfo() + L"},";
+
+	wsInfo.pop_back();
+
+	return wsInfo;
+}
+
+#ifdef BUILDING_WASM_MODULE
+void CBase::GetStructure(UINT& unMaxNumberPage, NSWasm::CData& oRes) const
+{
+	for(CDocBody* pDocBody : m_arDocBodies)
+		pDocBody->GetStructure(unMaxNumberPage, oRes);
+}
+
+void CBase::GetLinks(UINT unPageIndex, NSWasm::CData& oRes) const
+{
+	for(CDocBody* pDocBody : m_arDocBodies)
+		pDocBody->GetLinks(unPageIndex, oRes);
+}
+#endif
 }

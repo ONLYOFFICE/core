@@ -67,6 +67,43 @@ struct TMatrix
 
 	bool Read(const std::string& sValue);
 };
+
+struct TPos
+{
+	double m_dX;
+	double m_dY;
+
+	TPos();
+
+	bool Read(const std::string& sValue);
+};
+
+class CXmlReader;
+
+struct TDest
+{
+	enum class EType
+	{
+		XYZ,  // Go to a point with a specified zoom level (Left, Top, Zoom)
+		Fit,  // Fit the whole page
+		FitH, // Fit to width, scroll to top (Top)
+		FitV, // Fit to height, scroll to Left (Left)
+		FitR  // Fit the specified rectangle (Left, Top, Right, Bottom)
+	}m_eType;
+
+	unsigned int m_unPageID;
+
+	double* m_pLeft;
+	double* m_pTop;
+	double* m_pRight;
+	double* m_pBottom;
+	double* m_pZoom;
+
+	TDest();
+	~TDest();
+
+	static TDest* Read(CXmlReader& oReader);
+};
 }
 
 #endif // TYPES_H

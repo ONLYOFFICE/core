@@ -38,6 +38,15 @@
 
 namespace DocFileFormat
 {
+	static const int c_nDefTableShdCells = 22; // sprmTDefTableShd (cells 0-21), sprmTDefTableShd2nd (22-43) and sprmTDefTableShd3rd (44-62)
+
+	static std::shared_ptr<BorderCode> readTableBorder(unsigned char* sprmArg, int size, int brcSize, int ind)
+	{
+		if (!sprmArg || (ind + 1) * brcSize > size)
+			return std::shared_ptr<BorderCode>();
+		return std::shared_ptr<BorderCode>(new BorderCode(sprmArg + ind * brcSize, brcSize));
+	}
+
 	TableCellPropertiesMapping::TableCellPropertiesMapping (XMLTools::CStringXmlWriter* pWriter, 
 		const std::vector<short>* grid, int gridIndex, int cellIndex, unsigned int depth) : 
 										PropertiesMapping(pWriter)
@@ -53,6 +62,10 @@ namespace DocFileFormat
 		_brcLeft	=	NULL;
 		_brcRight	=	NULL;
 		_brcBottom	=	NULL;
+
+		_bFirstRow	=	true;
+		_bLastRow	=	true;
+		_bLastCell	=	true;
 
         _tcPr		=	new XMLTools::XMLElement(L"w:tcPr");
         _tcMar		=	new XMLTools::XMLElement(L"w:tcMar");
@@ -246,17 +259,17 @@ namespace DocFileFormat
 				}break;
 				case sprmOldTDefTableShd:
 				case sprmTDefTableShd:
-				{ //	cell shading for cells 0-20
+				{
 					apppendCellShading(iter->Arguments, iter->argumentsSize, _cellIndex);
 				}break;
 
 				case sprmTDefTableShd2nd:
-				{						//	cell shading for cells 21-42
-					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 21));
+				{
+					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - c_nDefTableShdCells));
 				}break;
 				case sprmTDefTableShd3rd:
-				{						//	cell shading for cells 43-62
-					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 43));
+				{
+					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 2 * c_nDefTableShdCells));
 				}break;
 				case sprmTCellWidth:
 				{ //width
@@ -294,58 +307,12 @@ namespace DocFileFormat
 				break;
 				case sprmTTableBorders80:
 				{
-					const int size = 4;
-					unsigned char brc80[size];
-
-					memcpy(brc80, iter->Arguments, size);
-					if (!_brcTop)
-						_brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-
-					memcpy(brc80, (iter->Arguments + 4), size);
-					if (!_brcLeft)
-						_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-
-					memcpy(brc80, (iter->Arguments + 8), size);
-					if (!_brcBottom)
-						_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-
-					memcpy(brc80, (iter->Arguments + 12), size);
-					if (!_brcRight)
-						_brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-
-					//memcpy(brc80, (iter->Arguments + 16), size);
-					//_brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
-
-					//memcpy(brc80, (iter->Arguments + 20), size);
-					//_brcVert = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+					applyTableBorders(iter->Arguments, iter->argumentsSize, 4);
 				}break;
 				case sprmOldTTableBorders:
 				case sprmTTableBorders:
 				{
-					const int size = 8;
-					unsigned char brc[size];
-
-					memcpy(brc, iter->Arguments, size);
-					if (!_brcTop)
-						_brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
-
-					memcpy(brc, (iter->Arguments + 8), size);
-					if (!_brcLeft)
-						_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
-
-					memcpy(brc, (iter->Arguments + 16), size);
-					if (!_brcBottom)
-						_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
-
-					memcpy(brc, (iter->Arguments + 24), size);
-					if (!_brcRight)
-						_brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
-
-					//memcpy(brc, (iter->Arguments + 32), size);
-					//_brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
-
-					//memcpy(brc, (iter->Arguments + 40), size);
-					//_brcVert = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+					applyTableBorders(iter->Arguments, iter->argumentsSize, 8);
 				}break;
 				case sprmOldTSetBrc:
 				case sprmTSetBrc:
@@ -509,6 +476,19 @@ namespace DocFileFormat
 				RELEASEARRAYOBJECTS(shdBytes);
 			}
 		}
+	}
+
+	void TableCellPropertiesMapping::applyTableBorders(unsigned char* sprmArg, int size, int brcSize)
+	{
+		const int indTop	= _bFirstRow		? 0 : 4;
+		const int indLeft	= (_cellIndex == 0) ? 1 : 5;
+		const int indBottom	= _bLastRow			? 2 : 4;
+		const int indRight	= _bLastCell		? 3 : 5;
+
+		if (!_brcTop)		_brcTop		= readTableBorder(sprmArg, size, brcSize, indTop);
+		if (!_brcLeft)		_brcLeft	= readTableBorder(sprmArg, size, brcSize, indLeft);
+		if (!_brcBottom)	_brcBottom	= readTableBorder(sprmArg, size, brcSize, indBottom);
+		if (!_brcRight)		_brcRight	= readTableBorder(sprmArg, size, brcSize, indRight);
 	}
 
 	bool TableCellPropertiesMapping::IsTableBordersDefined (const std::vector<SinglePropertyModifier>* grpprl) const

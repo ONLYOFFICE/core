@@ -66,6 +66,8 @@ namespace PPTX
 			virtual std::wstring toXML() const;
 			std::wstring toVML();
 
+			XLS::BaseObjectPtr toXLSText() const;
+
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			void toXmlWriterExcel(NSBinPptxRW::CXmlWriter* pWriter) const;
 

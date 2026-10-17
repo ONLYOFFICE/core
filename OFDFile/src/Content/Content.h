@@ -43,13 +43,17 @@ namespace OFD
 {
 class CContent
 {
-	std::vector<CLayer*> m_arLayers;
+	std::vector<const CLayer*> m_arLayers;
 public:
 	CContent();
 	~CContent();
 
-	bool Read(CXmlReader& oLiteReader);
+	bool Read(CXmlReader& oLiteReader, IFolder* pFolder);
 	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
+
+	#ifdef BUILDING_WASM_MODULE
+	void GetLinks(NSWasm::CData& oRes) const;
+	#endif
 };
 }
 

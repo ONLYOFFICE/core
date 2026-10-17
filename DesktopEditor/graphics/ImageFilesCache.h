@@ -223,4 +223,6 @@ public:
 	}
 };
 
+typedef NSMemoryStorage::CDefaultMemoryStream CImageStream;
+
 #endif // _BUILD_IMAGEFILESCACHE_H_

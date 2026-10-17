@@ -4,6 +4,19 @@ namespace NSCSS
 {
 namespace NS_STATIC_FUNCTIONS
 {
+	static size_t SkipDigits(const std::wstring& wsValue, size_t unPos)
+	{
+		while (unPos < wsValue.length() && iswdigit(wsValue[unPos]))
+			++unPos;
+
+		return unPos;
+	}
+
+	static bool IsSign(wchar_t wChar)
+	{
+		return L'-' == wChar || L'+' == wChar;
+	}
+
 	std::string GetContentAsUTF8(const std::string &sString, const std::wstring &sEncoding)
 	{
 		const std::string& sEnc = U_TO_UTF8(sEncoding);
@@ -68,13 +81,40 @@ namespace NS_STATIC_FUNCTIONS
 	{
 		std::vector<double> arValues;
 
-		std::wregex oPattern(LR"([-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?)");
+		const size_t unLength = wsValue.length();
 
-		std::wsregex_iterator oIter(wsValue.begin(), wsValue.end(), oPattern);
-		std::wsregex_iterator oEndIter;
+		size_t unStart = 0;
 
-		for (; oIter != oEndIter; ++oIter)
-			arValues.push_back(std::stod(oIter->str()));
+		while (unStart < unLength)
+		{
+			size_t unEnd = IsSign(wsValue[unStart]) ? unStart + 1 : unStart;
+
+			if (unEnd < unLength && iswdigit(wsValue[unEnd]))
+			{
+				unEnd = SkipDigits(wsValue, unEnd + 1);
+
+				if (unEnd < unLength && L'.' == wsValue[unEnd])
+					unEnd = SkipDigits(wsValue, unEnd + 1);
+			}
+			else if (unEnd + 1 < unLength && L'.' == wsValue[unEnd] && iswdigit(wsValue[unEnd + 1]))
+				unEnd = SkipDigits(wsValue, unEnd + 2);
+			else
+			{
+				++unStart;
+				continue;
+			}
+
+			if (unEnd < unLength && (L'e' == wsValue[unEnd] || L'E' == wsValue[unEnd]))
+			{
+				const size_t unExponent = (unEnd + 1 < unLength && IsSign(wsValue[unEnd + 1])) ? unEnd + 2 : unEnd + 1;
+
+				if (unExponent < unLength && iswdigit(wsValue[unExponent]))
+					unEnd = SkipDigits(wsValue, unExponent + 1);
+			}
+
+			arValues.push_back(std::stod(wsValue.substr(unStart, unEnd - unStart)));
+			unStart = unEnd;
+		}
 
 		return arValues;
 	}
@@ -188,7 +228,7 @@ namespace NS_STATIC_FUNCTIONS
 
 	std::map<std::wstring, std::wstring> GetRules(const std::wstring& wsStyles)
 	{
-		std::wregex oCssPropertyRegex(L"([a-zA-Z-]+)\\s*:\\s*([^;\t\n\r\f\v]+)");
+		static const std::wregex oCssPropertyRegex(L"([a-zA-Z-]+)\\s*:\\s*([^;\t\n\r\f\v]+)");
 		std::wsmatch oMatch;
 
 		std::wstring::const_iterator oSearchStart(wsStyles.cbegin());

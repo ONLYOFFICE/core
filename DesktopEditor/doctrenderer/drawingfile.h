@@ -37,13 +37,17 @@
 
 #include "./common.h"
 #include <stddef.h>
+#include <set>
 
 #include "../../PdfFile/PdfFile.h"
+#include "../../Common/OfficeFileFormatDefines.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../graphics/pro/js/wasm/src/serialize.h"
 #include "../graphics/pro/js/wasm/src/HTMLRendererText.h"
 #include "../../DocxRenderer/DocxRenderer.h"
+#include "../../OFDFile/OFDFile.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #define CHECKER_FILE_BUFFER_LEN 4096
 
@@ -59,6 +63,7 @@ private:
 	int m_nType = -1;
 
 	bool m_bIsExternalFile;
+	static std::wstring m_sCMapFolder;
 
 public:
 	CDrawingFile(NSFonts::IApplicationFonts* pFonts)
@@ -88,6 +93,11 @@ public:
 		RELEASEOBJECT(m_pImageStorage);
 	}
 
+	static void SetCMapFolder(const std::wstring& dir)
+	{
+		m_sCMapFolder = dir;
+	}
+
 	void SetInternalFile(IOfficeDrawingFile* pFile)
 	{
 		m_pFile = pFile;
@@ -106,6 +116,9 @@ public:
 		case odftXPS:
 			m_nType = 2;
 			break;
+		case odftOFD:
+			m_nType = 3;
+			break;
 		default:
 			break;
 		}
@@ -116,11 +129,19 @@ public:
 	{
 		NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 	}
-
 	static NSFonts::IFontsMemoryStorage* GetFontsStorage()
 	{
 		return NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
 	}
+	static void InitImagesGlobalStorage()
+	{
+		NSImages::NSApplicationImageStream::SetGlobalImagesMemoryStorage(NSImages::NSApplicationImageStream::CreateDefaultGlobalImagesMemoryStorage());
+	}
+	static NSImages::IImagesMemoryStorage* GetImagesStorage()
+	{
+		return NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+	}
+
 
 public:
 	bool OpenFile(const std::wstring& sFile, const wchar_t* sPassword)
@@ -144,7 +165,13 @@ public:
 					m_nType = 0;
 			}
 			else
+			{
+				if (!m_sCMapFolder.empty())
+				{
+					((CPdfFile*)m_pFile)->SetCMapFolder(m_sCMapFolder);
+				}
 				m_nType = 0;
+			}
 			break;
 		}
 		case 1:
@@ -167,6 +194,16 @@ public:
 			}
 			else
 				m_nType = 2;
+		}
+		case 3:
+		{
+			m_pFile = new COFDFile(m_pApplicationFonts);
+			if (!m_pFile->LoadFromFile(sFile, L"", sPassword, sPassword))
+			{
+				RELEASEOBJECT(m_pFile);
+			}
+			else
+				m_nType = 3;
 		}
 		default:
 			break;
@@ -217,6 +254,17 @@ public:
 				}
 				else
 					m_nType = 2;
+				break;
+			}
+			case 3:
+			{
+				m_pFile = new COFDFile(m_pApplicationFonts);
+				if (!m_pFile->LoadFromMemory(data, size, L"", sPassword, sPassword))
+				{
+					RELEASEOBJECT(m_pFile);
+				}
+				else
+					m_nType = 3;
 			}
 			default:
 				break;
@@ -291,11 +339,21 @@ public:
 		return bRes;
 	}
 
+	void SetPainter(IOfficeDrawingFilePainter* pPainter)
+	{
+		if (m_pFile)
+			m_pFile->SetPainter(pPainter);
+	}
 	BYTE* GetPixmap(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 	{
 		if (!m_pFile)
 			return NULL;
-		return m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+		BYTE* pRes = m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+
+		return pRes;
 	}
 	BYTE* SplitPages(int* arrPageIndex, int nLength, BYTE* data, LONG size)
 	{
@@ -347,6 +405,29 @@ public:
 			return ((CPdfFile*)m_pFile)->UndoRedact();
 		return false;
 	}
+	BYTE* BuildPdf(BYTE* pCommands, int nCommandsLen, const wchar_t* sPassword, BYTE* pMetaData = NULL, int nMetaLen = 0)
+	{
+		if (m_pFile && m_nType != 0)
+			return NULL;
+
+		// EDIT
+		if (m_pFile && m_pFile->GetPagesCount())
+			return ((CPdfFile*)m_pFile)->EditPdfToMemory(pCommands, nCommandsLen, sPassword);
+
+		// NEW
+		CPdfFile* pdfFile = new CPdfFile(m_pApplicationFonts);
+		pdfFile->CreatePdf();
+		if (sPassword)
+			pdfFile->SetPassword(sPassword);
+		if (pMetaData && nMetaLen > 0)
+			pdfFile->AddMetaData(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(g_format_oform_pdf_meta_tag, (LONG)strlen(g_format_oform_pdf_meta_tag)), pMetaData, (DWORD)nMetaLen);
+		pdfFile->CommandsToPdfFromBinary(pCommands, nCommandsLen);
+
+		BYTE* pData = NULL;
+		int nLength = 0;
+		pdfFile->SaveToMemory(&pData, &nLength, true);
+		return pData;
+	}
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{
@@ -355,6 +436,9 @@ public:
 
 		m_pTextRenderer->Init(m_pFile, 8);
 		m_pFile->DrawPageOnRenderer(m_pTextRenderer, nPageIndex, NULL);
+
+		if (m_nType == 0)
+			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
 
 		return m_pTextRenderer->GetBuffer();
 	}
@@ -365,6 +449,12 @@ public:
 	BYTE* GetStructure()
 	{
 		return m_pFile->GetStructure();
+	}
+	BYTE* GetMacros()
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->GetMacros();
+		return NULL;
 	}
 	BYTE* GetInteractiveFormsInfo()
 	{
@@ -457,22 +547,56 @@ public:
 		if (m_nType == 0)
 			((CPdfFile*)m_pFile)->SetCMapMemory(data, size);
 	}
-	void SetScanPageFonts(int nPageIndex)
+	BYTE* SetScanPageFonts(int* arrPageIndex, int nLength)
 	{
-		if (NULL == m_pImageStorage)
-			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
+		if (m_nType != 0)
+			return NULL;
+		CPdfFile* pFile = ((CPdfFile*)m_pFile);
+
+		if (!arrPageIndex || nLength == 0)
+		{
+			nLength = GetPagesCount();
+			arrPageIndex = NULL;
+		}
+		pFile->SetDrawOnlyText(true);
+
+		std::set<std::wstring> arrFonts;
 
 		CDocxRenderer oRenderer(m_pApplicationFonts);
 		oRenderer.SetExternalImageStorage(m_pImageStorage);
 		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
 
-		oRenderer.ScanPageBin(m_pFile, nPageIndex);
+		for (int i = 0; i < nLength; ++i)
+		{
+			int nPageIndex = arrPageIndex ? arrPageIndex[i] : i;
 
-		if (m_nType == 0)
-			((CPdfFile*)m_pFile)->SetPageFonts(nPageIndex);
+			std::vector<std::wstring> arrFont = oRenderer.GetFontsFromPage(m_pFile, nPageIndex);
+			arrFonts.insert(arrFont.begin(), arrFont.end());
+
+			pFile->SetPageFonts(nPageIndex);
+		}
+
+		pFile->SetDrawOnlyText(false);
+
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+		oRes.AddInt(arrFonts.size());
+
+		for (const auto& font : arrFonts)
+			oRes.WriteString(font);
+
+		oRes.WriteLen();
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+
+		return res;
+		// return pFile->GetAllFonts(arrPageIndex, nLength, true);
 	}
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{
+		if (NULL == m_pFile)
+			return NULL;
+
 		if (NULL == m_pImageStorage)
 			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();
 
@@ -550,6 +674,27 @@ public:
 		{
 			std::string sPathA(path);
 			NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
+			if (pStream)
+				return 1;
+		}
+		return 0;
+	}
+	void SetImageBinary(char* path, BYTE* data, int size)
+	{
+		NSImages::IImagesMemoryStorage* pStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pStorage)
+		{
+			std::string sPathA(path);
+			pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
+		}
+	}
+	int IsImageBinaryExist(char* path)
+	{
+		NSImages::IImagesMemoryStorage* pStorage = NSImages::NSApplicationImageStream::GetGlobalImagesMemoryStorage();
+		if (pStorage)
+		{
+			std::string sPathA(path);
+			NSImages::IImageStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
 			if (pStream)
 				return 1;
 		}
@@ -637,7 +782,7 @@ private:
 		double dPageDpiX, dPageDpiY;
 		double dWidth, dHeight;
 		m_pFile->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-		if (m_nType == 2)
+		if (m_nType == 2 || m_nType == 3)
 		{
 			dWidth    = dWidth    / 25.4 * 96.0;
 			dHeight   = dHeight   / 25.4 * 96.0;
@@ -675,6 +820,7 @@ private:
 		// 0 - PDF
 		// 1 - DJVU
 		// 2 - XPS
+		// 3 - OFD
 		LONG nSize = size < CHECKER_FILE_BUFFER_LEN ? size : CHECKER_FILE_BUFFER_LEN;
 		char* pData = (char*)data;
 		for (int i = 0; i < nSize - 5; ++i)
@@ -686,6 +832,25 @@ private:
 		if ( (8 <= size) && (0x41 == data[0] && 0x54 == data[1] && 0x26 == data[2] && 0x54 == data[3] &&
 							0x46 == data[4] && 0x4f == data[5] && 0x52 == data[6] && 0x4d == data[7]))
 			return 1;
+		COfficeUtils OfficeUtils(NULL);
+		if (OfficeUtils.IsArchive(data, size) == S_FALSE)
+			return -1;
+
+		ULONG nBufferSize = 0;
+		BYTE *pBuffer = NULL;
+
+		int nFileType = -1;
+		HRESULT hresult = OfficeUtils.LoadFileFromArchive(data, size, L"OFD.xml", &pBuffer, nBufferSize);
+		if (hresult == S_OK && pBuffer != NULL)
+		{
+			if (19 <= nBufferSize && NULL != strstr((char *)pBuffer, "ofd:OFD"))
+				nFileType = 3;
+
+			delete[] pBuffer;
+			pBuffer = NULL;
+
+			return nFileType;
+		}
 		return 2;
 	}
 };

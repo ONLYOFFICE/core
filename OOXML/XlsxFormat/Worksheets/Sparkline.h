@@ -151,7 +151,7 @@ namespace OOX
 			nullable<std::wstring>								m_oRef;
 			nullable<CSparklines>								m_oSparklines;
 
-			nullable_string										m_oUId;
+			nullable<SimpleTypes::CGuid>						m_oUId;
 		};
 
 		class CSparklineGroups  : public WritingElementWithChilds<CSparklineGroup>

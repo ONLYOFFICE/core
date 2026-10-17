@@ -86,6 +86,24 @@ namespace NExtractTools
 		}
 		return nRes;
 	}
+	// Editor.bin -> csv. With m_bCsvAllSheets every sheet goes to a file of its own, sheet<N>.<name>.csv
+	// (.tsv when tab-separated; N the sheet's place in the workbook, name the sheet's name made safe for a
+	// file name), and the files are packed into a zip at sTo - the way the images of all pages are.
+	// Without it: the active sheet, to sTo itself.
+	_UINT32 xlst_bin2csv_files(BinXlsxRW::CXlsxSerializer& oCXlsxSerializer, const std::wstring& sFromBin, const std::wstring& sTo, const std::wstring& sXmlOptions,
+							   const std::wstring& sMediaPath, const std::wstring& sEmbedPath, InputParams& params, ConvertParams& convertParams)
+	{
+		if (!params.getCsvAllSheets())
+			return oCXlsxSerializer.loadFromFile(sFromBin, sTo, sXmlOptions, sMediaPath, sEmbedPath);
+
+		std::wstring sSheetsDir = combinePath(convertParams.m_sTempDir, L"csv_sheets");
+		NSDirectory::CreateDirectory(sSheetsDir);
+
+		_UINT32 nRes = oCXlsxSerializer.loadFromFile(sFromBin, sSheetsDir, sXmlOptions, sMediaPath, sEmbedPath);
+		if (SUCCEEDED_X2T(nRes))
+			nRes = dir2zip(sSheetsDir, sTo);
+		return nRes;
+	}
 	_UINT32 xlsx_dir2csv(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		std::wstring sResultXlstDir   = combinePath(convertParams.m_sTempDir, L"xlst_unpacked");
@@ -118,7 +136,7 @@ namespace NExtractTools
             }
             sXMLOptions = params.getXmlOptionsTo();//_T("<XmlOptions><fileOptions fileType=\"2\"/></XmlOptions>");
 
-			nRes = oCXlsxSerializer.loadFromFile(sResultXlstFileEditor, sTo, sXMLOptions, sMediaPath, sEmbedPath);
+			nRes = xlst_bin2csv_files(oCXlsxSerializer, sResultXlstFileEditor, sTo, sXMLOptions, sMediaPath, sEmbedPath, params, convertParams);
 		}
 
 		return nRes;
@@ -182,7 +200,7 @@ namespace NExtractTools
 			oCXlsxSerializer.CreateXlsxFolders(sResultCsvDir, sMediaPath, sEmbedPath);
 
 			std::wstring sXmlOptions = params.getXmlOptionsTo();
-			nRes = oCXlsxSerializer.loadFromFile(sTargetBin, sTo, sXmlOptions, sMediaPath, sEmbedPath);
+			nRes = xlst_bin2csv_files(oCXlsxSerializer, sTargetBin, sTo, sXmlOptions, sMediaPath, sEmbedPath, params, convertParams);
 		}
 		// delete EditorWithChanges because it's not in Temp
 		if (sFrom != sTargetBin)
@@ -241,6 +259,6 @@ namespace NExtractTools
 			params.m_nCsvFormatTo = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
 		*params.m_nCsvFormatTo = *params.m_nFormatTo;
 
-		return oCXlsxSerializer.loadFromFile(sTempXlstFileEditor, sCSV, params.getXmlOptionsTo(), sMediaPath, sEmbedPath);
+		return xlst_bin2csv_files(oCXlsxSerializer, sTempXlstFileEditor, sCSV, params.getXmlOptionsTo(), sMediaPath, sEmbedPath, params, convertParams);
 	}
 }

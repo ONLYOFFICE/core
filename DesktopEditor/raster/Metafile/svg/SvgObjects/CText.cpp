@@ -81,12 +81,42 @@ namespace SVG
 	CTSpan::~CTSpan()
 	{}
 
+	void CTSpan::SetCoordinates(const std::wstring& wsValue, SvgDigit& oFirst, std::vector<SvgDigit>& arValues)
+	{
+		arValues.clear();
+
+		const std::vector<std::wstring> arTokens{NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" \n\r\t\f\v,")};
+
+		if (arTokens.empty())
+			return;
+
+		oFirst.SetValue(arTokens.front());
+
+		if (arTokens.size() < 2)
+			return;
+
+		arValues.reserve(arTokens.size());
+
+		for (const std::wstring& wsToken : arTokens)
+		{
+			SvgDigit oDigit;
+
+			if (!oDigit.SetValue(wsToken))
+				break;
+
+			arValues.push_back(oDigit);
+		}
+
+		if (arValues.size() < 2)
+			arValues.clear();
+	}
+
 	void CTSpan::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
 		if ("x" == sName)
-			m_oX.SetValue(oReader.GetText());
+			SetCoordinates(oReader.GetText(), m_oX, m_arX);
 		else if ("y" == sName)
-			m_oY.SetValue(oReader.GetText());
+			SetCoordinates(oReader.GetText(), m_oY, m_arY);
 		else
 			CRenderedObject::SetAttribute(sName, oReader);
 	}
@@ -172,20 +202,6 @@ namespace SVG
 
 				if('\0' != pValue[0])
 				{
-					bool bFoundedSymbol = false;
-					const char* pCheckValue = pValue;
-					while ('\0' != *pCheckValue)
-					{
-						if (std::isprint(static_cast<unsigned char>(*pCheckValue++)))
-						{
-							bFoundedSymbol = true;
-							break;
-						}
-					}
-
-					if (!bFoundedSymbol)
-						continue;
-
 					if (m_wsText.empty())
 					{
 						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), m_wsText);
@@ -221,14 +237,25 @@ namespace SVG
 		double dX, dY;
 		CalculatePosition(dX, dY);
 
+		const double dBaseX = dX, dBaseY = dY;
+
 		if (!UseExternalFont(pFile, dX, dY, pRenderer, oMode, pOtherStyles, pContexObject))
 		{
 			if (!m_wsText.empty())
 			{
-				Aggplus::CMatrix oCurrentMatrix;
-				ApplyFont(pRenderer, dX, dY, oCurrentMatrix);
+				std::vector<TTextRun> arRuns;
 
-				pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
+				if (!m_arX.empty() || !m_arY.empty())
+					arRuns = GetPositionedRuns(true);
+
+				Aggplus::CMatrix oCurrentMatrix;
+				double dScaleX = 1., dScaleY = 1., dFontSize = 0.;
+				ApplyFont(pRenderer, dX, dY, oCurrentMatrix, dScaleX, dScaleY, dFontSize);
+
+				if (arRuns.empty())
+					pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
+				else
+					DrawPositionedText(pRenderer, arRuns, dX - dBaseX / dScaleX, dY - dBaseY / dScaleY, dScaleX, dScaleY, dFontSize);
 
 				pRenderer->SetTransform(oCurrentMatrix.sx(),  oCurrentMatrix.shy(),
 				                        oCurrentMatrix.shx(), oCurrentMatrix.sy(),
@@ -274,12 +301,13 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 	}
 
-	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY, Aggplus::CMatrix& oOldMatrix) const
+	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY, Aggplus::CMatrix& oOldMatrix, double& dScaleX, double& dScaleY, double& dFontSize) const
 	{
-		std::wstring wsFontFamily = DefaultFontFamily;
-		double dFontSize = ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE) * 72. / 25.4;
+		std::wstring wsFontFamily;
+		dFontSize = ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE) * 72. / 25.4;
 
-		double dScaleX = 1., dScaleY = 1.;
+		dScaleX = 1.;
+		dScaleY = 1.;
 
 		NormalizeFontSize(dFontSize, dScaleX, dScaleY);
 
@@ -301,26 +329,14 @@ namespace SVG
 			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 		}
 
-		if (!m_oFont.GetFamily().Empty())
-		{
-			wsFontFamily = m_oFont.GetFamily().ToWString();
+		int nStyle = 0;
 
-			CorrectFontFamily(wsFontFamily);
-		}
+		GetFontParams(wsFontFamily, nStyle);
 
 		pRenderer->put_FontName(wsFontFamily);
 		pRenderer->put_FontSize(dFontSize);
 
-		int nStyle = 0;
-
-		if (m_oFont.GetWeight().ToWString() == L"bold")
-			nStyle |= 0x01;
-		if (m_oFont.GetStyle() .ToWString() == L"italic")
-			nStyle |= 0x02;
-		if (m_oText.Underline())
-			nStyle |= (1 << 2);
-
-		float fW, fUndX1, fUndY1, fUndX2, fUndY2, fUndSize;
+		float fW = 0.f;
 		double dFHeight  = dFontSize;
 
 		if (NULL != m_pFontManager)
@@ -339,23 +355,10 @@ namespace SVG
 			m_pFontManager->LoadString1(m_wsText, 0, 0);
 			TBBox oBox = m_pFontManager->MeasureString2();
 			fW = (float)dKoef * (oBox.fMaxX - oBox.fMinX);
-
-			// Calculate underline position
-			m_pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
-			fUndX1   *= (float)dKoef;
-			fUndY1   *= (float)dKoef;
-			fUndX2   *= (float)dKoef;
-			fUndY2   *= (float)dKoef;
-			fUndSize *= (float)dKoef / 2;
-
-			fUndY1 -= dFHeight / 4;
-			fUndY2 -= dFHeight / 4;
 		}
 
-		if (L"left" == m_oText.GetAlign().ToWString())
-			dX += -fW;
-		else if (L"center" == m_oText.GetAlign().ToWString())
-			dX += -fW / 2;
+		if (m_arX.empty() && m_arY.empty())
+			dX += GetAnchorFactor() * fW;
 
 		if (NSCSS::NSProperties::EBaselineShift::Baseline != m_oText.GetBaselineShiftType())
 		{
@@ -396,43 +399,83 @@ namespace SVG
 			}
 		}
 
-		if (m_oText.Underline() || m_oText.LineThrough() || m_oText.Overline())
-		{
-			pRenderer->put_PenSize((double)fUndSize);
-			pRenderer->put_PenColor(m_oStyles.m_oStroke.m_oColor.ToInt());
-			pRenderer->put_PenLineEndCap(0);
-			pRenderer->put_PenLineStartCap(0);
-
-			pRenderer->BeginCommand(c_nPathType);
-			pRenderer->PathCommandStart();
-
-			if (m_oText.Underline())
-			{
-				pRenderer->PathCommandMoveTo(fUndX1 + dX, fUndY1 + dY);
-				pRenderer->PathCommandLineTo(fUndX2 + dX, fUndY2 + dY);
-			}
-
-			if (m_oText.LineThrough())
-			{
-				pRenderer->PathCommandMoveTo(fUndX1 + dX, fUndY1 + dY - dFHeight / 2);
-				pRenderer->PathCommandLineTo(fUndX2 + dX, fUndY2 + dY - dFHeight / 2);
-			}
-
-			if (m_oText.Overline())
-			{
-				pRenderer->PathCommandMoveTo(fUndX1 + dX, fUndY1 + dY - dFHeight * 1.5);
-				pRenderer->PathCommandLineTo(fUndX2 + dX, fUndY2 + dY - dFHeight * 1.5);
-			}
-
-			pRenderer->DrawPath(c_nStroke);
-			pRenderer->EndCommand(c_nPathType);
-			pRenderer->PathCommandEnd();
-		}
+		if (m_arX.empty() && m_arY.empty())
+			DrawDecoration(pRenderer, m_wsText, dX, dY, dFontSize);
 
 		pRenderer->put_FontStyle(nStyle);
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 		pRenderer->put_BrushColor1(m_oStyles.m_oFill.ToInt());
 		pRenderer->put_BrushAlpha1(255 * m_oStyles.m_oFill.GetOpacity());
+	}
+
+	void CTSpan::DrawDecoration(IRenderer* pRenderer, const std::wstring& wsText, double dX, double dY, double dFontSize) const
+	{
+		if (NULL == m_pFontManager || (!m_oText.Underline() && !m_oText.LineThrough() && !m_oText.Overline()))
+			return;
+
+		const double dKoef = 25.4 / 72.;
+
+		std::wstring wsFontFamily;
+		int nStyle = 0;
+
+		GetFontParams(wsFontFamily, nStyle);
+
+		m_pFontManager->LoadFontByName(wsFontFamily, dFontSize, nStyle, 72., 72.);
+		m_pFontManager->SetCharSpacing(0);
+		m_pFontManager->LoadString1(wsText, 0, 0);
+
+		float fUndX1, fUndY1, fUndX2, fUndY2, fUndSize;
+		m_pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+
+		double dUnitsPerEm = 1000.;
+		double dAscender   = 900.;
+
+		NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
+
+		if (NULL != pFontFile && 0 < pFontFile->Units_Per_Em())
+		{
+			dUnitsPerEm = (double)pFontFile->Units_Per_Em();
+			dAscender   = (double)pFontFile->GetAscender();
+		}
+
+		const double dEmKoef = 1000. / dUnitsPerEm;
+
+		fUndX1   *= (float)dKoef;
+		fUndX2   *= (float)dKoef;
+		fUndSize *= (float)(dKoef * dEmKoef);
+
+		const double dUnderline = fUndY1 * dKoef * dEmKoef;
+		const double dAscent    = dFontSize * dKoef * dAscender / dUnitsPerEm;
+
+		pRenderer->put_PenSize((double)fUndSize);
+		pRenderer->put_PenColor(m_oStyles.m_oStroke.m_oColor.ToInt());
+		pRenderer->put_PenLineEndCap(0);
+		pRenderer->put_PenLineStartCap(0);
+
+		pRenderer->BeginCommand(c_nPathType);
+		pRenderer->PathCommandStart();
+
+		if (m_oText.Underline())
+		{
+			pRenderer->PathCommandMoveTo(fUndX1 + dX, dY + dUnderline);
+			pRenderer->PathCommandLineTo(fUndX2 + dX, dY + dUnderline);
+		}
+
+		if (m_oText.LineThrough())
+		{
+			pRenderer->PathCommandMoveTo(fUndX1 + dX, dY - dAscent / 3.);
+			pRenderer->PathCommandLineTo(fUndX2 + dX, dY - dAscent / 3.);
+		}
+
+		if (m_oText.Overline())
+		{
+			pRenderer->PathCommandMoveTo(fUndX1 + dX, dY - dAscent);
+			pRenderer->PathCommandLineTo(fUndX2 + dX, dY - dAscent);
+		}
+
+		pRenderer->DrawPath(c_nStroke);
+		pRenderer->EndCommand(c_nPathType);
+		pRenderer->PathCommandEnd();
 	}
 
 	void CTSpan::UpdateFontSize()
@@ -485,15 +528,27 @@ namespace SVG
 		oBounds.m_dLeft   = m_oX.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + GetWidth();
 
+		const double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE;
+
 		oBounds.m_dBottom = m_oY.ToDouble(NSCSS::Pixel);
-		oBounds.m_dTop    = oBounds.m_dBottom - ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE);
+		oBounds.m_dTop    = oBounds.m_dBottom - dFontSize;
+
+		if (!m_arX.empty() || !m_arY.empty())
+		{
+			for (const TTextRun& oRun : GetPositionedRuns(false))
+			{
+				oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   oRun.m_dX);
+				oBounds.m_dRight  = std::max(oBounds.m_dRight,  oRun.m_dX + MeasureText(oRun.m_wsText));
+				oBounds.m_dBottom = std::max(oBounds.m_dBottom, oRun.m_dY);
+				oBounds.m_dTop    = std::min(oBounds.m_dTop,    oRun.m_dY - dFontSize);
+			}
+		}
 
 		if (nullptr != pTransform)
 		{
 			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
 
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+			TransformBounds(oBounds, pTransform->GetFinalValue());
 		}
 
 		if (!m_arObjects.empty())
@@ -520,34 +575,7 @@ namespace SVG
 		if (m_wsText.empty() && m_arObjects.empty())
 			return 0.;
 
-		std::wstring wsName = DefaultFontFamily;
-		const double dSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE;
-
-		if (!m_oFont.GetFamily().Empty())
-		{
-			wsName = m_oFont.GetFamily().ToWString();
-
-			CorrectFontFamily(wsName);
-		}
-
-		int nStyle = 0;
-
-		if (m_oFont.GetWeight().ToWString() == L"bold")
-			nStyle |= 0x01;
-		if (m_oFont.GetStyle() .ToWString() == L"italic")
-			nStyle |= 0x02;
-		if (m_oText.Underline())
-			nStyle |= (1 << 2);
-
-		double dWidth = 0;
-		if (NULL != m_pFontManager)
-		{
-			m_pFontManager->LoadFontByName(wsName, dSize, nStyle, 72., 72.);
-
-			m_pFontManager->LoadString1(m_wsText, 0., 0.);
-			TBBox oBox = m_pFontManager->MeasureString2();
-			dWidth = oBox.fMaxX - oBox.fMinX;
-		}
+		double dWidth = MeasureText(m_wsText);
 
 		for (const CTSpan* oTSpan : m_arObjects)
 			dWidth += oTSpan->GetWidth();
@@ -575,10 +603,147 @@ namespace SVG
 
 	void CTSpan::CalculatePosition(double &dX, double &dY) const
 	{
-		TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
+		TBounds oBounds{(NULL != m_pParent && (IsRelativeValue(m_oX) || IsRelativeValue(m_oY))) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
 
 		dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft);
 		dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
+	}
+
+	void CTSpan::CalculatePositions(std::vector<double>& arX, std::vector<double>& arY, bool bUseParentBounds) const
+	{
+		double dParentWidth = 0., dParentHeight = 0.;
+
+		if (bUseParentBounds && NULL != m_pParent && (IsRelativeValue(m_oX) || IsRelativeValue(m_oY) || IsRelativeValue(m_arX) || IsRelativeValue(m_arY)))
+		{
+			const TBounds oBounds{m_pParent->GetBounds()};
+
+			dParentWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
+			dParentHeight = oBounds.m_dBottom - oBounds.m_dTop;
+		}
+
+		arX.clear();
+		arY.clear();
+
+		if (m_arX.empty())
+			arX.push_back(m_oX.ToDouble(NSCSS::Pixel, dParentWidth));
+		else
+		{
+			arX.reserve(m_arX.size());
+
+			for (const SvgDigit& oValue : m_arX)
+				arX.push_back(oValue.ToDouble(NSCSS::Pixel, dParentWidth));
+		}
+
+		if (m_arY.empty())
+			arY.push_back(m_oY.ToDouble(NSCSS::Pixel, dParentHeight));
+		else
+		{
+			arY.reserve(m_arY.size());
+
+			for (const SvgDigit& oValue : m_arY)
+				arY.push_back(oValue.ToDouble(NSCSS::Pixel, dParentHeight));
+		}
+	}
+
+	void CTSpan::GetFontParams(std::wstring& wsFontFamily, int& nStyle) const
+	{
+		wsFontFamily = DefaultFontFamily;
+
+		if (!m_oFont.GetFamily().Empty())
+		{
+			wsFontFamily = m_oFont.GetFamily().ToWString();
+
+			CorrectFontFamily(wsFontFamily);
+		}
+
+		nStyle = 0;
+
+		if (m_oFont.GetWeight().ToWString() == L"bold")
+			nStyle |= 0x01;
+		if (m_oFont.GetStyle() .ToWString() == L"italic")
+			nStyle |= 0x02;
+		if (m_oText.Underline())
+			nStyle |= (1 << 2);
+	}
+
+	double CTSpan::MeasureText(const std::wstring& wsText) const
+	{
+		if (NULL == m_pFontManager || wsText.empty())
+			return 0.;
+
+		const double dSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) : DEFAULT_FONT_SIZE;
+
+		std::wstring wsFontFamily;
+		int nStyle = 0;
+
+		GetFontParams(wsFontFamily, nStyle);
+
+		m_pFontManager->LoadFontByName(wsFontFamily, dSize, nStyle, 72., 72.);
+		m_pFontManager->LoadString1(wsText, 0., 0.);
+
+		const TBBox oBox = m_pFontManager->MeasureString2();
+
+		return oBox.fMaxX - oBox.fMinX;
+	}
+
+	double CTSpan::GetAnchorFactor() const
+	{
+		if (L"left" == m_oText.GetAlign().ToWString())
+			return -1.;
+
+		if (L"center" == m_oText.GetAlign().ToWString())
+			return -0.5;
+
+		return 0.;
+	}
+
+	std::vector<CTSpan::TTextRun> CTSpan::GetPositionedRuns(bool bUseParentBounds) const
+	{
+		std::vector<TTextRun> arRuns;
+
+		std::vector<double> arX, arY;
+		CalculatePositions(arX, arY, bUseParentBounds);
+
+		const double dAnchor = GetAnchorFactor();
+		const size_t unLength = m_wsText.length();
+
+		double dRunX = arX.front();
+		double dRunY = arY.front();
+
+		size_t unStart = 0;
+
+		for (size_t unIndex = 1; unIndex <= unLength; ++unIndex)
+		{
+			if (unIndex < unLength && unIndex >= arX.size() && unIndex >= arY.size())
+				continue;
+
+			const std::wstring wsRun{m_wsText.substr(unStart, unIndex - unStart)};
+			const bool bNeedWidth{!Equals(0., dAnchor) || (unIndex < unLength && unIndex >= arX.size())};
+			const double dRunWidth{bNeedWidth ? MeasureText(wsRun) : 0.};
+
+			arRuns.push_back({wsRun, dRunX + dAnchor * dRunWidth, dRunY});
+
+			if (unIndex == unLength)
+				break;
+
+			dRunX = (unIndex < arX.size()) ? arX[unIndex] : dRunX + dRunWidth;
+
+			if (unIndex < arY.size())
+				dRunY = arY[unIndex];
+
+			unStart = unIndex;
+		}
+
+		return arRuns;
+	}
+
+	void CTSpan::DrawPositionedText(IRenderer* pRenderer, const std::vector<TTextRun>& arRuns, double dOffsetX, double dOffsetY, double dScaleX, double dScaleY, double dFontSize) const
+	{
+		for (const TTextRun& oRun : arRuns)
+			DrawDecoration(pRenderer, oRun.m_wsText, oRun.m_dX / dScaleX + dOffsetX, oRun.m_dY / dScaleY + dOffsetY, dFontSize);
+
+		for (const TTextRun& oRun : arRuns)
+			pRenderer->CommandDrawText(oRun.m_wsText, oRun.m_dX / dScaleX + dOffsetX, oRun.m_dY / dScaleY + dOffsetY, 0, 0);
 	}
 
 	void CTSpan::NormalizeFontSize(double& dFontHeight, double& dScaleX, double& dScaleY) const
@@ -594,12 +759,12 @@ namespace SVG
 		if (!ISZERO(dModuleM22) && (dModuleM22 < MIN_SCALE || dModuleM22 > MAX_SCALE))
 			dScaleY /= dModuleM22;
 
-		dFontHeight *= dScaleY;
+		dFontHeight /= dScaleY;
 
 		if (!Equals(0., dFontHeight) && dFontHeight < MIN_FONT_SIZE)
 		{
-			dScaleX *= MIN_FONT_SIZE / dFontHeight;
-			dScaleY *= MIN_FONT_SIZE / dFontHeight;
+			dScaleX *= dFontHeight / MIN_FONT_SIZE;
+			dScaleY *= dFontHeight / MIN_FONT_SIZE;
 			dFontHeight = MIN_FONT_SIZE;
 		}
 		else if (!Equals(0., dFontHeight) && dFontHeight > MAX_FONT_SIZE)

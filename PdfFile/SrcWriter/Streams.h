@@ -105,6 +105,7 @@ namespace PdfWriter
 		{
 			return StreamUnknown;
 		}
+		virtual bool OpenFile(const std::wstring& wsFilePath, bool bWrite = false) { return false; }
 
 		unsigned int   ReadUInt();
 		unsigned char  ReadUChar();
@@ -172,12 +173,19 @@ namespace PdfWriter
 		BYTE* GetCurBuffer();
 		void ClearWithoutAttack();
 
+		void SetForWasm(bool bForWasm);
+		unsigned int GetHeaderOffset() const;
+		int RealTell() const;
+		void SkipLen();
+		void WriteLen();
+
 	private:
 
 		void Shrink(unsigned int unSize);
 
 	private:
 		bool         m_bFree;
+		bool         m_bForWasm = false;
 
 		BYTE*        m_pBuffer;
 		int          m_nBufferSize;
@@ -239,6 +247,40 @@ namespace PdfWriter
 		int                 m_nFilePos;
 		int                 m_nFileSize;
 	};
+	class CImageMemoryStream : public CStream
+	{
+	public:
+		CImageMemoryStream();
+		~CImageMemoryStream();
+
+		bool         IsEof();
+		void         Write(const BYTE* pBuffer, unsigned int unSize);
+		void         Read(BYTE* pBuffer, unsigned int* punSize);
+		void         Seek(int nPos, EWhenceMode eMode);
+		int          Tell();
+		void         Close();
+		unsigned int Size();
+		EStreamType  GetType()
+		{
+			return StreamMemory;
+		}
+		bool OpenFile(const std::wstring& wsFilePath, bool bWrite = false);
+
+	private:
+
+		BYTE* m_pData;
+		LONG  m_lLength;
+		int   m_nFilePos;
+	};
+
+	static CStream* CreateImageStream()
+	{
+	#ifdef BUILDING_WASM_MODULE
+		return new(std::nothrow) CImageMemoryStream();
+	#else
+		return new(std::nothrow) CImageFileStream();
+	#endif
+	}
 }
 
 #endif // _PDF_WRITER_SRC_STREAMS_H

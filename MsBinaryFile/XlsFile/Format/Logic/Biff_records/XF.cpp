@@ -421,10 +421,13 @@ void XF::writeFields(CFRecord& record)
 		if(font_index == 0xffff)
 			font_index = 0;
 		if(ifmt == 0xffff)
-			ifmt = 164;
+			ifmt = 0;
 
         FontIndex ifnt;
-		ifnt.setValue(font_index + 5);
+		if(font_index)
+			ifnt.setValue(font_index + 5);
+		else
+			ifnt.setValue(0);
         record <<ifnt  << ifmt;
         _UINT16 flags = 0, flags5 = 0;
         _UINT32 flags2 = 0, flags3 = 0, flags4 = 0;

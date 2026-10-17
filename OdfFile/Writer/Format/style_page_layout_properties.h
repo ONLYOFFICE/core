@@ -73,6 +73,8 @@ public:
 	odf_types::common_horizontal_margin_attlist			common_horizontal_margin_attlist_;
     odf_types::common_vertical_margin_attlist			common_vertical_margin_attlist_;
     odf_types::common_margin_attlist					common_margin_attlist_;
+    _CP_OPT(odf_types::length)                          loext_margin_gutter_;
+
     
     odf_types::common_border_attlist					common_border_attlist_;
     odf_types::common_border_line_width_attlist			common_border_line_width_attlist_;
@@ -103,7 +105,6 @@ public:
 	int													offset_page_border_;
 	_CP_OPT(unsigned int)								loext_scale_to_X_;
 	_CP_OPT(unsigned int)								loext_scale_to_Y_;
-
 };
 
 class style_page_layout_properties_elements

@@ -41,11 +41,7 @@ namespace SVG
 {
 	CCircle::CCircle(CSvgReader& oReader, CRenderedObject* pParent)
 		: CRenderedObject(oReader, pParent)
-	{
-		START_READ_ATTRIBUTES(oReader)
-			SetAttribute(sAttributeName, oReader);
-		END_READ_ATTRIBUTES(oReader)
-	}
+	{}
 
 	void CCircle::SetAttribute(const std::string& sName, CSvgReader& oReader)
 	{
@@ -71,10 +67,10 @@ namespace SVG
 	{
 		Aggplus::CMatrix oOldTransform;
 
-		if (!StartPath(pRenderer, pFile, oOldTransform, oMode))
+		if (!StartPath(pRenderer, pFile, oOldTransform, oMode, true))
 			return false;
 
-		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
+		TBounds oBounds = (NULL != m_pParent && (IsRelativeValue(m_oCx) || IsRelativeValue(m_oCy))) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
 		double dX = m_oCx.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
 		double dY = m_oCy.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
@@ -83,7 +79,7 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(dX + dR, dY);
 		pRenderer->PathCommandArcTo(dX - dR, dY - dR, dR * 2.0, dR * 2.0, 0, 360);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject, true);
 
 		return true;
 	}
@@ -110,8 +106,7 @@ namespace SVG
 		{
 			*pTransform += m_oTransformation.m_oTransform.GetMatrix();
 
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dLeft,  oBounds.m_dTop   );
-			pTransform->GetFinalValue().TransformPoint(oBounds.m_dRight, oBounds.m_dBottom);
+			TransformBounds(oBounds, pTransform->GetFinalValue());
 
 			*pTransform -= m_oTransformation.m_oTransform.GetMatrix();
 		}

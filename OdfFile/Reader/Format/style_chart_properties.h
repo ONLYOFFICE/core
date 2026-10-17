@@ -68,6 +68,7 @@ namespace odf_reader {
 	{
 		return prop ? GetProperty<T>(*prop, Name, Val) : false;
 	}
+	_CP_OPT(int) oox_convert_rotation_angle(const _CP_OPT(unsigned int) & angle);
 // style:chart-properties
 class style_chart_properties : public office_element_impl<style_chart_properties>//chart styles are not inherited
 {

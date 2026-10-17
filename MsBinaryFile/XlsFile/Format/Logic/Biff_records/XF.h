@@ -66,7 +66,7 @@ namespace XLS
 
         _UINT16		font_index = 0;
 		
-		_UINT16		ifmt = 164; //used
+		_UINT16		ifmt = 0; //used
         std::wstring format_code = L"";
 		
 		_UINT16		ixfParent = 0xFFF;
@@ -99,7 +99,7 @@ namespace XLS
 
 		FillInfoExt		font_color;
 
-		bool			fHasXFExt = false;
+		bool			fHasXFExt = true;
 		bool			fsxButton = false;
 
 //xlsb

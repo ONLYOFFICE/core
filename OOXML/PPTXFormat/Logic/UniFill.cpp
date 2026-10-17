@@ -33,6 +33,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "UniFill.h"
+#include "Colors/SchemeClr.h"
 #include "../../SystemUtility/File.h"
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
@@ -298,24 +299,33 @@ namespace PPTX
 					{
 						ptr->fls = 1;
 						auto solid = dynamic_cast<PPTX::Logic::SolidFill*>(Fill.GetPointer());
-						auto rgba = solid->Color.Color->GetRGBA(0);
-						ptr->rgbFore.red = GETBITS(rgba, 0, 1);
-						ptr->rgbFore.green = GETBITS(rgba, 2, 3);
-						ptr->rgbFore.blue = GETBITS(rgba, 4, 5);
+						if(solid->Color.Color.IsInit() && solid->Color.is<PPTX::Logic::SchemeClr>())
+						{
+							auto scheme = static_cast<PPTX::Logic::SchemeClr*>( solid->Color.Color.GetPointer());
+							ptr->fAuto = false;
+							if(scheme->val.get() == L"bg1" || scheme->val.get() == L"bg2")
+							{
+								ptr->icvFore = 0x4E;
+								ptr->rgbFore.blue = 0xff;
+								ptr->rgbFore.red = 0xff;
+								ptr->rgbFore.green = 0xff;
+							}
+							else
+							{
+								ptr->icvFore = 0x4E;
+								ptr->rgbFore.blue = 0xff;
+								ptr->rgbFore.red = 0xff;
+								ptr->rgbFore.green = 0xff;
+
+							}
+						}
 					}
 					else if(m_type == UniFill::Type::pattFill)
 					{
 						auto patt = dynamic_cast<PPTX::Logic::PattFill*>(Fill.GetPointer());
 
-						auto rgba = patt->fgClr.Color->GetRGBA(0);
-						ptr->rgbFore.red = GETBITS(rgba, 0, 1);
-						ptr->rgbFore.green = GETBITS(rgba, 2, 3);
-						ptr->rgbFore.blue = GETBITS(rgba, 4, 5);
 
-						rgba = patt->bgClr.Color->GetRGBA(0);
-						ptr->rgbBack.red = GETBITS(rgba, 0, 1);
-						ptr->rgbBack.green = GETBITS(rgba, 2, 3);
-						ptr->rgbBack.blue = GETBITS(rgba, 4, 5);
+						
 						if(patt->prst->get() == L"pct50")
 							ptr->fls = 2;
 						else if(patt->prst->get() == L"pct25")

@@ -40,7 +40,7 @@
 
 namespace CRYPT
 {
-class ECMADecryptor;
+class Decryptor;
 }
 namespace PPT
 {
@@ -154,7 +154,7 @@ public:
 
 public:
     CMetaHeader();
-    void FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecryptor = NULL);
+    void FromStream(POLE::Stream* pStream, CRYPT::Decryptor *pDecryptor = NULL);
 
     void ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader);
     void ToWMFHeader(Gdiplus::WmfPlaceableFileHeader* pHeader);

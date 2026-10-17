@@ -64,6 +64,7 @@ namespace DocFileFormat
 		//read the 512 bytes (FKP)
 		unsigned char* bytes = NULL;
 		bytes = new unsigned char[512];
+		memset(bytes, 0, 512);
 
 		WordStream->seek(offset);
 		WordStream->read(bytes, 512);
@@ -87,6 +88,11 @@ namespace DocFileFormat
 		rgb = new unsigned char[crun];
 		grpchpx = new CharacterPropertyExceptions * [grpchpxSize];
 
+		for (unsigned int i = 0; i < grpchpxSize; i++)
+		{
+			grpchpx[i] = NULL;
+		}
+
 		j = 4 * (crun + 1);
 
 		unsigned char* chpx = NULL;
@@ -94,6 +100,8 @@ namespace DocFileFormat
 		for (int i = 0; i < crun; i++)
 		{
 			//fill the rgb array
+			if (j > 511)
+				break;
 			unsigned char wordOffset = bytes[j];
 			rgb[i] = wordOffset;
 			j++;
@@ -103,6 +111,9 @@ namespace DocFileFormat
 				//read first unsigned char of CHPX
 				//it's the count of bytes
 				unsigned char cb = bytes[wordOffset * 2];
+
+				int cbMax = 512 - (wordOffset * 2 + 1);
+				if (cb > cbMax) cb = (unsigned char)cbMax;
 
 				//read the bytes of chpx
 				chpx = new unsigned char[cb];

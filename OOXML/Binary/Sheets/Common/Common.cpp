@@ -114,16 +114,19 @@ namespace SerializeCommon
             return sSourcePath.substr(0, nIndex + 1) + sTargetExt;
 		return sSourcePath;
 	}
-    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& sDelimiter, BYTE& cSaveFileType, _INT32& Lcid)
+    void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& sDelimiter, BYTE& cSaveFileType, _INT32& Lcid, bool* pbCsvAllSheets)
 	{
 		result = BinXlsxRW::c_oFileTypes::XLSX;
 		nCodePage = 46;		//default 46 temporarily CP_UTF8
 		cSaveFileType = BinXlsxRW::c_oFileTypes::XLSX;// default
         Lcid = -1;// default
+		if (pbCsvAllSheets)
+			*pbCsvAllSheets = false; // default: only the active sheet
 
 		sDelimiter = L","; // default common
 
 		nullable<SimpleTypes::CUnsignedDecimalNumber> csvFormat;
+		nullable<SimpleTypes::CUnsignedDecimalNumber> csvAllSheets;
 		nullable<SimpleTypes::CUnsignedDecimalNumber> fileType;
 		nullable<SimpleTypes::CUnsignedDecimalNumber> codePage;
 		nullable<SimpleTypes::CUnsignedDecimalNumber> saveFileType;
@@ -153,6 +156,7 @@ namespace SerializeCommon
 					WritingElement_ReadAttributes_Read_else_if	(oReader, L"Lcid", LcidParam)
 					WritingElement_ReadAttributes_Read_else_if	(oReader, L"saveFileType", saveFileType)
 					WritingElement_ReadAttributes_Read_else_if  (oReader, L"csvFormat", csvFormat)
+					WritingElement_ReadAttributes_Read_else_if  (oReader, L"csvAllSheets", csvAllSheets)
 				WritingElement_ReadAttributes_End(oReader)
 				
 				if (csvFormat.IsInit())
@@ -171,6 +175,8 @@ namespace SerializeCommon
                     Lcid = LcidParam->GetValue();
 				if (delimiter.IsInit())
 					sDelimiter = delimiter.get();
+				if (pbCsvAllSheets && csvAllSheets.IsInit())
+					*pbCsvAllSheets = 0 != csvAllSheets->GetValue();
 				break;
 			}
 		}

@@ -18,7 +18,7 @@ namespace HTML
 #undef CreateDirectory
 #endif
 
-static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdo|big|cite|code|dfn|em|font|i|img|kbd|nobr|s|small|span|strike|strong|sub|sup|tt|";
+static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdi|bdo|big|cite|code|data|del|dfn|em|font|i|img|ins|kbd|label|mark|nobr|q|s|samp|small|span|strike|strong|sub|sup|time|tt|u|var|";
 static std::string empty_tags          = "|area|base|basefont|bgsound|br|command|col|embed|event-source|frame|hr|image|img|input|keygen|link|menuitem|meta|param|source|spacer|track|wbr|";
 static std::string preserve_whitespace = "|pre|textarea|script|style|";
 static std::string special_handling    = "|html|body|";
@@ -445,6 +445,114 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 	}
 }
 
+static unsigned int get_utf8_symbol(const std::string& sValue, size_t unPosition, size_t& unSize)
+{
+	const unsigned char chFirst = (unsigned char)sValue[unPosition];
+
+	if (0x80 > chFirst)
+	{
+		unSize = 1;
+		return chFirst;
+	}
+
+	unsigned char chMask;
+
+	if (0xC0 == (chFirst & 0xE0))
+	{
+		unSize = 2;
+		chMask = 0x1F;
+	}
+	else if (0xE0 == (chFirst & 0xF0))
+	{
+		unSize = 3;
+		chMask = 0x0F;
+	}
+	else if (0xF0 == (chFirst & 0xF8))
+	{
+		unSize = 4;
+		chMask = 0x07;
+	}
+	else
+	{
+		unSize = 1;
+		return 0;
+	}
+
+	if (unPosition + unSize > sValue.length())
+	{
+		unSize = 1;
+		return 0;
+	}
+
+	unsigned int unSymbol = chFirst & chMask;
+
+	for (size_t unIndex = 1; unIndex < unSize; ++unIndex)
+	{
+		const unsigned char chNext = (unsigned char)sValue[unPosition + unIndex];
+
+		if (0x80 != (chNext & 0xC0))
+		{
+			unSize = 1;
+			return 0;
+		}
+
+		unSymbol = (unSymbol << 6) | (chNext & 0x3F);
+	}
+
+	return unSymbol;
+}
+
+static bool is_xml_name_symbol(unsigned int unSymbol, bool bIsFirst)
+{
+	if (('a' <= unSymbol && 'z' >= unSymbol) || ('A' <= unSymbol && 'Z' >= unSymbol) || '_' == unSymbol ||
+	    (0xC0 <= unSymbol && 0xD6 >= unSymbol) || (0xD8 <= unSymbol && 0xF6 >= unSymbol) || (0xF8 <= unSymbol && 0x2FF >= unSymbol) ||
+	    (0x370 <= unSymbol && 0x37D >= unSymbol) || (0x37F <= unSymbol && 0x1FFF >= unSymbol) ||
+	    (0x200C <= unSymbol && 0x200D >= unSymbol) || (0x2070 <= unSymbol && 0x218F >= unSymbol) ||
+	    (0x2C00 <= unSymbol && 0x2FEF >= unSymbol) || (0x3001 <= unSymbol && 0xD7FF >= unSymbol) ||
+	    (0xF900 <= unSymbol && 0xFDCF >= unSymbol) || (0xFDF0 <= unSymbol && 0xFFFD >= unSymbol) ||
+	    (0x10000 <= unSymbol && 0xEFFFF >= unSymbol))
+		return true;
+
+	if (bIsFirst)
+		return false;
+
+	return ('0' <= unSymbol && '9' >= unSymbol) || '-' == unSymbol || '.' == unSymbol || 0xB7 == unSymbol ||
+	       (0x300 <= unSymbol && 0x36F >= unSymbol) || (0x203F <= unSymbol && 0x2040 >= unSymbol);
+}
+
+static void remove_invalid_name_symbols(std::string& sName)
+{
+	std::string sResult;
+	sResult.reserve(sName.length());
+
+	size_t unPosition = 0;
+	bool bColonFound  = false;
+
+	while (unPosition < sName.length())
+	{
+		size_t unSize = 1;
+		const unsigned int unSymbol = get_utf8_symbol(sName, unPosition, unSize);
+
+		if (':' == unSymbol)
+		{
+			if (!bColonFound && !sResult.empty())
+			{
+				bColonFound = true;
+				sResult += ':';
+			}
+		}
+		else if (is_xml_name_symbol(unSymbol, sResult.empty() || ':' == sResult.back()))
+			sResult.append(sName, unPosition, unSize);
+
+		unPosition += unSize;
+	}
+
+	if (!sResult.empty() && ':' == sResult.back())
+		sResult.erase(sResult.length() - 1);
+
+	sName = sResult;
+}
+
 static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringBuilderA& atts)
 {
 	std::vector<std::string> arrRepeat;
@@ -457,51 +565,51 @@ static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringB
 		remove_control_symbols(sVal);
 		remove_control_symbols(sName);
 
-		atts.WriteString(" ");
+		const size_t unOriginalLength = sName.length();
 
-		bool bCheck = false;
-		size_t nBad = sName.find_first_of("+,.=?#%<>&;\"\'()[]{}");
-		while(nBad != std::string::npos)
-		{
-			sName.erase(nBad, 1);
-			nBad = sName.find_first_of("+,.=?#%<>&;\"\'()[]{}", nBad);
-			if(sName.empty())
-				break;
-			bCheck = true;
-		}
-		if(sName.empty())
+		remove_invalid_name_symbols(sName);
+
+		if (sName.empty())
 			continue;
-		while(sName.front() >= '0' && sName.front() <= '9')
-		{
-			sName.erase(0, 1);
-			if(sName.empty())
-				break;
-			bCheck = true;
-		}
-		if(bCheck)
+
+		if (unOriginalLength != sName.length())
 		{
 			GumboAttribute* check = gumbo_get_attribute(attribs, sName.c_str());
 			if(check || std::find(arrRepeat.begin(), arrRepeat.end(), sName) != arrRepeat.end())
 				continue;
-			else
-				arrRepeat.push_back(sName);
+
+			arrRepeat.push_back(sName);
 		}
 
-		if(sName.empty())
-			continue;
+		atts.WriteString(" ");
 		atts.WriteString(sName);
 
-		// determine original quote character used if it exists
-		std::string qs ="\"";
-		atts.WriteString("=");
-		atts.WriteString(qs);
+		atts.WriteString("=\"");
 		substitute_xml_entities_into_attributes(sVal);
 		atts.WriteString(sVal);
-		atts.WriteString(qs);
+		atts.WriteString("\"");
 	}
 }
 
 static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilder, bool bCheckValidNode = true);
+
+static bool has_inline_neighbour(GumboVector* children, size_t index, bool next)
+{
+	while (next ? index + 1 < children->length : index > 0)
+	{
+		index = next ? index + 1 : index - 1;
+
+		GumboNode* sibling = static_cast<GumboNode*>(children->data[index]);
+
+		if (sibling->type == GUMBO_NODE_COMMENT)
+			continue;
+
+		return sibling->type == GUMBO_NODE_TEXT ||
+		       (sibling->type == GUMBO_NODE_ELEMENT && nonbreaking_inline.find("|" + get_tag_name(sibling) + "|") != std::string::npos);
+	}
+
+	return false;
+}
 
 static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents, bool bCheckValidNode)
 {
@@ -536,7 +644,8 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 			prettyprint(child, contents, bCheckValidNode);
 		else if (child->type == GUMBO_NODE_WHITESPACE)
 		{
-			if (keep_whitespace || is_inline || is_like_inline)
+			if (keep_whitespace || is_inline || is_like_inline ||
+			    (has_inline_neighbour(children, i, false) && has_inline_neighbour(children, i, true)))
 				contents.WriteString(child->v.text.text);
 		}
 		else if (child->type != GUMBO_NODE_COMMENT)

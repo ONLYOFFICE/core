@@ -107,6 +107,7 @@ namespace PdfWriter
 		void      SetWidth(double dWidth);
 		double    GetWidth();
 		double    GetHeight();
+		double    GetCropHeight();
 
 		EDictType GetDictType() const
 		{
@@ -144,6 +145,7 @@ namespace PdfWriter
 		void      SetFlat(double dFlatness);
 		void      GrSave();
 		void      GrRestore();
+		int       GetOrCreateDestAnchorMCID();
 		void      SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB);
 		void      SetStrokeG(double dG);
 		void      SetStrokeRGB(double dR, double dG, double dB);
@@ -153,6 +155,7 @@ namespace PdfWriter
 		void      SetFillRGB(double dR, double dG, double dB);
 		void      SetFillCMYK(double dC, double dM, double dY, double dK);
 		void      Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
+		void      Transform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetExtGrState(CExtGrState* pExtGrState);
@@ -163,7 +166,7 @@ namespace PdfWriter
 		void      SetStrokeAlpha(unsigned char unAlpha);
 		void      SetFillAlpha(unsigned char unAlpha);
 		void      BeginMarkedContent(const std::string& sName);
-		void      BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC);
+		void      BeginMarkedContentDict(const std::string& sName, CObjectBase* pBDC);
 		void      EndMarkedContent();
 		void      SetRenderingIntent(ERenderingIntent eRenderingIntent);
 
@@ -234,6 +237,7 @@ namespace PdfWriter
 		CDictObject* m_pPatterns;
 		unsigned int m_unPatternsCount;
 		EFontType    m_eType;
+		int          m_nDestAnchorMCID;
 	};
 	class CFakePage : public CObjectBase
 	{

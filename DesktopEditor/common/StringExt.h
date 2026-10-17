@@ -41,6 +41,7 @@
 #include <string.h>
 #include <string>
 #include <vector>
+#include <wctype.h>
 
 #include "../../Common/kernel_config.h"
 
@@ -307,14 +308,14 @@ static inline long FindLastNotOf(const wchar_t* str, unsigned int unLen, const w
 static bool FromHumanReadableByteCount(const std::wstring& wsString, long long& res)
 {
 	res = 0;
-	long long coeff = 0;
 	int unit = 1000;
 	int exp = 0;
+	double coeff = 0;
 	// Parse leading numeric factor
 	std::size_t pos = 0;
 	try
 	{
-		coeff = std::stoll(wsString, &pos);
+		coeff = std::stod(wsString, &pos);
 	}
 	catch (...)
 	{
@@ -322,13 +323,13 @@ static bool FromHumanReadableByteCount(const std::wstring& wsString, long long& 
 	}
 
 	// Skip any intermediate white space
-	while (pos < wsString.length() && isspace(wsString[pos]))
+	while (pos < wsString.length() && iswspace(wsString[pos]))
 		++pos;
 
 	// Read off first character which should be an SI prefix
 	if (pos < wsString.length())
 	{
-		switch (toupper(wsString[pos]))
+		switch (towupper(wsString[pos]))
 		{
 		case 'B':
 			exp = 0;
@@ -345,14 +346,17 @@ static bool FromHumanReadableByteCount(const std::wstring& wsString, long long& 
 		case 'T':
 			exp = 12;
 			break;
-		case 'E':
+		case 'P':
 			exp = 15;
 			break;
-		case 'Z':
+		case 'E':
 			exp = 18;
 			break;
-		case 'Y':
+		case 'Z':
 			exp = 21;
+			break;
+		case 'Y':
+			exp = 24;
 			break;
 
 		default:
@@ -364,7 +368,7 @@ static bool FromHumanReadableByteCount(const std::wstring& wsString, long long& 
 	// If an 'i' or 'I' is present use IEC standard 1024 units
 	if (pos < wsString.length())
 	{
-		if (toupper(wsString[pos]) == 'I')
+		if (towupper(wsString[pos]) == 'I')
 		{
 			++pos;
 			unit = 1024;
@@ -374,7 +378,7 @@ static bool FromHumanReadableByteCount(const std::wstring& wsString, long long& 
 	// Next character must be one of B/empty/whitespace
 	if (pos < wsString.length())
 	{
-		switch (toupper(wsString[pos]))
+		switch (towupper(wsString[pos]))
 		{
 		case 'B':
 		case ' ':
@@ -388,14 +392,18 @@ static bool FromHumanReadableByteCount(const std::wstring& wsString, long long& 
 	}
 
 	// Skip any remaining white space
-	while (pos < wsString.length() && isspace(wsString[pos]))
+	while (pos < wsString.length() && iswspace(wsString[pos]))
 		++pos;
 
 	// Parse error on anything but a null terminator
 	if (pos < wsString.length())
 		return false;
 
-	res = exp ? (long long)(coeff * pow(unit, exp / 3)) : coeff;
+	// 2^63 is the first double above the long long range, LLONG_MAX itself rounds up to it
+	double total = coeff * pow(unit, exp / 3);
+	if (!(total > -9223372036854775808.0 && total < 9223372036854775808.0))
+		return false;
+	res = (long long)total;
 	return true;
 }
 } // namespace NSStringExt

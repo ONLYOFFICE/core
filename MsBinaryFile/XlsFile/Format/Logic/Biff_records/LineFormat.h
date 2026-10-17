@@ -55,13 +55,14 @@ public:
 
 	static const ElementType	type = typeLineFormat;
 	int serialize(std::wostream & _stream);
+	void setChecksum(std::vector<BYTE> &ChecksumData);
 //-----------------------------
 	LongRGB rgb;
-	_UINT16 lns = 5;
+	_UINT16 lns = 0;
 	_UINT16 we = 0xFFFF;
-	bool	fAuto = false;
+	bool	fAuto = true;
 	bool	fAxisOn = false;
-	bool	fAutoCo = false;
+	bool	fAutoCo = true;
 	IcvChart icv = 	0x004D;
 };
 

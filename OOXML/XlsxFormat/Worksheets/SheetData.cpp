@@ -76,6 +76,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Blank.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BoolErr.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/LabelSst.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Label.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Formula.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgArea.h"
@@ -853,7 +854,7 @@ namespace OOX
             oStream.XlsbStartRecord(XLSB::rt_RowHdr, 17);
 			oStream.WriteULONG(m_nR & 0xFFFFF);
 			oStream.WriteULONG(m_nS);
-			oStream.WriteUSHORT(((_UINT16)(m_dHt * 20)) & 0x1FFF);//pt to twips;
+			oStream.WriteUSHORT(((_UINT16)(m_dHt * 20)) & 0xFFFF);//pt to twips;
 
 			BYTE byteExtra1 = 0;
 			if(m_oThickTop.ToBool())
@@ -982,7 +983,7 @@ namespace OOX
 		}
 		void CFormula::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<f"));
+			writer.WriteString(L"<f");
 			WritingStringNullableAttrString(L"t", m_oT, m_oT->ToString());
 			WritingStringNullableAttrBool(L"aca", m_oAca);
 			WritingStringNullableAttrString(L"ref", m_oRef, m_oRef.get());
@@ -997,13 +998,13 @@ namespace OOX
 			WritingStringNullableAttrBool(L"bx", m_oBx);
 			if(!m_sText.empty())
 			{
-				writer.WriteString(_T(">"));
+				writer.WriteString(L">");
 				writer.WriteEncodeXmlStringHHHH(m_sText);
-				writer.WriteString(_T("</f>"));
+				writer.WriteString(L"</f>");
 			}
 			else
 			{
-				writer.WriteString(_T("/>"));
+				writer.WriteString(L"/>");
 			}
 		}
 		void CFormula::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream)
@@ -1307,7 +1308,12 @@ namespace OOX
 					FmlaUnion->m_SharedFormula = XLS::BaseObjectPtr(shrFmla);
 					shrFmla->ref_.fromString(m_oRef.get());
 					shrFmla->formula = m_sText;
-					FmlaUnion->shared_formulas_locations_ref_.push_back(shrFmla->ref_);
+					CellRangeRef shrFmlaLoc;
+					shrFmlaLoc.columnFirst = cellBaseRef.column;
+					shrFmlaLoc.columnLast = cellBaseRef.column;
+					shrFmlaLoc.rowFirst = cellBaseRef.row;
+					shrFmlaLoc.rowLast = cellBaseRef.row;
+					FmlaUnion->shared_formulas_locations_ref_.push_back(shrFmlaLoc);
 					parseFmlaValueType(shrFmla->formula);
 				}
 				if(m_oSi.IsInit() && FmlaUnion->shared_formulas_locations_ref_.size() > m_oSi->GetValue())
@@ -1336,7 +1342,7 @@ namespace OOX
 					auto ArrayFmla = new XLS::Array(cellBaseRef);
 					FmlaUnion->m_ArrayFormula = XLS::BaseObjectPtr(ArrayFmla);
 					ArrayFmla->ref_.fromString(m_oRef.get());
-					ArrayFmla->formula = m_sText;
+					ArrayFmla->formula.parseStringFormula(m_sText, L"XLS");
 					parseFmlaValueType(ArrayFmla->formula);
 
 					auto cellPos = new XLS::PtgExp;
@@ -1635,7 +1641,7 @@ namespace OOX
 		}
 		std::wstring CCell::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
         bool CCell::parseRef(std::wstring sRef, int& nRow, int& nCol)
 		{
@@ -1690,7 +1696,7 @@ namespace OOX
 
 			int nBaseRow = (pXlsxFlat)? 0 : 1; // xml/xlsb->xlsx
 
-			writer.WriteString(_T("<c"));
+			writer.WriteString(L"<c");
 			if (m_oRow.IsInit() && m_oCol.IsInit())
 			{
 				int nCol = *m_oCol;
@@ -1719,21 +1725,31 @@ namespace OOX
 			WritingStringNullableAttrBool(L"ph", m_oShowPhonetic);
 			if(m_oFormula.IsInit() || m_oRichText.IsInit() || m_oValue.IsInit())
 			{
-				writer.WriteString(_T(">"));
+				writer.WriteString(L">");
 				if(m_oFormula.IsInit())
 					m_oFormula->toXML(writer);
-				if(m_oRichText.IsInit())
+				if(m_oRichText.IsInit() || (m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue()))
 				{
-					writer.WriteString(_T("<is>"));
-					m_oRichText->toXML2(writer);
-					writer.WriteString(_T("</is>"));
+					writer.WriteString(L"<is>");
+					if (m_oRichText.IsInit())
+					{
+						m_oRichText->toXML2(writer);
+					}
+					else if (m_oValue.IsInit())
+					{
+						m_oValue->toXML2(writer, L"t");
+					}
+					writer.WriteString(L"</is>");
 				}
-				if(m_oValue.IsInit())
-					m_oValue->toXML2(writer, _T("v"));
-				writer.WriteString(_T("</c>"));
+				else
+				{
+					if (m_oValue.IsInit())
+						m_oValue->toXML2(writer, L"v");
+				}
+				writer.WriteString(L"</c>");
 			}
 			else
-				writer.WriteString(_T("/>"));
+				writer.WriteString(L"/>");
 		}
 		void CCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -2127,9 +2143,9 @@ namespace OOX
 						oOnOff.FromString(sVal.c_str());
 						m_oValue.Init();
 						if (oOnOff.ToBool())
-							m_oValue->m_sText = _T("1");
+							m_oValue->m_sText = L"1";
 						else
-							m_oValue->m_sText = _T("0");
+							m_oValue->m_sText = L"0";
 					}
 				}
 			}
@@ -2858,6 +2874,8 @@ namespace OOX
 				CellReference.row = m_oRow.get() -1;
 				CellReference.column = m_oCol.get();
 			}
+			if(CellReference.row >  65535 || CellReference.column > 255)
+				return;
 			bool isReal = false;
 			double realCache = 0;
 			if(!m_oType.IsInit())
@@ -2980,7 +2998,7 @@ namespace OOX
 					}
 					case SimpleTypes::Spreadsheet::celltypeSharedString:
 					{
-						if(m_oValue.IsInit())
+						if(m_oValue.IsInit() && !m_oValue->m_sText.empty())
 						{
 							auto CellSst = new XLS::LabelSst;
 							CellSst->cell.rw = CellReference.row;
@@ -2994,6 +3012,19 @@ namespace OOX
 						}
 						break;
 					}
+					case SimpleTypes::Spreadsheet::celltypeInlineStr:
+					{
+
+							auto CellLabel = new XLS::Label;
+							CellLabel->cell.rw = CellReference.row;
+							CellLabel->cell.col = CellReference.column;
+							if(m_oStyle.IsInit())
+									CellLabel->cell.ixfe = m_oStyle.get();
+							if(m_oRichText.IsInit())
+								CellLabel->st = m_oRichText->ToString();
+							castedPtr->cellContent = XLS::BaseObjectPtr(CellLabel);
+							break;
+					}
 					case SimpleTypes::Spreadsheet::celltypeStr:
 					{
 
@@ -3005,7 +3036,6 @@ namespace OOX
 							castedPtr->cellContent = XLS::BaseObjectPtr(CellBlank);
 						break;
 					}
-
 				}
 			}
 			else
@@ -3024,7 +3054,11 @@ namespace OOX
 				else if(cellType == SimpleTypes::Spreadsheet::celltypeStr)
 				{
 					if(m_oValue.IsInit() && !m_oValue.get().m_sText.empty())
+					{
 						FmlaCell->val.data.Byte1 = 0x00;
+						fmlaUnion->m_stringValCache.Init();
+						fmlaUnion->m_stringValCache = m_oValue->m_sText;
+					}
 					else
 						FmlaCell->val.data.Byte1 = 0x03;
 				}
@@ -3061,10 +3095,11 @@ namespace OOX
 					}
 					FmlaCell->val.data.Byte3 = cellval;
 				}
+				if(cellType != SimpleTypes::Spreadsheet::celltypeNumber)
+					FmlaCell->val.data.fExprO = 0xFFFF;
 				if(m_oFormula.IsInit())
 					m_oFormula->toXls(castedPtr->cellContent);
 			}
-
 		}
         void CCell::toBin(XLS::StreamCacheWriterPtr& writer)
         {
@@ -3111,6 +3146,18 @@ namespace OOX
 				if(m_oValue.IsInit())
 					m_oType->SetValue(processCellType(m_oValue.get().m_sText, isReal, realCache));
             }
+			else if(m_oType->GetValue() == SimpleTypes::Spreadsheet::celltypeNumber)
+			{
+				wchar_t *tail;
+				try
+				{
+					realCache =  std::wcstod(m_oValue.get().m_sText.c_str(), &tail);
+				}
+				catch(const std::exception& e)
+				{
+					realCache = 0;
+				}
+			}
             auto cellType = m_oType->GetValue();
             //main cell record
             CFRecordPtr CellRecord;
@@ -4080,7 +4127,7 @@ namespace OOX
 		}
 		std::wstring CRow::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		void CRow::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -4116,11 +4163,20 @@ namespace OOX
 		}
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<row"));
+			writer.WriteString(L"<row");
 				WritingStringNullableAttrInt(L"r", m_oR, m_oR->GetValue());
 				WritingStringNullableAttrInt(L"s", m_oS, m_oS->GetValue());
 				WritingStringNullableAttrBool(L"customFormat", m_oCustomFormat);
-				WritingStringNullableAttrDouble(L"ht", m_oHt, m_oHt->GetValue());
+				if (m_oHt.IsInit())
+				{
+					double dVal = m_oHt->GetValue();
+					if (dVal < 409.6)
+					{
+						WritingStringNullableAttrDouble(L"ht", m_oHt, dVal);
+					}
+					else
+						writer.WriteString(L" ht=\"409.6\""); //todooo ? WritingStringNullableAttrDoubleLimit
+				}
 				WritingStringNullableAttrBool(L"hidden", m_oHidden);
 				WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
 				WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
@@ -4128,11 +4184,11 @@ namespace OOX
 				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
 				WritingStringNullableAttrBool(L"thickBot", m_oThickBot);
 				WritingStringNullableAttrBool(L"ph", m_oPh);
-			writer.WriteString(_T(">"));
+			writer.WriteString(L">");
 		}
 		void CRow::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("</row>"));
+			writer.WriteString(L"</row>");
 		}
 		void CRow::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -4441,7 +4497,7 @@ namespace OOX
 			m_oR.Init();
 			m_oR->SetValue((oStream.GetULong() & 0xFFFFF) + 1);
 			_UINT32 nS = oStream.GetULong();
-			_UINT16 nHt = oStream.GetUShort() & 0x1FFF;
+			_UINT16 nHt = oStream.GetUShort() & 0xFFFF;
 			BYTE byteExtra1 = oStream.GetUChar();
 			if(0 != (byteExtra1 & 0x1))
 			{
@@ -4723,7 +4779,7 @@ namespace OOX
         }
         bool CRow::compressCell(CCell* pCell)
         {
-            if(!pCell->m_oValue.IsInit() && !pCell->m_oFormula.IsInit() && !m_arrItems.empty())
+			if(!pCell->m_oValue.IsInit() && !pCell->m_oRichText.IsInit() && !pCell->m_oFormula.IsInit() && !m_arrItems.empty())
             {
                 auto prevCell = m_arrItems.back();
                 if(!prevCell->m_oRepeated.IsInit())
@@ -4765,7 +4821,7 @@ namespace OOX
 		}
 		std::wstring CSheetData::toXML() const
 		{
-			return _T("");
+			return L"";
 		}
 		void CSheetData::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -4803,11 +4859,11 @@ namespace OOX
 		}
 		void CSheetData::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<sheetData>"));
+			writer.WriteString(L"<sheetData>");
 		}
 		void CSheetData::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("</sheetData>"));
+			writer.WriteString(L"</sheetData>");
 		}
         void CSheetData::AddRowToCache(CRow &row)
         {
@@ -5173,6 +5229,8 @@ namespace OOX
 		};
 		auto processRow = [&](CRow *row, XLS::CELL_GROUP *groupPtr, std::vector<CellRangeRef> &shared_formulas_locations_ref)
 		{
+			if(row->m_oR.IsInit() && row->m_oR->GetValue() > 65535)
+				return;
 			groupPtr->m_arRows.push_back(row->toXLS());
 			for(auto cell : row->m_arrItems)
 			{
@@ -5203,7 +5261,7 @@ namespace OOX
 		{
 			processRow(row, cellGroup, shared_formulas_locations_ref);
 		}
-
+		ClearSharedFmlaRefs();
 		return tablePtr;
 	}
     void CSheetData::toBin(XLS::StreamCacheWriterPtr& writer)

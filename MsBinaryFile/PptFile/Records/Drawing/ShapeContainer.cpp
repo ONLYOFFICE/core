@@ -1663,7 +1663,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
             }
             else if (CExFilesInfo::eftAudio == exType)
             {
-                CAudioElement* pAudioElem		= new CAudioElement();
+                CAudioElement* pAudioElem = new CAudioElement();
                 pElement = CElementPtr(pAudioElem);
 
                 pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
@@ -1672,7 +1672,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                 pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
                 pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
 
-                pAudioElem->m_bLoop				= oInfo.m_bLoop;
+                pAudioElem->m_bLoop = oInfo.m_bLoop;
 
                 if (NULL != pSlide)
                 {

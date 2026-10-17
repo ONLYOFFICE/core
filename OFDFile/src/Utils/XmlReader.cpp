@@ -92,11 +92,10 @@ std::vector<double> CXmlReader::GetArrayDoubles(bool bIsAttribute)
 	if(arValues.empty())
 		return std::vector<double>();
 
-	std::vector<double> arDoubleValues(arValues.size());
+	std::vector<double> arDoubleValues(arValues.size(), 0.);
 
 	for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-		if (!StringToDouble(arValues[unIndex], arDoubleValues[unIndex]))
-			return std::vector<double>();
+		StringToDouble(arValues[unIndex], arDoubleValues[unIndex]);
 
 	return arDoubleValues;
 }
@@ -108,11 +107,10 @@ std::vector<unsigned int> CXmlReader::GetArrayUInteger(bool bIsAttribute)
 	if(arValues.empty())
 		return std::vector<unsigned int>();
 
-	std::vector<unsigned int> arUIntValues(arValues.size());
+	std::vector<unsigned int> arUIntValues(arValues.size(), 0);
 
 	for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-		if (!StringToUInteger(arValues[unIndex], arUIntValues[unIndex]))
-			return std::vector<unsigned int>();
+		StringToUInteger(arValues[unIndex], arUIntValues[unIndex]);
 
 	return arUIntValues;
 }

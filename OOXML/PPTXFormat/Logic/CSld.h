@@ -33,8 +33,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
-#ifndef PPTX_SLIDES_COMMON_SLIDE_DATA_INCLUDE_H_
-#define PPTX_SLIDES_COMMON_SLIDE_DATA_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "Bg.h"
@@ -49,8 +47,8 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionMethods(CSld)
-			
-			CSld(OOX::Document *pMain = NULL);
+
+				CSld(OOX::Document* pMain = NULL);
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
@@ -74,7 +72,6 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
-	} // namespace Logic
+	}
 } // namespace PPTX
 
-#endif // PPTX_SLIDES_COMMON_SLIDE_DATA_INCLUDE_H_

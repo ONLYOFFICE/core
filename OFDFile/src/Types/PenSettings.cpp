@@ -35,11 +35,14 @@
 
 #include "PenSettings.h"
 
+#include "../../../DesktopEditor/graphics/IRenderer.h"
+
 namespace OFD
 {
 CPenSettings::CPenSettings(CXmlReader& oLiteReader)
 	: m_dLineWidth(0.353), m_eCap(ECap::Butt),
-	  m_eJoin(EJoin::Miter), m_dMiterLimit(4.234), m_dDashOffset(0.)
+	  m_eJoin(EJoin::Miter), m_dMiterLimit(4.234), m_dDashOffset(0.),
+	  m_uchAlpha(255)
 {
 	if (0 == oLiteReader.GetAttributesCount() || !oLiteReader.MoveToFirstAttribute())
 		return;

@@ -192,19 +192,10 @@ public:
 		RwType rw;
         ColType col = 0;
 		rw = row;
-		auto version = record.getGlobalWorkbookInfo()->Version;
-		
-		if (version < 0x0800)
-		{
-			col = column;
-		}
-		else
-		{
-        	SETBITS(col, 0, 13, column);
-        	SETBIT(col, 14, colRelative);
-        	SETBIT(col, 15, rowRelative);
-		}
 
+		SETBITS(col, 0, 13, column);
+		SETBIT(col, 14, colRelative);
+		SETBIT(col, 15, rowRelative);
 		record << rw << col;
 	}
 

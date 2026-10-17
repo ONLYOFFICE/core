@@ -187,6 +187,8 @@ namespace NExtractTools
 		if (recordTo > *oMailMergeSend.recordTo)
 			recordTo = *oMailMergeSend.recordTo;
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
+		convertParams.InitDoctRenderer(&oDoctRenderer);
+
 		std::wstring sMailMergeXml = getMailMergeXml(sJsonPath, *oMailMergeSend.recordFrom, recordTo, *oMailMergeSend.to);
 		// send output folder sFileFromDir so that files are at the same level as the media folder, important for further conversion to docx, pdf
 		std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, eTypeTo, sFrom, sFileFromDir, sImagesDirectory, convertParams.m_sThemesDir, -1, sMailMergeXml, params);
@@ -605,6 +607,63 @@ namespace NExtractTools
 				}
 			}
 		}
+		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom)
+		{
+			if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
+			{
+				nRes = txt2doct_bin(sFrom, sTo, params, convertParams);
+			}
+			else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == nFormatTo)
+			{
+				nRes = txt2doct(sFrom, sTo, params, convertParams);
+			}
+			else if (	AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo ||
+						AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
+						AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
+			{
+				nRes = txt2docx(sFrom, sTo, params, convertParams);
+			}
+			else if (	AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatTo || 
+						AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatTo || 
+						AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
+			//{//copy | change settings
+			//	//nRes = txt2txt(sFrom, sTo, params, convertParams);
+			//}
+			//else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
+			//{
+			//	//nRes = txt2odt(sFrom, sTo, params, convertParams);
+			//}			
+			//else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatTo)
+			{
+				//nRes = txt2rtf(sFrom, sTo, params, convertParams);
+				std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
+				NSDirectory::CreateDirectory(sDocxDir);
+				nRes = txt2docx_dir(sFrom, sDocxDir, params, convertParams);
+				if (SUCCEEDED_X2T(nRes))
+				{
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromDocxDir(sDocxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
+				}
+			}
+			else
+			{//image, pdf ... 
+				std::wstring sDoctDir = combinePath(convertParams.m_sTempDir, L"doct_unpacked");
+				NSDirectory::CreateDirectory(sDoctDir);
+				std::wstring sTFile = combinePath(sDoctDir, L"Editor.bin");
+
+				nRes = txt2doct_bin(sFrom, sTFile, params, convertParams);
+
+				if (SUCCEEDED_X2T(nRes))
+				{
+					nRes = fromDoctBin(sTFile, sTo, nFormatTo, params, convertParams);
+				}
+			}
+		}
 		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES == nFormatFrom)
 		{
 			std::wstring wsTempFile{combinePath(convertParams.m_sTempDir, L"IntermediateFile.odf")};
@@ -747,10 +806,6 @@ namespace NExtractTools
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatFrom)
 			{
 				nRes = rtf2docx_dir(sFrom, sDocxDir, params, convertParams);
-			}
-			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_XML == nFormatFrom)
-			{
-				nRes = txt2docx_dir(sFrom, sDocxDir, params, convertParams);
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 == nFormatFrom)
 			{
@@ -945,6 +1000,10 @@ namespace NExtractTools
 			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatTo)
 			{
 				nRes = xlsx_dir2xlsb(sFrom, sTo, params, convertParams);
+			}
+			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
+			{
+				nRes = xlsx_dir2xls(sFrom, sTo, params, convertParams);
 			}
 			// else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
 			//{
@@ -1744,6 +1803,9 @@ namespace NExtractTools
 			std::cerr << "Couldn't create temp folder" << std::endl;
 			return AVS_FILEUTILS_ERROR_UNKNOWN;
 		}
+
+		if (NULL != oInputParams.m_sOverrideSdkJsPath)
+			oConvertParams.m_sOverrideSdkJsPath = *oInputParams.m_sOverrideSdkJsPath;
 
 		std::wstring sGlobalTempDir = L"";
 		if (NSFile::CFileBinary::IsGlobalTempPathUse())

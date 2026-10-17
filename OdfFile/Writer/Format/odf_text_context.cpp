@@ -287,8 +287,10 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 	
 	if (single_paragraph_ && level > 0)
 	{
-		std::wstring str_enter(L"\n");
-		add_text_content(str_enter);
+		office_element_ptr break_elm;
+		create_element(L"text", L"line-break", break_elm, odf_context_);
+
+		current_level_.back().elm->add_child_element(break_elm);
 		return;
 	}
 	
@@ -394,7 +396,8 @@ int odf_text_context::get_last_level()
 }
 void odf_text_context::start_span(bool styled)
 {
-	if (styles_context_ == NULL || single_paragraph_)return;
+	if (styles_context_ == NULL) return;
+	if (single_paragraph_ && false == styled) return;
 
 	office_element_ptr span_elm;
 	create_element(L"text", L"span", span_elm, odf_context_);
@@ -447,7 +450,7 @@ bool odf_text_context::in_span()
 }
 void odf_text_context::end_span()
 {
-	if (styles_context_ == NULL || single_paragraph_)return;
+	if (styles_context_ == NULL) return;
 	
 	if (false == current_level_.empty() && dynamic_cast<text_span*>(current_level_.back().elm.get()))	
 		current_level_.pop_back();

@@ -615,19 +615,10 @@ namespace MetaFile
 		if (*pdH < 0) *pdH = -*pdH;
 	}
 
-	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
+	void CMetaFile::ConvertTo(const wchar_t* wsOutFilePath, BYTE*& pBuffer, int& nSize, unsigned int unFileType, int nWidth, int nHeight)
 	{
 		if (nWidth == 0 || nHeight == 0)
 			return;
-
-		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
-
-		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();
-		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-		pFontCache->SetStreams(m_pAppFonts->GetStreams());
-		pFontManager->SetOwnerCache(pFontCache);
-
-		pGrRenderer->SetFontManager(pFontManager);
 
 		if (-1 == nHeight)
 		{
@@ -642,6 +633,18 @@ namespace MetaFile
 			if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
 			nHeight = (int)((double)nWidth * dH / dW);
 		}
+
+		if (nWidth <= 0 || nHeight <= 0)
+			return;
+
+		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
+
+		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();
+		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+		pFontCache->SetStreams(m_pAppFonts->GetStreams());
+		pFontManager->SetOwnerCache(pFontCache);
+
+		pGrRenderer->SetFontManager(pFontManager);
 
 		double dWidth  = 25.4 * nWidth / 96;
 		double dHeight = 25.4 * nHeight / 96;
@@ -683,12 +686,26 @@ namespace MetaFile
 
 		DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
 
-		oFrame.SaveFile(wsOutFilePath, unFileType);
+		if (wsOutFilePath)
+			oFrame.SaveFile(wsOutFilePath, unFileType);
+		else
+			oFrame.Encode(pBuffer, nSize, unFileType);
+
 		oFrame.put_Data(NULL);
 		RELEASEINTERFACE(pFontManager);
 		RELEASEINTERFACE(pGrRenderer);
 
 		if (pBgraData)
 			free(pBgraData);
+	}
+	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
+	{
+		BYTE* pBuffer = NULL;
+		int nSize = 0;
+		ConvertTo(wsOutFilePath, pBuffer, nSize, unFileType, nWidth, nHeight);
+	}
+	void CMetaFile::ConvertToRaster(BYTE*& pBuffer, int& nSize, unsigned int unFileType, int nWidth, int nHeight)
+	{
+		ConvertTo(NULL, pBuffer, nSize, unFileType, nWidth, nHeight);
 	}
 }

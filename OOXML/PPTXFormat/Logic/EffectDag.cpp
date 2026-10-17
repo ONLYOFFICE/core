@@ -102,16 +102,11 @@ namespace PPTX
 			pWriter->WriteString2(0, name);
 			pWriter->WriteLimit2(1, type);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->StartRecord(0);				
-				size_t len = Effects.size();
-				pWriter->WriteSize_t1(0, len);
-				
-				for (size_t i = 0; i < len; ++i)
+			
+				for (size_t i = 0; i < Effects.size(); ++i)
 				{
 					pWriter->WriteRecord1(1, Effects[i]); // id doesn't matter
 				}
-				pWriter->EndRecord();
 
 			pWriter->EndRecord();
 		}
@@ -142,20 +137,13 @@ namespace PPTX
 				BYTE _at = pReader->GetUChar();
 				switch (_at)
 				{
-					case 0:
+					case 1:
 					{
-						ULONG count_effects = pReader->GetULong();
-						for (ULONG _eff = 0; _eff < count_effects; ++_eff)
+						Effects.emplace_back();
+						Effects.back().fromPPTY(pReader);
+						if (false == Effects.back().is_init())
 						{
-							pReader->Skip(1); // type 
-
-							Effects.push_back(UniEffect());
-							Effects.back().fromPPTY(pReader);
-
-							if (false == Effects.back().is_init())
-							{
-								Effects.pop_back();
-							}
+							Effects.pop_back();
 						}
 					}break;
 					default:

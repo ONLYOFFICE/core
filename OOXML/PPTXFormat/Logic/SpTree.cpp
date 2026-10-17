@@ -44,6 +44,24 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		static int GetGroupCoordDivider(int nOffX, int nOffY, int nExtX, int nExtY)
+		{
+			const _INT64 nMaxCoord = 100000;
+			const _INT64 arrBounds[4] = { nOffX, nOffY, (_INT64)nOffX + nExtX, (_INT64)nOffY + nExtY };
+
+			_INT64 nMax = 0;
+			for (int i = 0; i < 4; ++i)
+			{
+				_INT64 nBound = arrBounds[i] < 0 ? -arrBounds[i] : arrBounds[i];
+				if (nBound > nMax) nMax = nBound;
+			}
+
+			int nDivider = 1;
+			while (nDivider < 100 && nMax / nDivider > nMaxCoord) nDivider *= 10;
+
+			return nDivider;
+		}
+
 		SpTree::SpTree(std::wstring ns) : nvGrpSpPr(ns), grpSpPr(ns)
 		{
 			m_namespace		= ns;
@@ -236,10 +254,11 @@ namespace PPTX
 				oStylesWriter.WriteAttributeCSS(L"position", L"absolute");
 				if (in_group)
 				{
-					oStylesWriter.WriteAttributeCSS_int(L"left", dL / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"top", dT / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"width", dW / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"height", dH / 100);
+					const int nDividerOwner = pWriter->m_nGroupCoordDivider;
+					oStylesWriter.WriteAttributeCSS_int(L"left", dL / nDividerOwner);
+					oStylesWriter.WriteAttributeCSS_int(L"top", dT / nDividerOwner);
+					oStylesWriter.WriteAttributeCSS_int(L"width", dW / nDividerOwner);
+					oStylesWriter.WriteAttributeCSS_int(L"height", dH / nDividerOwner);
 				}
 				else
 				{
@@ -293,21 +312,26 @@ namespace PPTX
 				if (grpSpPr.xfrm->chExtX.is_init())	dW = *grpSpPr.xfrm->chExtX;
 				if (grpSpPr.xfrm->chExtY.is_init())	dH = *grpSpPr.xfrm->chExtY;
 			}
+			const int nDivider = GetGroupCoordDivider(dL, dT, dW, dH);
+
 			oStylesWriter.ClearNoAttack();
 			oStylesWriter.m_oWriter.AddSize(30);
-			oStylesWriter.m_oWriter.AddIntNoCheck(dL / 100);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dL / nDivider);
 			oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-			oStylesWriter.m_oWriter.AddIntNoCheck(dT / 100);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dT / nDivider);
 			pWriter->WriteAttribute(_T("coordorigin"), oStylesWriter.GetXmlString());
 
 			oStylesWriter.ClearNoAttack();
 			oStylesWriter.m_oWriter.AddSize(30);
-			oStylesWriter.m_oWriter.AddIntNoCheck(dW / 100);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dW / nDivider);
 			oStylesWriter.m_oWriter.AddCharNoCheck(WCHAR(','));
-			oStylesWriter.m_oWriter.AddIntNoCheck(dH / 100);
+			oStylesWriter.m_oWriter.AddIntNoCheck(dH / nDivider);
 			pWriter->WriteAttribute(_T("coordsize"), oStylesWriter.GetXmlString());
 
 			pWriter->EndAttributes();
+
+			const int nDividerParent = pWriter->m_nGroupCoordDivider;
+			pWriter->m_nGroupCoordDivider = nDivider;
 
 			size_t nCount = SpTreeElems.size();
 			for (size_t i = 0; i < nCount; ++i)
@@ -325,6 +349,8 @@ namespace PPTX
 					SpTreeElems[i].as<PPTX::Logic::SpTree>().toXmlWriterVML(pWriter, oTheme, oClrMap, pContainer, true);
 				}				
 			}
+
+			pWriter->m_nGroupCoordDivider = nDividerParent;
 
 			pWriter->WriteString(pWriter->m_strNodes);
 			pWriter->m_strNodes = _T("");

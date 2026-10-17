@@ -44,10 +44,10 @@ namespace PPTX
 			parentFile		= oSrc.parentFile;
 			parentElement	= oSrc.parentElement;
 
-			CViewPr				= oSrc.CViewPr;
-			attrShowGuides		= oSrc.attrShowGuides;
-			attrSnapToGrid		= oSrc.attrSnapToGrid;
-			attrSnapToObjects	= oSrc.attrSnapToObjects;
+			CViewPr			= oSrc.CViewPr;
+			showGuides		= oSrc.showGuides;
+			snapToGrid		= oSrc.snapToGrid;
+			snapToObjects	= oSrc.snapToObjects;
 
 			GuideLst = oSrc.GuideLst;
 
@@ -62,18 +62,18 @@ namespace PPTX
 			XmlUtils::CXmlNode oNodeLst = node.ReadNode(L"p:guideLst");
 			XmlMacroLoadArray(oNodeLst, L"p:guide", GuideLst, Guide);
 
-			XmlMacroReadAttributeBase(node, L"showGuides", attrShowGuides);
-			XmlMacroReadAttributeBase(node, L"snapToGrid", attrSnapToGrid);
-			XmlMacroReadAttributeBase(node, L"snapToObjects", attrSnapToObjects);
+			XmlMacroReadAttributeBase(node, L"showGuides", showGuides);
+			XmlMacroReadAttributeBase(node, L"snapToGrid", snapToGrid);
+			XmlMacroReadAttributeBase(node, L"snapToObjects", snapToObjects);
 
 			FillParentPointersForChilds();
 		}
 		std::wstring CSldViewPr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(L"showGuides", attrShowGuides);
-			oAttr.Write(L"snapToGrid", attrSnapToGrid);
-			oAttr.Write(L"snapToObjects", attrSnapToObjects);
+			oAttr.Write(L"showGuides", showGuides);
+			oAttr.Write(L"snapToGrid", snapToGrid);
+			oAttr.Write(L"snapToObjects", snapToObjects);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(CViewPr);
@@ -84,9 +84,9 @@ namespace PPTX
 		void CSldViewPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteBool2(0, attrShowGuides);
-			pWriter->WriteBool2(1, attrSnapToGrid);
-			pWriter->WriteBool2(2, attrSnapToObjects);
+			pWriter->WriteBool2(0, showGuides);
+			pWriter->WriteBool2(1, snapToGrid);
+			pWriter->WriteBool2(2, snapToObjects);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord1(0, CViewPr);
@@ -108,15 +108,15 @@ namespace PPTX
 				{
 					case 0:
 					{
-						attrShowGuides = pReader->GetBool();
+						showGuides = pReader->GetBool();
 					}break;
 					case 1:
 					{
-						attrSnapToGrid = pReader->GetBool();
+						snapToGrid = pReader->GetBool();
 					}break;
 					case 2:
 					{
-						attrSnapToObjects = pReader->GetBool();
+						snapToObjects = pReader->GetBool();
 					}break;
 					default:
 						break;
@@ -156,9 +156,9 @@ namespace PPTX
 
 			pWriter->StartAttributes();
 
-			pWriter->WriteAttribute(L"showGuides", attrShowGuides);
-			pWriter->WriteAttribute(L"snapToGrid", attrSnapToGrid);
-			pWriter->WriteAttribute(L"snapToObjects", attrSnapToObjects);
+			pWriter->WriteAttribute(L"snapToGrid", snapToGrid);
+			pWriter->WriteAttribute(L"showGuides", showGuides);
+			pWriter->WriteAttribute(L"snapToObjects", snapToObjects);
 
 			pWriter->EndAttributes();
 

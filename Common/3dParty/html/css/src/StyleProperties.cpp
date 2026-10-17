@@ -548,25 +548,25 @@ namespace NSCSS
 	}
 
 	CColor::CColor()
-		: m_oOpacity(1.)
+		: m_oOpacity(1.), m_dAlpha(1.)
 	{}
 
 	void CColor::SetEmpty(unsigned int unLevel)
 	{
-		Clear();
+		ClearValue();
 		m_unLevel = unLevel;
 	}
 	
 	void CColor::SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB)
 	{
-		Clear();
+		ClearValue();
 
 		m_oValue = CColorValue(TRGB{uchR, uchG, uchB});
 	}
 	
 	void CColor::SetRGB(const TRGB &oRGB)
 	{
-		Clear();
+		ClearValue();
 
 		m_oValue = CColorValue(oRGB);
 	}
@@ -576,7 +576,7 @@ namespace NSCSS
 		if (6 != wsValue.length() && 3 != wsValue.length())
 			return;
 
-		Clear();
+		ClearValue();
 
 		if (6 == wsValue.length())
 			m_oValue = CColorValue(std::wstring(wsValue));
@@ -594,7 +594,7 @@ namespace NSCSS
 		if (!oURL.SetValue(wsValue))
 			return false;
 
-		Clear();
+		ClearValue();
 
 		m_oValue = CColorValue(oURL);
 
@@ -609,6 +609,20 @@ namespace NSCSS
 			return (char)(std::abs(nValue) % 255);
 
 		return (char)nValue;
+	}
+
+	static double OpacityToDouble(const CDigit& oOpacity)
+	{
+		if (oOpacity.Empty())
+			return 1.;
+
+		if (UnitMeasure::Percent == oOpacity.GetUnitMeasure())
+			return oOpacity.ToDouble() / 100.;
+
+		if (UnitMeasure::None == oOpacity.GetUnitMeasure() && oOpacity.ToDouble() <= 1.)
+			return oOpacity.ToDouble();
+
+		return 1.;
 	}
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -641,19 +655,19 @@ namespace NSCSS
 		}
 		else if (L"none" == wsNewValue || wsNewValue == L"transparent")
 		{
-			Clear();
+			ClearValue();
 			m_oValue = CColorValue();
 			bResult = true;
 		}
 		else if (L"context-stroke" == wsNewValue)
 		{
-			Clear();
+			ClearValue();
 			m_oValue = CColorValueContextStroke();
 			bResult = true;
 		}
 		else if (L"context-fill" == wsNewValue)
 		{
-			Clear();
+			ClearValue();
 			m_oValue = CColorValueContextFill();
 			bResult = true;
 		}
@@ -676,7 +690,12 @@ namespace NSCSS
 			SetRGB(chRed, chGreen, chBlue);
 
 			if (wsNewValue.substr(0, 4) == L"rgba" && 4 == arValues.size())
-				m_oOpacity.SetValue(arValues[3], unLevel, bHardMode);
+			{
+				CDigit oAlpha;
+				oAlpha.SetValue(arValues[3]);
+
+				m_dAlpha = OpacityToDouble(oAlpha);
+			}
 
 			bResult = true;
 		}
@@ -723,6 +742,12 @@ namespace NSCSS
 	void CColor::Clear()
 	{
 		m_oOpacity.Clear();
+		ClearValue();
+	}
+
+	void CColor::ClearValue()
+	{
+		m_dAlpha = 1.;
 		CValueOptional::Clear();
 	}
 
@@ -736,16 +761,7 @@ namespace NSCSS
 
 	double CColor::GetOpacity() const
 	{
-		if (m_oOpacity.Empty())
-			return 1.;
-
-		if (UnitMeasure::Percent == m_oOpacity.GetUnitMeasure())
-			return m_oOpacity.ToDouble() / 100.;
-
-		if (UnitMeasure::None == m_oOpacity.GetUnitMeasure() && m_oOpacity.ToDouble() <= 1.)
-			return m_oOpacity.ToDouble();
-
-		return 1.;
+		return OpacityToDouble(m_oOpacity) * m_dAlpha;
 	}
 
 	int CColor::ToInt() const
@@ -859,12 +875,95 @@ namespace NSCSS
 		while (wsValue.end() != citBegin)
 		{
 			citEnd = std::find_if(citBegin, wsValue.end(), [](wchar_t wChar){return L')' == wChar;});
+
+			if (wsValue.end() == citEnd)
+				break;
+
 			arValues.push_back(std::wstring(citBegin, citEnd + 1));
-			citBegin = citEnd + 1;
-			citBegin =  std::find_if(citBegin, wsValue.end(), std::iswalpha);
+			citBegin =  std::find_if(citEnd + 1, wsValue.end(), std::iswalpha);
 		}
 
 		return arValues;
+	}
+
+	static const double PI = 3.14159265358979323846;
+
+	static double DegreeToRadian(double dDegree)
+	{
+		return dDegree * PI / 180.;
+	}
+
+	static bool ConvertTransformFunction(const std::wstring& wsName, std::vector<double>& arValues, TransformType& enType)
+	{
+		if (arValues.empty())
+			return false;
+
+		if (L"matrix" == wsName)
+			enType = TransformMatrix;
+		else if (L"translate" == wsName)
+			enType = TransformTranslate;
+		else if (L"translate3d" == wsName)
+		{
+			if (arValues.size() < 2)
+				return false;
+
+			arValues.resize(2);
+			enType = TransformTranslate;
+		}
+		else if (L"translatex" == wsName)
+		{
+			arValues = {arValues[0], 0.};
+			enType   = TransformTranslate;
+		}
+		else if (L"translatey" == wsName)
+		{
+			arValues = {0., arValues[0]};
+			enType   = TransformTranslate;
+		}
+		else if (L"scale" == wsName)
+			enType = TransformScale;
+		else if (L"scale3d" == wsName)
+		{
+			if (arValues.size() < 2)
+				return false;
+
+			arValues.resize(2);
+			enType = TransformScale;
+		}
+		else if (L"scalex" == wsName)
+		{
+			arValues = {arValues[0], 1.};
+			enType   = TransformScale;
+		}
+		else if (L"scaley" == wsName)
+		{
+			arValues = {1., arValues[0]};
+			enType   = TransformScale;
+		}
+		else if (L"rotate" == wsName || L"rotatez" == wsName)
+			enType = TransformRotate;
+		else if (L"skewx" == wsName)
+			enType = TransformSkewX;
+		else if (L"skewy" == wsName)
+			enType = TransformSkewY;
+		else if (L"skew" == wsName)
+		{
+			if (1 == arValues.size())
+				enType = TransformSkewX;
+			else if (2 == arValues.size())
+			{
+				arValues = {1., std::tan(DegreeToRadian(arValues[1])), std::tan(DegreeToRadian(arValues[0])), 1., 0., 0.};
+				enType   = TransformMatrix;
+			}
+			else
+				return false;
+		}
+		else if (L"translatez" == wsName || L"scalez" == wsName)
+			enType = TransformNone;
+		else
+			return false;
+
+		return true;
 	}
 
 	CMatrix::CMatrix()
@@ -892,32 +991,28 @@ namespace NSCSS
 
 		Clear();
 
-		TransformType enType;
-
 		for (const std::wstring& wsTransform : arTransforms)
 		{
-			if (std::wstring::npos != wsTransform.find(L"matrix"))
-				enType = TransformMatrix;
-			else if (std::wstring::npos != wsTransform.find(L"translate"))
-				enType = TransformTranslate;
-			else if (std::wstring::npos != wsTransform.find(L"scale"))
-				enType = TransformScale;
-			else if (std::wstring::npos != wsTransform.find(L"rotate"))
-				enType = TransformRotate;
-			else if (std::wstring::npos != wsTransform.find(L"skewx"))
-				enType = TransformSkewX;
-			else if (std::wstring::npos != wsTransform.find(L"skewy"))
-				enType = TransformSkewY;
-			else
+			const std::wstring::size_type unBracketPos = wsTransform.find(L'(');
+
+			if (std::wstring::npos == unBracketPos)
 			{
 				Clear();
 				return false;
 			}
 
-			std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsTransform);
+			std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsTransform.substr(unBracketPos));
 
-			if (arValues.empty())
+			TransformType enType = TransformNone;
+
+			if (!ConvertTransformFunction(wsTransform.substr(0, unBracketPos), arValues, enType))
+			{
+				Clear();
 				return false;
+			}
+
+			if (TransformNone == enType)
+				continue;
 
 			if (!AddValue(arValues, enType))
 			{
@@ -1035,17 +1130,6 @@ namespace NSCSS
 
 		switch (enType)
 		{
-			case TransformMatrix:
-			{
-				wsValue = L"matrix(";
-				wsValue += std::to_wstring(oMatrix.sx())  + L',';
-				wsValue += std::to_wstring(oMatrix.shx()) + L',';
-				wsValue += std::to_wstring(oMatrix.shy()) + L',';
-				wsValue += std::to_wstring(oMatrix.sy())  + L',';
-				wsValue += std::to_wstring(oMatrix.tx())  + L',';
-				wsValue += std::to_wstring(oMatrix.ty())  + L')';
-				break;
-			}
 			case TransformTranslate:
 			{
 				if (0. == oMatrix.tx() && 0. == oMatrix.ty())
@@ -1066,17 +1150,86 @@ namespace NSCSS
 				wsValue += std::to_wstring(oMatrix.sy())  + L')';
 				break;
 			}
-			case TransformRotate:
+			default:
 			{
-				//TODO:: add implementation
-				wsValue = L"rotate(";
+				wsValue = L"matrix(";
+				wsValue += std::to_wstring(oMatrix.sx())  + L',';
+				wsValue += std::to_wstring(oMatrix.shy()) + L',';
+				wsValue += std::to_wstring(oMatrix.shx()) + L',';
+				wsValue += std::to_wstring(oMatrix.sy())  + L',';
+				wsValue += std::to_wstring(oMatrix.tx())  + L',';
+				wsValue += std::to_wstring(oMatrix.ty())  + L')';
 				break;
 			}
-			default:
-				break;
 		}
 
 		return wsValue;
+	}
+
+	static void ApplyTransformElement(Aggplus::CMatrix& oMatrix, const std::vector<double>& arValues, TransformType enType, Aggplus::MatrixOrder order)
+	{
+		switch(enType)
+		{
+			case TransformMatrix:
+			{
+				if (6 != arValues.size())
+					break;
+
+				Aggplus::CMatrix oTempMatrix(arValues[0], arValues[1], arValues[2], arValues[3], arValues[4], arValues[5]);
+
+				oMatrix.Multiply(&oTempMatrix, order);
+				break;
+			}
+			case TransformTranslate:
+			{
+				if (2 != arValues.size())
+					break;
+
+				oMatrix.Translate(arValues[0], arValues[1], order);
+				break;
+			}
+			case TransformScale:
+			{
+				if (2 != arValues.size())
+					break;
+
+				oMatrix.Scale(arValues[0], arValues[1], order);
+				break;
+			}
+			case TransformRotate:
+			{
+				if (3 != arValues.size())
+					break;
+
+				const double dAngle = DegreeToRadian(arValues[0]);
+				const double dCos   = std::cos(dAngle);
+				const double dSin   = std::sin(dAngle);
+
+				Aggplus::CMatrix oTempMatrix(dCos, dSin, -dSin, dCos,
+				                             arValues[1] - arValues[1] * dCos + arValues[2] * dSin,
+				                             arValues[2] - arValues[1] * dSin - arValues[2] * dCos);
+
+				oMatrix.Multiply(&oTempMatrix, order);
+				break;
+			}
+			case TransformSkewX:
+			{
+				if (arValues.empty())
+					break;
+
+				oMatrix.Shear(DegreeToRadian(arValues[0]), 0., order);
+				break;
+			}
+			case TransformSkewY:
+			{
+				if (arValues.empty())
+					break;
+
+				oMatrix.Shear(0., DegreeToRadian(arValues[0]), order);
+				break;
+			}
+			default: break;
+		}
 	}
 
 	Aggplus::CMatrix CMatrix::GetFinalValue(TransformType oWithoutType) const
@@ -1088,42 +1241,7 @@ namespace NSCSS
 			if (oWithoutType == oElement.second)
 				continue;
 
-			switch(oElement.second)
-			{
-				case TransformMatrix:
-				{
-					Aggplus::CMatrix oTempMatrix(oElement.first[0], oElement.first[1], oElement.first[2], oElement.first[3], oElement.first[4], oElement.first[5]);
-
-					oMatrix.Multiply(&oTempMatrix);
-					break;
-				}
-				case TransformTranslate:
-				{
-					oMatrix.Translate(oElement.first[0], oElement.first[1]);
-					break;
-				}
-				case TransformScale:
-				{
-					oMatrix.Scale(oElement.first[0], oElement.first[1]);
-					break;
-				}
-				case TransformRotate:
-				{
-					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2]);
-					break;
-				}
-				case TransformSkewX:
-				{
-					oMatrix.Shear(oElement.first[0] * 3.14 / 180.0, 0);
-					break;
-				}
-				case TransformSkewY:
-				{
-					oMatrix.Shear(0, oElement.first[0] * 3.14 / 180.0);
-					break;
-				}
-				default: break;
-			}
+			ApplyTransformElement(oMatrix, oElement.first, oElement.second, Aggplus::MatrixOrderPrepend);
 		}
 
 		return oMatrix;
@@ -1132,45 +1250,7 @@ namespace NSCSS
 	void CMatrix::ApplyTranform(Aggplus::CMatrix &oMatrix, Aggplus::MatrixOrder order) const
 	{
 		for (const std::pair<std::vector<double>, TransformType>& oElement : m_oValue)
-		{
-			switch(oElement.second)
-			{
-				case TransformMatrix:
-				{
-					Aggplus::CMatrix oTempMatrix(oElement.first[0], oElement.first[1], oElement.first[2], oElement.first[3], oElement.first[4], oElement.first[5]);
-
-					oMatrix.Multiply(&oTempMatrix, order);
-					break;
-				}
-				case TransformTranslate:
-				{
-					oMatrix.Translate(oElement.first[0], oElement.first[1], order);
-					break;
-				}
-				case TransformScale:
-				{
-					oMatrix.Scale(oElement.first[0], oElement.first[1], order);
-					break;
-				}
-				case TransformRotate:
-				{
-					oMatrix.RotateAt(oElement.first[0], -oElement.first[1], -oElement.first[2], order);
-					break;
-				}
-				case TransformSkewX:
-				{
-					oMatrix.Shear(oElement.first[0] * 3.14 / 180.0, 0, order);
-					break;
-				}
-				case TransformSkewY:
-				{
-					oMatrix.Shear(0, oElement.first[0] * 3.14 / 180.0, order);
-					break;
-				}
-				default: break;
-			}
-		}
-
+			ApplyTransformElement(oMatrix, oElement.first, oElement.second, order);
 	}
 
 	bool CMatrix::operator==(const CMatrix &oMatrix) const
@@ -1211,12 +1291,13 @@ namespace NSCSS
 	// DISPLAY
 	CDisplay::CDisplay()
 	{
-		m_eWhiteSpace.SetMapping({{L"normal",   EWhiteSpace::Normal  },
-		                          {L"nowrap",   EWhiteSpace::Nowrap  },
-		                          {L"pre",      EWhiteSpace::Pre     },
-		                          {L"pre-line", EWhiteSpace::Pre_Line},
-		                          {L"pre-wrap", EWhiteSpace::Pre_Wrap}},
-		                                        EWhiteSpace::Normal);
+		static const std::map<std::wstring, int> mWhiteSpaceMapping{{L"normal",   EWhiteSpace::Normal  },
+		                                                            {L"nowrap",   EWhiteSpace::Nowrap  },
+		                                                            {L"pre",      EWhiteSpace::Pre     },
+		                                                            {L"pre-line", EWhiteSpace::Pre_Line},
+		                                                            {L"pre-wrap", EWhiteSpace::Pre_Wrap}};
+
+		m_eWhiteSpace.SetMapping(mWhiteSpaceMapping, EWhiteSpace::Normal);
 	}
 
 	void CDisplay::Equation(CDisplay &oFirstDisplay, CDisplay &oSecondDisplay)
@@ -1362,12 +1443,16 @@ namespace NSCSS
 		m_eWhiteSpace.Clear();
 	}
 
+	void CDisplay::InheritSize(const CDisplay &oDisplay)
+	{
+		m_oWidth  = oDisplay.m_oWidth;
+		m_oHeight = oDisplay.m_oHeight;
+	}
+
 	CDisplay &CDisplay::operator+=(const CDisplay &oDisplay)
 	{
 		m_oX          += oDisplay.m_oX;
 		m_oY          += oDisplay.m_oY;
-		m_oWidth       = oDisplay.m_oWidth;
-		m_oHeight      = oDisplay.m_oHeight;
 		m_oHAlign     += oDisplay.m_oHAlign;
 		m_oVAlign     += oDisplay.m_oVAlign;
 		m_oDisplay    += oDisplay.m_oDisplay;
@@ -1451,32 +1536,187 @@ namespace NSCSS
 		return m_oColor.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CBackground::SetImage(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		if (L"none" == wsValue || L"initial" == wsValue || L"inherit" == wsValue)
+		{
+			m_oImage.Clear();
+			return true;
+		}
+
+		return m_oImage.SetValue(wsValue);
+	}
+
+	bool CBackground::SetRepeat(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_oRepeat.SetValue(wsValue, {L"repeat", L"repeat-x", L"repeat-y", L"no-repeat", L"space", L"round"}, unLevel, bHardMode);
+	}
+
+	bool CBackground::SetPosition(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		const std::vector<std::wstring> arValues{NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ")};
+
+		if (arValues.empty())
+			return false;
+
+		CDigit oX, oY;
+		bool bSetX{false}, bSetY{false};
+
+		for (const std::wstring& wsComponent : arValues)
+		{
+			if (L"left" == wsComponent)
+			{
+				oX.SetValue(0., UnitMeasure::Percent, unLevel, true);
+				bSetX = true;
+			}
+			else if (L"right" == wsComponent)
+			{
+				oX.SetValue(100., UnitMeasure::Percent, unLevel, true);
+				bSetX = true;
+			}
+			else if (L"top" == wsComponent)
+			{
+				oY.SetValue(0., UnitMeasure::Percent, unLevel, true);
+				bSetY = true;
+			}
+			else if (L"bottom" == wsComponent)
+			{
+				oY.SetValue(100., UnitMeasure::Percent, unLevel, true);
+				bSetY = true;
+			}
+			else if (L"center" == wsComponent)
+			{
+				if (!bSetX)
+				{
+					oX.SetValue(50., UnitMeasure::Percent, unLevel, true);
+					bSetX = true;
+				}
+				else
+				{
+					oY.SetValue(50., UnitMeasure::Percent, unLevel, true);
+					bSetY = true;
+				}
+			}
+			else
+			{
+				CDigit oDigit;
+
+				if (!oDigit.SetValue(wsComponent, unLevel, true))
+					continue;
+
+				if (!bSetX)
+				{
+					oX.SetValue(oDigit);
+					bSetX = true;
+				}
+				else if (!bSetY)
+				{
+					oY.SetValue(oDigit);
+					bSetY = true;
+				}
+			}
+		}
+
+		if (!bSetX)
+			return false;
+
+		if (!bSetY)
+			oY.SetValue(0., UnitMeasure::Pixel, unLevel, true);
+
+		m_oPositionX.SetValue(oX);
+		m_oPositionY.SetValue(oY);
+
+		return true;
+	}
+
 	bool CBackground::SetBackground(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		const std::vector<std::wstring> &arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsValue, false, L" ");
 
-		for (const std::wstring& wsValue : arValues)
+		bool bResult{false};
+		std::wstring wsPosition;
+
+		for (const std::wstring& wsComponent : arValues)
 		{
-			if (SetColor(wsValue, unLevel, bHardMode))
-				return true;
+			if (std::wstring::npos != wsComponent.find(L"url"))
+			{
+				if (SetImage(wsComponent, unLevel, bHardMode))
+					bResult = true;
+
+				continue;
+			}
+
+			if (SetRepeat(wsComponent, unLevel, bHardMode))
+			{
+				bResult = true;
+				continue;
+			}
+
+			if (SetColor(wsComponent, unLevel, bHardMode))
+			{
+				bResult = true;
+				continue;
+			}
+
+			if (!wsPosition.empty())
+				wsPosition += L' ';
+
+			wsPosition += wsComponent;
 		}
 
-		return false;
+		if (!wsPosition.empty() && SetPosition(wsPosition, unLevel, bHardMode))
+			bResult = true;
+
+		return bResult;
 	}
 
 	const CColor& CBackground::GetColor() const
 	{
 		return m_oColor;
 	}
-	
+
+	const CURL& CBackground::GetImage() const
+	{
+		return m_oImage;
+	}
+
+	const CDigit& CBackground::GetPositionX() const
+	{
+		return m_oPositionX;
+	}
+
+	const CDigit& CBackground::GetPositionY() const
+	{
+		return m_oPositionY;
+	}
+
+	const CString& CBackground::GetRepeat() const
+	{
+		return m_oRepeat;
+	}
+
+	bool CBackground::HaveImage() const
+	{
+		return !m_oImage.Empty();
+	}
+
+	bool CBackground::NoRepeat() const
+	{
+		return m_oRepeat == L"no-repeat";
+	}
+
 	void CBackground::Clear()
 	{
 		m_oColor.Clear();
+		m_oImage.Clear();
+		m_oPositionX.Clear();
+		m_oPositionY.Clear();
+		m_oRepeat.Clear();
 	}
 
 	bool CBackground::Empty() const
 	{
-		return m_oColor.Empty();
+		return m_oColor.Empty() && m_oImage.Empty();
 	}
 
 	bool CBackground::IsNone() const
@@ -1486,7 +1726,11 @@ namespace NSCSS
 
 	CBackground &CBackground::operator=(const CBackground &oBackground)
 	{
-		m_oColor    = oBackground.m_oColor;
+		m_oColor     = oBackground.m_oColor;
+		m_oImage     = oBackground.m_oImage;
+		m_oPositionX = oBackground.m_oPositionX;
+		m_oPositionY = oBackground.m_oPositionY;
+		m_oRepeat    = oBackground.m_oRepeat;
 
 		return *this;
 	}
@@ -1500,7 +1744,11 @@ namespace NSCSS
 
 	bool CBackground::operator==(const CBackground &oBackground) const
 	{
-		return m_oColor    == oBackground.m_oColor;
+		return m_oColor     == oBackground.m_oColor &&
+		       m_oImage     == oBackground.m_oImage &&
+		       m_oPositionX == oBackground.m_oPositionX &&
+		       m_oPositionY == oBackground.m_oPositionY &&
+		       m_oRepeat    == oBackground.m_oRepeat;
 	}
 
 	// TRANSFORM
@@ -1755,7 +2003,9 @@ namespace NSCSS
 	// BORDER
 	CBorder::CBorder()
 	{
-		m_enCollapse.SetMapping({{L"collapse", BorderCollapse::Collapse}, {L"separate", BorderCollapse::Separate}}, BorderCollapse::Separate);
+		static const std::map<std::wstring, int> mCollapseMapping{{L"collapse", BorderCollapse::Collapse}, {L"separate", BorderCollapse::Separate}};
+
+		m_enCollapse.SetMapping(mCollapseMapping, BorderCollapse::Separate);
 	}
 
 	void CBorder::Clear()
@@ -2499,7 +2749,9 @@ namespace NSCSS
 
 	CBaselineShift::CBaselineShift()
 	{
-		m_eType.SetMapping({{L"baseline", EBaselineShift::Baseline}, {L"sub", EBaselineShift::Sub}, {L"super", EBaselineShift::Super}}, EBaselineShift::Baseline);
+		static const std::map<std::wstring, int> mTypeMapping{{L"baseline", EBaselineShift::Baseline}, {L"sub", EBaselineShift::Sub}, {L"super", EBaselineShift::Super}};
+
+		m_eType.SetMapping(mTypeMapping, EBaselineShift::Baseline);
 	}
 
 	bool CBaselineShift::Empty() const
@@ -2810,23 +3062,78 @@ namespace NSCSS
 		m_wsValue.clear();
 	}
 
-	bool CURL::SetValue(const std::wstring &wsValue)
+	bool CURL::SetValue(const std::wstring& wsValue)
 	{
 		if (wsValue.empty())
 			return false;
 
-		std::wregex oRegex(L"url\\s*\\(\\s*(?:'|\"|)([#]?[^'\"()]+)(?:'|\"|)\\s*\\)");
-		std::wsmatch oMatch;
+		const wchar_t* pStart{wsValue.c_str()};
+		const wchar_t* pEnd  {pStart + wsValue.size()};
 
-		if (!std::regex_search(wsValue.cbegin(), wsValue.cend(), oMatch, oRegex) || oMatch[1].str().empty())
+		const wchar_t* pFound{nullptr};
+
+		for (const wchar_t* pCur = pStart; pCur + 3 <= pEnd; ++pCur)
+		{
+			if (L'u' == pCur[0] && L'r' == pCur[1] && L'l' == pCur[2])
+			{
+				pFound = pCur + 3;
+				break;
+			}
+		}
+
+		if (!pFound)
 			return false;
 
-		m_wsValue = oMatch[1].str();
+		const wchar_t* pCur{pFound};
+
+		while (pCur < pEnd && std::iswspace(*pCur))
+			++pCur;
+
+		if (pCur >= pEnd || L'(' != *pCur)
+			return false;
+
+		++pCur;
+
+		while (pCur < pEnd && std::iswspace(*pCur))
+			++pCur;
+
+		wchar_t chQuote{0};
+
+		if (pCur < pEnd && (L'\'' == *pCur || L'"' == *pCur))
+		{
+			chQuote = *pCur;
+			++pCur;
+		}
+
+		const wchar_t* pValueBegin{pCur};
+
+		while (pCur < pEnd &&
+			   L'\'' != *pCur && L'"' != *pCur &&
+			   L'('  != *pCur && L')' != *pCur)
+			++pCur;
+
+		const wchar_t* pValueEnd{pCur};
+
+		if (pValueBegin == pValueEnd)
+			return false;
+
+		if (0 != chQuote && pCur < pEnd && *pCur == chQuote)
+			++pCur;
+		else if (pCur < pEnd && (L'\'' == *pCur || L'"' == *pCur))
+			++pCur;
+
+		while (pCur < pEnd && std::iswspace(*pCur))
+			++pCur;
+
+		if (pCur >= pEnd || L')' != *pCur)
+			return false;
+
+		m_wsValue.assign(pValueBegin, pValueEnd);
 		NS_STATIC_FUNCTIONS::RemoveSpaces(m_wsValue);
 
 		return true;
 	}
-	
+
 	std::wstring CURL::GetValue() const
 	{
 		return m_wsValue;
@@ -2843,12 +3150,12 @@ namespace NSCSS
 	}
 
 	CEnum::CEnum()
-		: m_nDefaultValue(0)
+		: m_nDefaultValue(0), m_pMap(nullptr)
 	{}
 
 	bool CEnum::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || m_mMap.empty() || (CHECK_CONDITIONS && !bHardMode))
+		if (wsValue.empty() || nullptr == m_pMap || m_pMap->empty() || (CHECK_CONDITIONS && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -2858,9 +3165,9 @@ namespace NSCSS
 		if (m_bImportant && !bImportant)
 			return false;
 
-		std::map<std::wstring, int>::const_iterator oFound = m_mMap.find(wsNewValue);
+		std::map<std::wstring, int>::const_iterator oFound = m_pMap->find(wsNewValue);
 
-		if (m_mMap.end() == oFound)
+		if (m_pMap->end() == oFound)
 			return false;
 
 		m_oValue     = oFound->second;
@@ -2872,7 +3179,7 @@ namespace NSCSS
 
 	void CEnum::SetMapping(const std::map<std::wstring, int> &mMap, int nDefaulvalue)
 	{
-		m_mMap = mMap;
+		m_pMap = &mMap;
 
 		if (-1 != nDefaulvalue)
 			m_nDefaultValue = nDefaulvalue;
@@ -2898,13 +3205,13 @@ namespace NSCSS
 
 	std::wstring CEnum::ToWString() const
 	{
-		if (m_mMap.empty())
+		if (nullptr == m_pMap || m_pMap->empty())
 			return std::wstring();
 
 		if (Empty())
-			return std::find_if(m_mMap.begin(), m_mMap.end(), [this](const std::pair<std::wstring, int>& oValue){ return m_nDefaultValue == oValue.second; })->first;
+			return std::find_if(m_pMap->begin(), m_pMap->end(), [this](const std::pair<const std::wstring, int>& oValue){ return m_nDefaultValue == oValue.second; })->first;
 
-		return std::find_if(m_mMap.begin(), m_mMap.end(), [this](const std::pair<std::wstring, int>& oValue){ return m_oValue == oValue.second; })->first;
+		return std::find_if(m_pMap->begin(), m_pMap->end(), [this](const std::pair<const std::wstring, int>& oValue){ return m_oValue == oValue.second; })->first;
 	}
 
 	CPage::CPage()

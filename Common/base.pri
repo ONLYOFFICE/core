@@ -70,6 +70,15 @@ win32 {
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\r", "")
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\n", "")
 	CURRENT_YEAR = $$replace(CURRENT_YEAR, "\t", "")
+
+	# QMAKE_TARGET_COPYRIGHT below writes \251 (©) as an octal escape. rc.exe maps it through
+	# the code page, by default the build machine ANSI one (65001 gives U+FFFD). Pin it.
+	# Every .rc file built with base.pri is read as cp1252 now, so a hand-written .rc file
+	# with non-ASCII text (Cyrillic etc.) must be saved as UTF-8 and start with
+	#     #pragma code_page(65001)
+	# The pragma overrides /c. Keep PUBLISHER_NAME ASCII: qmake reads the environment in the
+	# ANSI code page, so other characters reach the generated .rc as '?'.
+	QMAKE_RC += /c1252
 }
 
 !win32 {
@@ -80,7 +89,7 @@ DEFINES += COPYRIGHT_YEAR=$${CURRENT_YEAR}
 #DEFINES += _LOGOUT_ALWAYS
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
-QMAKE_TARGET_COPYRIGHT = © $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved.
+QMAKE_TARGET_COPYRIGHT = "\\251 $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved."
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {
@@ -551,17 +560,19 @@ enable_cpp_17 {
 }
 
 core_linux {
-core_static_link_libstd {
-	!core_linux_clang {
-		QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
-	} else {
-		# TODO: add libc++abi?
+	core_release {
+		core_static_link_libstd {
+			!core_linux_clang {
+				QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+			} else {
+				# TODO: add libc++abi?
+			}
+			message(core_static_link_libstd)
+		}
 	}
-	message(core_static_link_libstd)
-}
-plugin {
-	TARGET_EXT = .so
-}
+	plugin {
+		TARGET_EXT = .so
+	}
 }
 
 core_windows {
@@ -629,7 +640,9 @@ CORE_BUILDS_BINARY_PATH = $$CORE_ROOT_DIR/build/bin/$$CORE_BUILDS_PLATFORM_PREFI
 	CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/$$OO_BUILD_BRANDING/lib/$$CORE_BUILDS_PLATFORM_PREFIX
 	CORE_BUILDS_BINARY_PATH = $$CORE_ROOT_DIR/build/$$OO_BUILD_BRANDING/bin/$$CORE_BUILDS_PLATFORM_PREFIX
 
-	DEFINES += "BUILD_BRANDING_NAME=\"\\\"$$OO_BUILD_BRANDING\\\"\""
+	!equals(OO_BUILD_BRANDING, onlyoffice-opensource) {
+		DEFINES += "BUILD_BRANDING_NAME=\"\\\"$$OO_BUILD_BRANDING\\\"\""
+	}
 }
 
 core_debug {

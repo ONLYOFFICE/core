@@ -46,11 +46,8 @@ CImagesWorker::CImagesWorker(const std::wstring& sFolder)
 }
 std::wstring CImagesWorker::GetImageLocal(const std::wstring& sUrl)
 {
-	if (CServerInstance::getInstance().IsEnable())
-	{
-		if (!CServerInstance::getInstance().CheckTmpDirectory(sUrl))
-			return L"error";
-	}
+	if (CServerInstance::getInstance().IsEnable() && !CServerInstance::getInstance().CheckTmpDirectory(sUrl))
+		return L"error";
 	std::wstring sExt = NSFile::GetFileExtention(sUrl);
 	std::wstring sRet = L"image" + std::to_wstring(m_nIndex++) + L"." + sExt;
 	m_mapImages.insert(std::make_pair(sUrl, sRet));
@@ -62,6 +59,9 @@ std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
 	std::wstring sUrlFile = sUrl;
 	if (sUrlFile.find(L"file://") == 0)
 	{
+		if (CServerInstance::getInstance().IsEnable())
+			return L"error";
+
 		sUrlFile = sUrlFile.substr(7);
 
 		// MS Word copy image with url "file://localhost/..." on mac
@@ -78,7 +78,11 @@ std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
 	if (find != m_mapImages.end())
 		return find->second;
 
-	if (NSFile::CFileBinary::Exists(sUrlFile))
+	bool bMayReadFile = true;
+	if (CServerInstance::getInstance().IsEnable())
+		bMayReadFile = CServerInstance::getInstance().CheckTmpDirectory(sUrlFile);
+
+	if (bMayReadFile && NSFile::CFileBinary::Exists(sUrlFile))
 		return GetImageLocal(sUrlFile);
 
 	bool bIsNeedDownload = false;
@@ -96,6 +100,9 @@ std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
 
 	if (bIsNeedDownload)
 	{
+		if (false/*TODO*/ && CServerInstance::getInstance().IsEnable())
+			return L"error";
+
 		NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
 
 		std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"IMG");

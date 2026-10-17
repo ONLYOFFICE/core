@@ -113,19 +113,25 @@ void oox_serialize_solid_fill(std::wostream & strm, const _oox_fill & val, const
 
 	}
 }
+static std::wstring vml_opacity(double opacity)
+{
+	if (opacity < 0.) opacity = 0.;
+	return std::to_wstring((int)(opacity + 0.5)) + L"%";
+}
+static bool vml_opacity_needed(const _CP_OPT(double) & opacity)
+{
+	return (opacity) && (*opacity < 100.);
+}
 void vml_serialize_solid_fill(std::wostream & strm, const _oox_fill & val)
 {
 	if (!val.solid)	return;
-	if (!val.opacity) return;
-	
+	if (!vml_opacity_needed(val.opacity)) return;
+
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"v:fill")
 		{
-			if (val.opacity)
-			{
-				CP_XML_ATTR(L"opacity",	(int)(*val.opacity));
-			}
+			CP_XML_ATTR(L"opacity", vml_opacity(*val.opacity));
 		}
 
 	}
@@ -141,10 +147,10 @@ void vml_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 		{	
 			CP_XML_ATTR(L"r:id", val.bitmap->rId );
 
-			if (val.opacity)
+			if (vml_opacity_needed(val.opacity))
 			{
-				CP_XML_ATTR(L"opacity",(int)(*val.opacity));
-			}		
+				CP_XML_ATTR(L"opacity", vml_opacity(*val.opacity));
+			}
 			
 			if (val.bitmap->bTile)
 			{

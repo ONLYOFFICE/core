@@ -293,7 +293,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
 				rgce.addPtg(found_operand = OperandPtgPtr(new PtgStr(operand_str)));
             }
-            else if(SyntaxPtg::extract_PtgRefErr(it, itEnd)) // Sequence is important (in pair with PtgErr)
+			else if(tag_name != L"NameParsedFormula" && SyntaxPtg::extract_PtgRefErr(it, itEnd)) // Sequence is important (in pair with PtgErr)
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgRefErr(OperandPtg::ptg_REFERENCE))); // Checked with SIN(val) - OK
             }
@@ -378,12 +378,14 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             else if(SyntaxPtg::extract_PtgFunc(it, itEnd, operand_str))
             {
                 PtgPtr func;
-                if((func = PtgFunc::create(operand_str, OperandPtg::ptg_REFERENCE)) ||
-                    (func = PtgFuncVar::create(operand_str, OperandPtg::ptg_REFERENCE)))
+				auto funcIndex = Ftab_Cetab::recognizeFunction(operand_str);
+				bool isBiff8LimitExceeded = (tag_name == L"XLS" && funcIndex > 0x017B);
+				if(!isBiff8LimitExceeded &&((func = PtgFunc::create(operand_str, OperandPtg::ptg_REFERENCE)) ||
+					(func = PtgFuncVar::create(operand_str, OperandPtg::ptg_REFERENCE))))
                 {
                     ptg_stack.push(func);
                 }
-                else if(SyntaxPtg::extract_FutureFunction(operand_str, number))
+				else if(!isBiff8LimitExceeded && SyntaxPtg::extract_FutureFunction(operand_str, number))
                 {
                     func = PtgFuncVar::create(L"USER_DEFINED_FUNCTION", OperandPtg::ptg_REFERENCE);
                     auto funcPtr = dynamic_cast<PtgFuncVar*>(func.get());

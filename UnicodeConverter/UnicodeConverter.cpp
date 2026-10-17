@@ -383,16 +383,16 @@ namespace NSUnicodeConverter
 			const wchar_t* pEnd = pUnicodes + lCount;
 			const wchar_t* pCur = pUnicodes;
 
-			bool bIsUtf16 = (2 == sizeof(wchar_t)) ? true : false;
-
 			while (pCur < pEnd)
 			{
 				unsigned int code = (unsigned int)*pCur++;
-				if (bIsUtf16)
+				if (code >= 0xD800 && code <= 0xDBFF && pCur < pEnd)
 				{
-					if (code >= 0xD800 && code <= 0xDFFF && pCur < pEnd)
+					unsigned int next = (unsigned int)*pCur;
+					if (next >= 0xDC00 && next <= 0xDFFF)
 					{
-						code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & *pCur++));
+						code = 0x10000 + (((code & 0x3FF) << 10) | (next & 0x3FF));
+						pCur++;
 					}
 				}
 

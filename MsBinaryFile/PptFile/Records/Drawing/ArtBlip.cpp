@@ -52,7 +52,7 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 {
 	if ((oHeader.RecVersion == PSFLAG_CONTAINER) || ((oHeader.RecVersion & 0x0F) == 0x0F)) return;
 	
-	CRYPT::ECMADecryptor *pDecryptor = m_pDocumentInfo ? m_pDocumentInfo->m_arUsers[0]->m_pDecryptor : NULL;
+	CRYPT::Decryptor *pDecryptor = m_pDocumentInfo ? m_pDocumentInfo->m_arUsers[0]->m_pDecryptor : NULL;
 
 	CMetaFileBuffer	oMetaFile;
 	std::wstring sExt = L".jpg";

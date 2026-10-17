@@ -63,9 +63,7 @@ CONFIG += build_all_zlib build_zlib_as_sources
 include($$PWD/../OfficeUtils/OfficeUtils.pri)
 
 # LIBXML
-CONFIG += core_static_link_xml_full
-CONFIG += core_only_libxml
-include($$PWD/../DesktopEditor/xml/build/qt/libxml2.pri)
+include($$PWD/../Common/3dParty/libxml/libxml.pri)
 
 #
 include($$CORE_ROOT_DIR/Common/3dParty/apple/apple.pri)

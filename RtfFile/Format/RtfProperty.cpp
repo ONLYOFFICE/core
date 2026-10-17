@@ -535,7 +535,7 @@ bool RtfColor::GetHighlightByColor( RtfColor oOutputColor,std::wstring& oStr ) /
 RtfColor RtfColor::GetColorByPreset( std::wstring oStr )
 {
 	if		( oStr == L"aliceBlue" )	return RtfColor(240,248,255);
-	else if ( oStr == L"aniqueWhite" )	return RtfColor(250,235,215);
+	else if ( oStr == L"antiqueWhite" )	return RtfColor(250,235,215);
 	else if ( oStr == L"aqua" )			return RtfColor(0,255,255);
 	else if ( oStr == L"aquamarine" )	return RtfColor(127,255,212);
 	else if ( oStr == L"azure" )		return RtfColor(240,255,255);
@@ -559,7 +559,7 @@ RtfColor RtfColor::GetColorByPreset( std::wstring oStr )
 std::wstring RtfColor::GetPresetByColor( RtfColor oCol ) //page 3320
 {
 	if		( oCol == RtfColor(240,248,255))	return L"aliceBlue";
-	else if ( oCol == RtfColor(250,235,215))	return L"aniqueWhite";
+	else if ( oCol == RtfColor(250,235,215))	return L"antiqueWhite";
 	else if ( oCol == RtfColor(0,255,255))		return L"aqua";
 	else if ( oCol == RtfColor(127,255,212))	return L"aquamarine";
 	else if ( oCol == RtfColor(240,255,255))	return L"azure";
@@ -1769,6 +1769,12 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 			oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 			sResult +=  oCurColor.RenderToOOX(oNewParam);
 		}
+	}
+	else if( PROP_DEF == m_nCharStyle && PROP_DEF != oRenderParameter.nParaStyleForeColor )
+	{
+		// run has no explicit color (e.g. after \plain) - in RTF it is auto, but the paragraph
+		// style defines a color that OOXML would otherwise inherit, so pin it to auto.
+		sResult += L"<w:color w:val=\"auto\"/>";
 	}
 
     std::wstring sUnderColor;

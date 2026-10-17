@@ -106,6 +106,7 @@ namespace NSBinPptxRW
 	{
 		std::vector<std::wstring> sFilepathAdditionals;
 		std::wstring sFilepathImage;
+		std::vector<NSCommon::smart_ptr<OOX::File>> additionalFiles;
 	};
 
 	struct _relsGeneratorInfo
@@ -230,12 +231,10 @@ namespace NSBinPptxRW
 		_imageManager2Info GenerateMediaExec(const std::wstring& strInput);
 		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, std::vector<std::pair<std::wstring, int>> & additional, const std::wstring& oleData);
 
-		bool SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
-		bool SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst);
-
 		bool IsNeedDownload(const std::wstring& strFile);
-		_imageManager2Info DownloadImage(const std::wstring& strFile);
-		std::wstring DownloadImageExec(const std::wstring& strFile);
+		std::wstring DownloadImageExec(const std::wstring& strUrl, int nDisplayType, std::wstring& sExts);
+		
+		std::wstring DownloadMediaExec(const std::wstring& strFile, const std::wstring& tmpFile);
 		
 		bool WriteOleData(const std::wstring& sFilePath, const std::wstring& sData);
 	};
@@ -609,5 +608,6 @@ namespace NSBinPptxRW
 
 		void SetDstContentRels();
 		void SaveDstContentRels(const std::wstring& bsRelsPath);
+		void RemoveDstContentRels();
 	};
 }

@@ -35,6 +35,7 @@
 #pragma once
 
 #include "BinReaderWriterDefines.h"
+#include "IDocumentContentProvider.h"
 
 #include "../../../DocxFormat/DocxFlat.h"
 #include "../../../DocxFormat/Document.h"
@@ -93,6 +94,7 @@ namespace BinDocxRW
 		OOX::CNumbering*		m_pEmbeddedNumbering;
 
 		OOX::IFileContainer*	m_pCurRels;
+
 		std::map<int, bool>		m_mapIgnoreComments;
 		std::map<int, bool>		m_mapIgnoreDocumentComments;
 
@@ -139,6 +141,7 @@ namespace BinDocxRW
 		void WriteFont(std::wstring sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor);
 		void WriteBytesArray(BYTE* pData, long nDataSize);
 		template<typename T> void WriteTrackRevision(const T& elem);
+		void WriteEastAsianLayout(const ComplexTypes::Word::CEastAsianLayout& EastAsianLayout);
 	};
 
 	class BinaryHeaderFooterTableWriter
@@ -303,7 +306,7 @@ namespace BinDocxRW
 		void Write();
 		void WriteOtherContent();
 	};
-	class BinaryDocumentTableWriter
+	class BinaryDocumentTableWriter : public IDocumentContentWriter
 	{
 	private:
 		ParamsWriter&			m_oParamsWriter;
@@ -316,6 +319,15 @@ namespace BinDocxRW
 
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 		std::map<int, bool>*			m_mapIgnoreComments;
+
+		// IDocumentContentWriter
+		std::vector<std::vector<BYTE>>	m_arContentParagraphProperties;
+		std::vector<std::vector<BYTE>>	m_arContentRunProperties;
+		int								m_nContentParagraphStart;
+		int								m_nContentParagraphContentStart;
+
+		std::vector<BYTE> CutStreamTail(int nStart);
+		void WriteContentRunProperty(int nRPr);
 	public:
 		Binary_tblPrWriter				btblPrs;
 		OOX::Logic::CSectionProperty*	pSectPr;
@@ -335,7 +347,16 @@ namespace BinDocxRW
 		void WriteAltChunk(OOX::Media& oAltChunk, OOX::CStyles* styles);
 
 		void Write(std::vector<OOX::WritingElement*> & aElems);
+		void Write(IDocumentContentProvider& oContentProvider);
 		void WriteDocumentContent(const std::vector<OOX::WritingElement*> & aElems);
+		void WriteDocumentContentEnd();
+
+		virtual int AddParagraphProperty(const OOX::Logic::CParagraphProperty& oPPr);
+		virtual int AddRunProperty(OOX::Logic::CRunProperty& oRPr);
+		virtual void StartParagraph(int nPPr);
+		virtual void EndParagraph();
+		virtual void WriteRunText(int nRPr, const std::wstring& sText);
+		virtual void WriteRunTab(int nRPr);
 		void WriteBackground (OOX::WritingElement* pBackground);
 		void WriteParapraph(OOX::Logic::CParagraph& par, OOX::Logic::CParagraphProperty* pPr);
 		void WriteParagraphContent(const std::vector<OOX::WritingElement*> & content, bool bHyperlink = false);
@@ -581,6 +602,7 @@ namespace BinDocxRW
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
 		void intoBindoc(const std::wstring& sDir);
+		void intoBindoc(IDocumentContentProvider& oContentProvider);
 		void ParagraphAddBreak(OOX::Logic::CParagraph* pParagraph);
 	};
 

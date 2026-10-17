@@ -145,7 +145,7 @@ namespace XPS
 		void GetFontKey(const std::wstring& wsName, unsigned char* sKey)
 		{
 			int k = 0;
-			for (int i = wsName.length() - 1; i >= 0; i--)
+			for (int i = (int)wsName.length() - 1; i >= 1 && k < 16; i--)
 			{
 				if ('-' != wsName[i])
 				{

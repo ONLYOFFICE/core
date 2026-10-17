@@ -359,6 +359,7 @@ namespace NSDoctRenderer
 		 * @param params The parameters needed for the correct file opening (most commonly, the encoding is used for the txt and csv file types or the delimiter for the csv files,
 		 * for other file types this is just an empty string). The parameters are added in the form of XML tags, where m_nCsvTxtEncoding is used for the text encoding
 		 * and m_nCsvDelimiter is used for the csv delimiter. The supported values for the csv delimiters include: 0 - no delimiter; 1 - tab; 2 - semicolon; 3 - colon; 4 - comma; 5 - space.
+		 * The paths are set by the builder only: m_sFileFrom, m_sFileTo and m_sTempDir are removed from params.
 		 * @return Process x2t return code
 		 */
 		int OpenFile(const wchar_t* path, const wchar_t* params);
@@ -392,6 +393,7 @@ namespace NSDoctRenderer
 		 * * width - the image width in pixels;
 		 * * height - the image height in pixels.
 		 * For example: oBuilder.SaveFile(OFFICESTUDIO_FILE_IMAGE, L"thumbnail.png", "<m_oThumbnail><format>4</format><aspect>1</aspect><first>false</first><width>1000</width><height>1000</height></m_oThumbnail>");
+		 * The paths are set by the builder only: m_sFileFrom, m_sFileTo and m_sTempDir are removed from params.
 		 * @return Process x2t return code
 		 */
 		int SaveFile(const int& type, const wchar_t* path, const wchar_t* params = 0);
@@ -609,6 +611,16 @@ namespace NSDoctRenderer
 	 * Close() : closes the file (removes the temporary folder contents).
 	 * GetImageMap() : returns a dictionary object with the imageId -> imagePath key-value pairs (for inserting into the document).
 	 *
+	 * 7) Editing an existing PDF.
+	 * When a pdf file is opened (OpenFile), it is edited with the same Api as a text document
+	 * (the pdf editor uses the word sdkjs scripts). The original pdf is opened directly and kept,
+	 * so that on SaveFile("pdf", ...) the changes are applied onto the original pdf content
+	 * (EditPdf + apply changes), preserving everything that was already in the file:
+	 * builder.OpenFile("input.pdf", "");
+	 * var oDocument = Api.GetDocument();
+	 * // ... edit via Api / run macros ...
+	 * builder.SaveFile("pdf", "output.pdf");
+	 * builder.CloseFile();
 	 */
 
 	// To make the code shorter, use the following type definitions:

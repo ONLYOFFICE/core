@@ -342,6 +342,7 @@ AcroForm *AcroForm::load(PDFDoc *docA, Catalog *catalog, Object *acroFormObjA) {
   AcroForm *acroForm;
   AcroFormField *field;
   Object xfaObj, fieldsObj, annotsObj, annotRef, annotObj, obj1, obj2;
+  char *touchedObjs;
   int pageNum, i, j;
 
   // this is the normal case: acroFormObj is a dictionary, as expected
@@ -371,9 +372,13 @@ AcroForm *AcroForm::load(PDFDoc *docA, Catalog *catalog, Object *acroFormObjA) {
       delete acroForm;
       return NULL;
     }
+    // scan the fields, checking for loops in the field tree; touchedObjs
+    // stays for the widget scan below, so no object is scanned twice
+    touchedObjs = (char *)gmalloc(docA->getXRef()->getNumObjects());
+    memset(touchedObjs, 0, docA->getXRef()->getNumObjects());
     for (i = 0; i < obj1.arrayGetLength(); ++i) {
       obj1.arrayGetNF(i, &obj2);
-      acroForm->scanField(&obj2);
+      acroForm->scanField(&obj2, touchedObjs);
       obj2.free();
     }
     obj1.free();
@@ -397,7 +402,7 @@ AcroForm *AcroForm::load(PDFDoc *docA, Catalog *catalog, Object *acroFormObjA) {
 	      annotRef.fetch(acroForm->doc->getXRef(), &annotObj);
 	      if (annotObj.isDict()) {
 		if (annotObj.dictLookup("Subtype", &obj1)->isName("Widget")) {
-		  acroForm->scanField(&annotRef);
+		  acroForm->scanField(&annotRef, touchedObjs);
 		}
 		obj1.free();
 	      }
@@ -409,6 +414,7 @@ AcroForm *AcroForm::load(PDFDoc *docA, Catalog *catalog, Object *acroFormObjA) {
       }
       annotsObj.free();
     }
+    gfree(touchedObjs);
 
   // if acroFormObjA is a null object, but there are Widget-type
   // annots, we still create an AcroForm
@@ -421,6 +427,8 @@ AcroForm *AcroForm::load(PDFDoc *docA, Catalog *catalog, Object *acroFormObjA) {
     acroForm->buildAnnotPageList(catalog);
 
     // scan the annotations, looking for any Widget-type annots
+    touchedObjs = (char *)gmalloc(docA->getXRef()->getNumObjects());
+    memset(touchedObjs, 0, docA->getXRef()->getNumObjects());
     for (pageNum = 1; pageNum <= catalog->getNumPages(); ++pageNum) {
       if (catalog->getPage(pageNum)->getAnnots(&annotsObj)->isArray()) {
 	for (i = 0; i < annotsObj.arrayGetLength(); ++i) {
@@ -428,7 +436,7 @@ AcroForm *AcroForm::load(PDFDoc *docA, Catalog *catalog, Object *acroFormObjA) {
 	    annotRef.fetch(acroForm->doc->getXRef(), &annotObj);
 	    if (annotObj.isDict()) {
 	      if (annotObj.dictLookup("Subtype", &obj1)->isName("Widget")) {
-		acroForm->scanField(&annotRef);
+		acroForm->scanField(&annotRef, touchedObjs);
 	      }
 	      obj1.free();
 	    }
@@ -439,6 +447,7 @@ AcroForm *AcroForm::load(PDFDoc *docA, Catalog *catalog, Object *acroFormObjA) {
       }
       annotsObj.free();
     }
+    gfree(touchedObjs);
 
     if (acroForm->fields->getLength() == 0) {
       delete acroForm;
@@ -509,11 +518,25 @@ int AcroForm::lookupAnnotPage(Object *annotRef) {
   return 0;
 }
 
-void AcroForm::scanField(Object *fieldRef) {
+void AcroForm::scanField(Object *fieldRef, char *touchedObjs) {
   AcroFormField *field;
   Object fieldObj, kidsObj, kidRef, kidObj, subtypeObj;
   GBool isTerminal;
   int i;
+
+  // check for an infinite loop in the field tree
+  if (fieldRef->isRef()) {
+    if (fieldRef->getRefNum() < 0 ||
+	fieldRef->getRefNum() >= doc->getXRef()->getNumObjects()) {
+      error(errSyntaxError, -1, "Invalid AcroForm field object");
+      return;
+    }
+    if (touchedObjs[fieldRef->getRefNum()]) {
+      error(errSyntaxError, -1, "Loop in AcroForm field tree");
+      return;
+    }
+    touchedObjs[fieldRef->getRefNum()] = 1;
+  }
 
   fieldRef->fetch(doc->getXRef(), &fieldObj);
   if (!fieldObj.isDict()) {
@@ -542,7 +565,7 @@ void AcroForm::scanField(Object *fieldRef) {
     if (!isTerminal) {
       for (i = 0; !isTerminal && i < kidsObj.arrayGetLength(); ++i) {
 	kidsObj.arrayGetNF(i, &kidRef);
-	scanField(&kidRef);
+	scanField(&kidRef, touchedObjs);
 	kidRef.free();
       }
     }
@@ -3499,6 +3522,7 @@ GString *AcroFormField::pictureFormatDateTime(GString *value,
 	    s->append(c);
 	  }
 	} else {
+	  ++i;
 	  s->append(c);
 	}
       }

@@ -68,13 +68,15 @@ namespace NSOnlineOfficeBinToPdf
 		case ctAnnotField:       return Read_Command<CAnnotFieldInfo>  (this, pCorrector);
 		case ctFormField:        return Read_Command<CFormFieldInfo>   (this, pCorrector);
 		case ctAnnotFieldDelete: return Read_Command<CAnnotFieldDelete>(this, pCorrector);
-		case ctWidgetsInfo:      return Read_Command<CWidgetsInfo>     (this, pCorrector);
+		case ctWidgetsInfo:      return Read_Command_Len<CWidgetsInfo> (this, pCorrector, nLen);
 		case ctShapeStart:       return Read_Command_Len<CShapeStart>  (this, pCorrector, nLen);
 		case ctShapeEnd:         return new CEmptyComand(IAdvancedCommand::AdvancedCommandType::ShapeEnd);
 		case ctPageClear:        return new CEmptyComand(IAdvancedCommand::AdvancedCommandType::PageClear);
 		case ctPageRotate:       return Read_Command<CPageRotate>      (this, pCorrector);
 		case ctHeadings:         return Read_Command<CHeadings>        (this, pCorrector);
 		case ctRedact:           return Read_Command<CRedact>          (this, pCorrector);
+		case ctRedactMeta:       return Read_Command<CRedactMeta>      (this, pCorrector);
+		case ctMacros:           return Read_Command<CMacros>          (this, pCorrector);
 		default: break;
 		}
 

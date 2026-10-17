@@ -785,8 +785,10 @@ bool SRecordHeader::ReadFromStream(POLE::Stream *pStream)
     RecVersion = rec - (RecInstance << 4);
 
     nRd = pStream->read((unsigned char*)&(RecType), 2);
+    if (nRd != 2) return false;
 
     nRd = pStream->read((unsigned char*)&(RecLen), 4);
+    if (nRd != 4) return false;
 
     POLE::uint64 sz = pStream->size() - pStream->tell();
 

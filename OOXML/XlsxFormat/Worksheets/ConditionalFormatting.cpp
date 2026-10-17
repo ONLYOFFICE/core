@@ -2505,10 +2505,13 @@ void CConditionalFormattingRule::toXML2(NSStringUtils::CStringBuilder& writer, b
 		{
 			if (false == m_oId.IsInit())
 			{
-				WritingStringAttrString(L"id", L"{" + XmlUtils::GenerateGuid() + L"}");
-			}
-			else
-				WritingStringNullableAttrString(L"id", m_oId, m_oId.get());
+                SimpleTypes::CGuid newGuid; newGuid.Generate();
+                WritingStringNullableAttrString(L"id", m_oId, newGuid.ToString());
+            }
+            else
+            {
+                WritingStringNullableAttrString(L"id", m_oId, m_oId->ToString());
+            }
 		}
 	writer.WriteString(L">");
 
@@ -2670,7 +2673,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toBin(const  XLS::CellRef &cellRe
         extPtr->m_BrtCFRuleExt = XLS::BaseObjectPtr{beginExt};
         ptr->m_FRTCFRULE = XLS::BaseObjectPtr{extPtr};
 
-        beginExt->guid = m_oExtId.get();
+        beginExt->guid = m_oExtId->ToString();
         auto ruleBegin(new XLSB::FRTBegin);
         ruleBegin->productVersion.product = 0;
         ruleBegin->productVersion.version = 0;
@@ -2704,7 +2707,7 @@ void CConditionalFormattingRule::toBin(XLS::StreamCacheWriterPtr& writer, const 
         auto beginExt(new XLSB::CFRuleExt);
         ext.m_BrtCFRuleExt = XLS::BaseObjectPtr{beginExt};
 
-        beginExt->guid = m_oExtId.get();
+        beginExt->guid = m_oExtId->ToString();
         auto ruleBegin(new XLSB::FRTBegin);
         ext.m_BrtFRTBegin = XLS::BaseObjectPtr{ruleBegin};
         ext.write(writer, nullptr);
@@ -3217,7 +3220,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes14(const  XLS::Cel
     if(m_oId.IsInit())
     {
         ptr->fGuid = true;
-        ptr->guid = m_oId.get();
+        ptr->guid = m_oId->ToString();
     }
     if(m_oText.IsInit())
         ptr->strParam = m_oText.get();
@@ -3528,7 +3531,10 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 	}
 	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::aboveAverage)
 	{
-		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
+		if(m_oAboveAverage.IsInit() && !m_oAboveAverage->GetValue())
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_BELOWAVERAGE;
+		else
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
 		if(m_oStdDev.IsInit())
 			ptr->rgbTemplateParms.data.averages.iParam =  m_oStdDev->GetValue();
 	}
@@ -3612,9 +3618,11 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 	if(m_oPriority.IsInit())
 		ptr->ipriority = m_oPriority->GetValue();
 	if(m_arrFormula.size() > 0)
-		ptr->rgce1.parseStringFormula(m_arrFormula[0].get().m_sText, L"");
+		ptr->rgce1.parseStringFormula(m_arrFormula[0].get().m_sText, L"CFParsedFormulaNoCCE");
+	else if(ptr->ct == 2)
+		ptr->rgce1.parseStringFormula(L"TRUE", L"CFParsedFormulaNoCCE");
 	if(m_arrFormula.size() > 1)
-		ptr->rgce2.parseStringFormula(m_arrFormula[1].get().m_sText, L"");
+		ptr->rgce2.parseStringFormula(m_arrFormula[1].get().m_sText, L"CFParsedFormulaNoCCE");
 	return XLS::BaseObjectPtr(ptr);
 }
 
@@ -4396,11 +4404,11 @@ void CConditionalFormatting::toXLS(XLS::BaseObjectPtr fmtsPtr)
 		ptr->mainCF.sqref.strValue = m_oSqRef.get();
 		formatingfirstCell = ptr->mainCF.sqref.getLocationFirstCell();
 	}
-	ptr->mainCF.ccf = m_arrItems.size();
 	for(auto i : m_arrItems)
 	{
 		UnionPtr->m_arCF12.push_back(i->toXLS(formatingfirstCell));
 	}
+	ptr->mainCF.ccf = UnionPtr->m_arCF12.size();
 
 	fmtsArray->m_arCONDFMT.push_back(XLS::BaseObjectPtr(UnionPtr));
 }

@@ -35,7 +35,16 @@ Information about formats you can find [here](https://github.com/ONLYOFFICE/core
 	# configuration for .csv files
 	<m_nCsvTxtEncoding> </m_nCsvTxtEncoding>
 	<m_nCsvDelimiter> </m_nCsvDelimiter>
-	<m_sCsvDelimiterChar> </m_sCsvDelimiterChar>
+	<m_nCsvDelimiterChar> </m_nCsvDelimiterChar>
+
+	# spreadsheet to .csv/.tsv: every sheet, not only the active one (true/false, default false).
+	# The result at m_sFileTo is then a zip, as for the images of all pages: one file per sheet,
+	# sheet<N>.<name>.csv (.tsv when tab-separated), e.g. sheet1.Names.csv, sheet2.Q1_2025.csv:
+	# N is the sheet's place in the workbook, counting hidden sheets; <name> is the sheet's name
+	# with white space turned into _ and anything a file name may not hold dropped (of ASCII only
+	# letters, digits, _ and - are kept), at most 64 characters; with nothing left it is sheet<N>.csv.
+	# Give m_nFormatTo explicitly - the format is not taken from the .zip extension.
+	<m_bCsvAllSheets> </m_bCsvAllSheets>
 
 	# save additional information about conversion or not
 	<m_bDontSaveAdditional> </m_bDontSaveAdditional>

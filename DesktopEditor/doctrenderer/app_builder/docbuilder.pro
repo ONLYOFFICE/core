@@ -58,7 +58,7 @@ core_windows {
 DESTDIR = $$CORE_BUILDS_BINARY_PATH
 ################################################
 
-ADD_DEPENDENCY(graphics, kernel, kernel_network, UnicodeConverter, doctrenderer, PdfFile, XpsFile, DjVuFile, DocxRenderer)
+ADD_DEPENDENCY(graphics, kernel, kernel_network, UnicodeConverter, doctrenderer, PdfFile, XpsFile, DjVuFile, OFDFile, DocxRenderer)
 
 core_linux {
     LIBS += -ldl

@@ -98,7 +98,8 @@ namespace SVG
 
 	void CMarker::Draw(IRenderer *pRenderer, const CSvgFile* pFile, const TMarkerExternData& oExternalData, CommandeMode oMode, const TSvgStyles* pOtherStyles, const CRenderedObject* pContexObject) const
 	{
-		if (NULL == oExternalData.m_pPoints || oExternalData.m_pPoints->empty() || m_arObjects.empty() || (EMarkerUnits::StrokeWidth == m_enUnits && Equals(0., oExternalData.m_dStroke)))
+		if (NULL == oExternalData.m_pPoints || oExternalData.m_pPoints->empty() || m_arObjects.empty() || (EMarkerUnits::StrokeWidth == m_enUnits && Equals(0., oExternalData.m_dStroke)) ||
+		    m_oViewBox.m_oWidth.Zero() || m_oViewBox.m_oHeight.Zero())
 			return;
 
 		const double dMaxScale = ((EMarkerUnits::StrokeWidth == m_enUnits) ? oExternalData.m_dStroke : 1.) *

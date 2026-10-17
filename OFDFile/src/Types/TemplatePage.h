@@ -38,6 +38,8 @@
 
 #include "../IOFDElement.h"
 
+class IFolder;
+
 namespace OFD
 {
 enum class EZOrder
@@ -49,13 +51,14 @@ enum class EZOrder
 EZOrder GetZOrderFromString(const std::string& sValue);
 
 class CPage;
+
 class CTemplatePage : public IOFDElement
 {
 	EZOrder m_eZOrder;
 
 	const CPage* m_pPage;
 public:
-	CTemplatePage(CXmlReader& oXmlReader, const std::wstring& wsRootPath);
+	CTemplatePage(CXmlReader& oXmlReader, const std::wstring& wsRootPath, IFolder* pFolder);
 	~CTemplatePage();
 
 	EZOrder GetZOrder() const;

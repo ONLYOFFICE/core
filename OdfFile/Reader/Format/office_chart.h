@@ -127,10 +127,11 @@ class chart_title_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    _CP_OPT(std::wstring)					table_cell_range_;
-    odf_types::common_draw_position_attlist common_draw_position_attlist_;
-    common_chart_attlist					common_attlist_;
+    _CP_OPT(std::wstring) table_cell_range_;
+    common_chart_attlist common_attlist_;
 
+    odf_types::common_draw_position_attlist		common_draw_position_attlist_;
+    odf_types::common_draw_size_attlist         common_draw_size_attlist_;
 };
 
 //  chart:title
@@ -171,7 +172,6 @@ private:
 public:
     chart_title_attlist	attlist_;
     office_element_ptr	text_p_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_subtitle);
@@ -209,6 +209,7 @@ public:
     _CP_OPT(double)				style_legend_expansion_aspect_ratio_;
 	
 	odf_types::common_draw_position_attlist		common_draw_position_attlist_;
+    odf_types::common_draw_size_attlist         common_draw_size_attlist_;
 	common_chart_attlist						common_attlist_;
 
 };
@@ -272,6 +273,27 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_plot_area);
 
+//  chart:coordinate-region
+class chart_coordinate_region : public office_element_impl<chart_coordinate_region>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeChartCoordinateRegion;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
+
+public:
+    odf_types::common_draw_position_attlist	common_draw_position_attlist_;
+    odf_types::common_draw_size_attlist		common_draw_size_attlist_;
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(chart_coordinate_region);
+
 class chart_wall_attlist
 {
 public:
@@ -332,6 +354,8 @@ public:
     _CP_OPT(odf_types::chart_axis_type) axis_type_;
 
     common_chart_attlist common_attlist_;
+    odf_types::common_draw_position_attlist	 common_draw_position_attlist_;
+    odf_types::common_draw_size_attlist common_draw_size_attlist_;
 };
 
 //  chart:axis
@@ -360,8 +384,8 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring)		grid_class_;
-    common_chart_attlist		common_attlist_;
+    _CP_OPT(std::wstring) grid_class_;
+    common_chart_attlist common_attlist_;
     
 };
 
@@ -414,12 +438,12 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring)			chart_values_cell_range_address_;
-    _CP_OPT(std::wstring)			chart_label_cell_address_;
+    _CP_OPT(std::wstring) chart_values_cell_range_address_;
+    _CP_OPT(std::wstring) chart_label_cell_address_;
     _CP_OPT(odf_types::chart_class)	chart_class_;
-    _CP_OPT(std::wstring)			chart_attached_axis_;
-    common_chart_attlist			common_attlist_;
-
+    _CP_OPT(std::wstring) chart_attached_axis_;
+    
+    common_chart_attlist common_attlist_;
 };
 
 //  chart:series
@@ -471,9 +495,8 @@ class chart_data_point_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-public:
-    _CP_OPT(unsigned int)		chart_repeated_;
-    common_chart_attlist		common_attlist_;
+    _CP_OPT(unsigned int) chart_repeated_;
+    common_chart_attlist common_attlist_;
 };
 
 //  chart:data-point
@@ -551,17 +574,12 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartEquation;
     CPDOCCORE_DEFINE_VISITABLE();
-
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-	{}
-
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
 public:
-    common_chart_attlist	common_attlist_;
-	_CP_OPT(bool)			display_r_square_;
-
+    common_chart_attlist common_attlist_;
+	_CP_OPT(bool) display_r_square_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_equation);
@@ -575,15 +593,13 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartRegressionCurve;
     CPDOCCORE_DEFINE_VISITABLE();
-
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    common_chart_attlist	common_attlist_;
-	office_element_ptr		chart_equation_;
+    common_chart_attlist common_attlist_;
+	office_element_ptr chart_equation_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_regression_curve);
@@ -598,16 +614,12 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartStockGainMarker;
     CPDOCCORE_DEFINE_VISITABLE();
-
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-	{}
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
 
 public:
     common_chart_attlist common_attlist_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(chart_stock_gain_marker);
@@ -621,15 +633,12 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartStockLossMarker;
     CPDOCCORE_DEFINE_VISITABLE();
-
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-	{}
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
 public:
-    common_chart_attlist		common_attlist_;
+    common_chart_attlist common_attlist_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(chart_stock_loss_marker);
@@ -643,12 +652,9 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartStockRangeLine;
     CPDOCCORE_DEFINE_VISITABLE();
-
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-	{}
-
+    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 public:
     common_chart_attlist common_attlist_;
 

@@ -40,9 +40,6 @@ namespace XLS
 
 AreaFormat::AreaFormat()
 {
-	rgbFore.red = 0xFF;
-	rgbFore.green = 0xFF;
-	rgbFore.blue = 0xFF;
 }
 
 
@@ -94,6 +91,33 @@ int AreaFormat::serialize(std::wostream & _stream)
 		}
 	}
 	return 0;
+}
+void AreaFormat::setChecksum(std::vector<BYTE> &ChecksumData)
+{
+	{
+		BYTE red = rgbFore.red;
+		ChecksumData.push_back(red);
+		BYTE green = rgbFore.green;
+		ChecksumData.push_back(green);
+		BYTE Blue = rgbFore.blue;
+		ChecksumData.push_back(Blue);
+		BYTE reserved = 0;
+		ChecksumData.push_back(reserved);
+	}
+	{
+		BYTE red = rgbBack.red;
+		ChecksumData.push_back(red);
+		BYTE green = rgbBack.green;
+		ChecksumData.push_back(green);
+		BYTE Blue = rgbBack.blue;
+		ChecksumData.push_back(Blue);
+		BYTE reserved = 0;
+		ChecksumData.push_back(reserved);
+	}
+	{
+		BYTE flsChecksum = fls;
+		ChecksumData.push_back(flsChecksum);
+	}
 }
 
 } // namespace XLS

@@ -126,7 +126,24 @@ void odf_style_state::set_family_type (odf_types::style_family::type type)
 {
 	 style_family_ = type;
 }
+void odf_style_state::set_link_style_name(const std::wstring& name)
+{
+	if (name.length() < 1) return;
 
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return;
+
+	if (name == style_->style_name_)
+		return;
+	style_->loext_linked_style_name_ = name;
+}
+void odf_style_state::set_primary_format(bool val)
+{
+	style* style_ = dynamic_cast<style*>(odf_style_.get());
+	if (!style_)return;
+
+	style_->loext_primary_format_ = val;
+}
 void odf_style_state::set_parent_style_name(const std::wstring &name)
 {
 	if (name.length() < 1) return;

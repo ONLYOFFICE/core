@@ -191,6 +191,14 @@ namespace PPTX
 								{
 									sectionLst = ext.sectionLst;
 								}
+								else if (ext.sldGuideLst.IsInit())
+								{
+									sldGuideLst = ext.sldGuideLst;
+								}
+								else if (ext.notesGuideLst.IsInit())
+								{
+									notesGuideLst = ext.notesGuideLst;
+								}
 							}
 						}
 					}
@@ -247,6 +255,9 @@ namespace PPTX
 		pWriter->WriteRecord2(9, m_pJsaProject);
 		pWriter->WriteRecord2(10, comments);
 
+		pWriter->WriteRecord2(15, sldGuideLst);
+		pWriter->WriteRecord2(16, notesGuideLst);
+
 		pWriter->EndRecord();
 	}
 	void Presentation::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -268,20 +279,20 @@ namespace PPTX
 
 			switch (_at)
 			{
-			case 0: { attrAutoCompressPictures = pReader->GetBool(); break; }
-			case 1: { attrBookmarkIdSeed = pReader->GetLong(); break; }
-			case 2: { attrCompatMode = pReader->GetBool(); break; }
-			case 3: { attrConformance = pReader->GetUChar(); break; }
-			case 4: { attrEmbedTrueTypeFonts = pReader->GetBool(); break; }
-			case 5: { attrFirstSlideNum = pReader->GetLong(); break; }
-			case 6: { attrRemovePersonalInfoOnSave = pReader->GetBool(); break; }
-			case 7: { attrRtl = pReader->GetBool(); break; }
-			case 8: { attrSaveSubsetFonts = pReader->GetBool(); break; }
-			case 9: { attrServerZoom = pReader->GetString2(); break; }
-			case 10: { attrShowSpecialPlsOnTitleSld = pReader->GetBool(); break; }
-			case 11: { attrStrictFirstAndLastChars = pReader->GetBool(); break; }
-			default:
-				return;
+				case 0: { attrAutoCompressPictures = pReader->GetBool(); break; }
+				case 1: { attrBookmarkIdSeed = pReader->GetLong(); break; }
+				case 2: { attrCompatMode = pReader->GetBool(); break; }
+				case 3: { attrConformance = pReader->GetUChar(); break; }
+				case 4: { attrEmbedTrueTypeFonts = pReader->GetBool(); break; }
+				case 5: { attrFirstSlideNum = pReader->GetLong(); break; }
+				case 6: { attrRemovePersonalInfoOnSave = pReader->GetBool(); break; }
+				case 7: { attrRtl = pReader->GetBool(); break; }
+				case 8: { attrSaveSubsetFonts = pReader->GetBool(); break; }
+				case 9: { attrServerZoom = pReader->GetString2(); break; }
+				case 10: { attrShowSpecialPlsOnTitleSld = pReader->GetBool(); break; }
+				case 11: { attrStrictFirstAndLastChars = pReader->GetBool(); break; }
+				default:
+					return;
 			}
 		}
 
@@ -291,104 +302,114 @@ namespace PPTX
 
 			switch (_type)
 			{
-			case 0:
-			{
-				defaultTextStyle = PPTX::Logic::TextListStyle();
-				defaultTextStyle->m_name = L"p:defaultTextStyle";
-				defaultTextStyle->fromPPTY(pReader);
-				break;
-			}
-			case 1: { pReader->SkipRecord(); break; }
-			case 2: { pReader->SkipRecord(); break; }
-			case 3:
-			{
-				notesSz = new nsPresentation::NotesSz();
-				pReader->Skip(5); // len + start attributes
-
-				while (true)
+				case 0:
 				{
-					BYTE _at = pReader->GetUChar_TypeNode();
+					defaultTextStyle = PPTX::Logic::TextListStyle();
+					defaultTextStyle->m_name = L"p:defaultTextStyle";
+					defaultTextStyle->fromPPTY(pReader);
+					break;
+				}
+				case 1: { pReader->SkipRecord(); break; }
+				case 2: { pReader->SkipRecord(); break; }
+				case 3:
+				{
+					notesSz = new nsPresentation::NotesSz();
+					pReader->Skip(5); // len + start attributes
 
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
+					while (true)
 					{
-					case 0: { notesSz->cx = pReader->GetLong(); break; }
-					case 1: { notesSz->cy = pReader->GetLong(); break; }
-					default:
-						return;
+						BYTE _at = pReader->GetUChar_TypeNode();
+
+						if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+							break;
+
+						switch (_at)
+						{
+						case 0: { notesSz->cx = pReader->GetLong(); break; }
+						case 1: { notesSz->cy = pReader->GetLong(); break; }
+						default:
+							return;
+						}
 					}
+					break;
 				}
-				break;
-			}
-			case 4: { pReader->SkipRecord(); break; }
-			case 5:
-			{
-				sldSz = new nsPresentation::SldSz();
-				pReader->Skip(5); // len + start attributes
-
-				while (true)
+				case 4: { pReader->SkipRecord(); break; }
+				case 5:
 				{
-					BYTE _at = pReader->GetUChar_TypeNode();
+					sldSz = new nsPresentation::SldSz();
+					pReader->Skip(5); // len + start attributes
 
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
+					while (true)
 					{
-					case 0: { sldSz->cx = pReader->GetLong(); break; }
-					case 1: { sldSz->cy = pReader->GetLong(); break; }
-					case 2: { sldSz->type = pReader->GetUChar(); break; }
-					default:
-						return;
-					}
-				}
-			}break;
-			case 6:
-			{
-				if (false == commentAuthors.IsInit())
-				{
-					commentAuthors = new PPTX::Authors(File::m_pMainDocument);
-				}
-				commentAuthors->fromPPTY(pReader);
-			}break;
-			case 7:
-			{
-				sectionLst = new nsPresentation::SectionLst();
-				sectionLst->fromPPTY(pReader);
-			}break;
-			case 8:
-			{
-				if (m_bMacroEnabled)
-				{
-					m_pVbaProject = new OOX::VbaProject(File::m_pMainDocument);
-					m_pVbaProject->fromPPTY(pReader);
+						BYTE _at = pReader->GetUChar_TypeNode();
 
-					smart_ptr<OOX::File> file = m_pVbaProject.smart_dynamic_cast<OOX::File>();
+						if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+							break;
+
+						switch (_at)
+						{
+						case 0: { sldSz->cx = pReader->GetLong(); break; }
+						case 1: { sldSz->cy = pReader->GetLong(); break; }
+						case 2: { sldSz->type = pReader->GetUChar(); break; }
+						default:
+							return;
+						}
+					}
+				}break;
+				case 6:
+				{
+					if (false == commentAuthors.IsInit())
+					{
+						commentAuthors = new PPTX::Authors(File::m_pMainDocument);
+					}
+					commentAuthors->fromPPTY(pReader);
+				}break;
+				case 7:
+				{
+					sectionLst = new nsPresentation::SectionLst();
+					sectionLst->fromPPTY(pReader);
+				}break;
+				case 8:
+				{
+					if (m_bMacroEnabled)
+					{
+						m_pVbaProject = new OOX::VbaProject(File::m_pMainDocument);
+						m_pVbaProject->fromPPTY(pReader);
+
+						smart_ptr<OOX::File> file = m_pVbaProject.smart_dynamic_cast<OOX::File>();
+						FileContainer::Add(file);
+					}
+					else
+						pReader->SkipRecord();
+				}break;
+				case 9:
+				{
+					m_pJsaProject = new OOX::JsaProject(File::m_pMainDocument);
+					m_pJsaProject->fromPPTY(pReader);
+
+					smart_ptr<OOX::File> file = m_pJsaProject.smart_dynamic_cast<OOX::File>();
 					FileContainer::Add(file);
-				}
-				else
+				}break;
+				case 10:
+				{
+					comments = new PPTX::Comments(OOX::File::m_pMainDocument);
+					comments->fromPPTY(pReader);
+				}break;
+				case 15:
+				{
+					sldGuideLst = new nsPresentation::ExtendedGuideList();
+					sldGuideLst->fromPPTY(pReader);
+				}break;
+				case 16:
+				{
+					notesGuideLst = new nsPresentation::ExtendedGuideList();
+					notesGuideLst->fromPPTY(pReader);
+				}break;
+				default:
+				{
 					pReader->SkipRecord();
-			}break;
-			case 9:
-			{
-				m_pJsaProject = new OOX::JsaProject(File::m_pMainDocument);
-				m_pJsaProject->fromPPTY(pReader);
-
-				smart_ptr<OOX::File> file = m_pJsaProject.smart_dynamic_cast<OOX::File>();
-				FileContainer::Add(file);
-			}break;
-			case 10:
-			{
-				comments = new PPTX::Comments(OOX::File::m_pMainDocument);
-				comments->fromPPTY(pReader);
-			}break;
-			default:
-			{
-				pReader->SkipRecord();
-				return;
-			}
+				
+				}break;
 			}
 		}
 		pReader->Seek(_end_pos);
@@ -407,7 +428,10 @@ namespace PPTX
 		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
 		pWriter->WriteAttribute(L"xmlns:m", PPTX::g_Namespaces.m.m_strLink);
 		pWriter->WriteAttribute(L"xmlns:w", PPTX::g_Namespaces.w.m_strLink);
-
+		if (sldGuideLst.IsInit() || notesGuideLst.IsInit())
+		{
+			pWriter->WriteAttribute(L"xmlns:p15", PPTX::g_Namespaces.p15.m_strLink);
+		}
 		pWriter->WriteAttribute(L"autoCompressPictures", attrAutoCompressPictures);
 		pWriter->WriteAttribute(L"bookmarkIdSeed", attrBookmarkIdSeed);
 		pWriter->WriteAttribute(L"compatMode", attrCompatMode);
@@ -424,13 +448,18 @@ namespace PPTX
 		pWriter->EndAttributes();
 
 		pWriter->WriteArray(L"p:sldMasterIdLst", sldMasterIdLst);
+
 		pWriter->WriteArray(L"p:notesMasterIdLst", notesMasterIdLst);
+		
 		pWriter->WriteArray(L"p:handoutMasterIdLst", handoutMasterIdLst);
-		pWriter->WriteArray(L"p:embeddedFontLst", embeddedFontLst);
+
 		pWriter->WriteArray(L"p:sldIdLst", sldIdLst);
 
 		pWriter->Write(sldSz);
 		pWriter->Write(notesSz);
+		
+		pWriter->WriteArray(L"p:embeddedFontLst", embeddedFontLst);
+
 		pWriter->Write(photoAlbum);
 		pWriter->Write(kinsoku);
 
@@ -461,6 +490,20 @@ namespace PPTX
 		{
 			Logic::Ext exp;
 			exp.sectionLst = sectionLst;
+			extLst.push_back(exp);
+		}
+		if (sldGuideLst.IsInit())
+		{
+			Logic::Ext exp;
+			exp.uri = L"{EFAFB233-063F-42B5-8137-9DF3F51BA10A}";
+			exp.sldGuideLst = sldGuideLst;
+			extLst.push_back(exp);
+		}
+		if (notesGuideLst.IsInit())
+		{
+			Logic::Ext exp;
+			exp.uri = L"{2D200454-40CA-4A62-9FC3-DE9A4176ACB9}";
+			exp.notesGuideLst = notesGuideLst;
 			extLst.push_back(exp);
 		}
 		pWriter->WriteArray(L"p:extLst", extLst);

@@ -395,7 +395,8 @@ namespace OOX
 				auto cols = new XLS::COLUMNS;
 				for(auto i:m_arrItems)
 				{
-				   cols->m_colInfos.push_back(i->toXLS());
+					if(!((i->m_oMax.IsInit() && i->m_oMax->GetValue() > 255) || (i->m_oMin.IsInit() && i->m_oMin->GetValue() > 255)))
+						cols->m_colInfos.push_back(i->toXLS());
 				}
 
 				return  XLS::BaseObjectPtr(cols);

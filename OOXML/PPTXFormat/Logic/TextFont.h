@@ -33,8 +33,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
-#ifndef PPTX_LOGIC_TEXTFONT_INCLUDE_H_
-#define PPTX_LOGIC_TEXTFONT_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
@@ -63,7 +61,6 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-		public:
 			nullable_string		charset;
 			nullable_string		panose;
 			nullable_string		pitchFamily;
@@ -77,5 +74,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_TEXTFONT_INCLUDE_H_

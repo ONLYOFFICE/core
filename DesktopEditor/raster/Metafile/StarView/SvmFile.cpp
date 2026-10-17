@@ -51,6 +51,19 @@
 
 namespace MetaFile
 {
+static void CutString(std::wstring& wsText, unsigned short unIndex, unsigned short unLen)
+{
+	if (unIndex >= wsText.length())
+	{
+		if (0 != unIndex)
+			wsText.clear();
+		return;
+	}
+
+	const size_t unMaxLen = wsText.length() - unIndex;
+
+	wsText = wsText.substr(unIndex, (unLen < unMaxLen) ? unLen : unMaxLen);
+}
 
 static const struct ActionNamesSmv
 {
@@ -263,7 +276,7 @@ void CSvmFile::Read_META_LINE()
 		CSvmPen *last_pen = dynamic_cast<CSvmPen *>(m_oPlayer.GetLastObject(SVM_OBJECT_PEN));
 		if (last_pen)
 		{
-			last_pen->Width = static_cast<int>(line_info.width / (m_oPlayer.GetDC()->m_dPixelWidth * 2));
+			last_pen->Width = line_info.width;
 
 			switch(line_info.style)
 			{
@@ -295,16 +308,10 @@ void CSvmFile::Read_SVM_HEADER()
 
 	m_pDC->SetMapMode(m_oHeader.mapMode, true);
 	
-	if (m_bMainStream) // due to 2, the image itself is scaled up by 2 (content has original size, i.e. 2 times smaller than needed)
-	{	
-		unsigned int unCoef = 1;
-		m_oBoundingBox          = m_oHeader.boundRect;
-		m_oBoundingBox.Right    = static_cast<int>(m_pDC->m_dPixelWidthPrefered		* unCoef * m_oBoundingBox.Right);
-		m_oBoundingBox.Bottom   = static_cast<int>(m_pDC->m_dPixelHeightPrefered	* unCoef * m_oBoundingBox.Bottom);
-			
-		m_oBoundingBox.Left     = static_cast<int>(m_pDC->m_dPixelWidthPrefered		* unCoef * m_oBoundingBox.Left);
-		m_oBoundingBox.Top      = static_cast<int>(m_pDC->m_dPixelHeightPrefered	* unCoef * m_oBoundingBox.Top);
-	}// *2 to improve image quality (if vector actually contains raster - will switch to raster dimensions below)
+	if (m_bMainStream)
+	{
+		m_oBoundingBox = m_oHeader.boundRect;
+	}// (if vector actually contains raster - will switch to raster dimensions below)
 		
 	m_bFirstPoint = true;
 }
@@ -321,7 +328,7 @@ void CSvmFile::Read_META_POLYLINE()
 		CSvmPen *last_pen = dynamic_cast<CSvmPen *>(m_oPlayer.GetLastObject(SVM_OBJECT_PEN));
 		if (last_pen)
 		{
-			last_pen->Width = line_info.width / (m_oPlayer.GetDC()->m_dPixelWidth * 2);
+			last_pen->Width = line_info.width;
 
 			switch(line_info.style)
 			{
@@ -511,6 +518,7 @@ void CSvmFile::Read_META_STRETCHTEXT()
 		}
 		sText = buf;
 	}
+	CutString(sText, Index, Len);
 	DrawText(sText, sText.length(), startPoint.x + m_oCurrnetOffset.x, startPoint.y + m_oCurrnetOffset.y);
 }
 
@@ -591,6 +599,7 @@ void CSvmFile::Read_META_ARRAYTEXT()
 			tempBuffer += (wchar_t)nTemp;
 		}
 	}
+	CutString(sText, nIndex, nLen);
 	DrawText(sText, sText.length(), startPoint.x + m_oCurrnetOffset.x, startPoint.y + m_oCurrnetOffset.y, mpDXAry, nArrayLen);
 
 	if (mpDXAry)

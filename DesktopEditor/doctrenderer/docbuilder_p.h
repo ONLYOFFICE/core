@@ -44,6 +44,7 @@
 
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/OfficeFileFormatChecker.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
 #include "js_internal/js_base.h"
 #include "embed/NativeBuilderEmbed.h"
@@ -65,6 +66,7 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../common/ProcessEnv.h"
+#include "../xml/include/xmlutils.h"
 
 #include "docbuilder_addon.h"
 
@@ -72,51 +74,32 @@
 #undef CreateFile
 #endif
 
+class IOfficeDrawingFile;
+
 namespace NSDoctRenderer
 {
 	static int GetFormatByTexExtention(const std::wstring& sExt)
 	{
-		int nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		if (L"docx" == sExt)
+		std::wstring sLower = sExt;
+		for (size_t i = 0, len = sLower.length(); i < len; ++i)
+		{
+			wchar_t c = sLower[i];
+			if (c >= (wchar_t)'A' && c <= (wchar_t)'Z')
+				sLower[i] = c - (wchar_t)'A' + (wchar_t)'a';
+		}
+
+		if (L"form" == sLower)
+			return AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
+		if (L"image" == sLower)
+			return AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+		if (L"html" == sLower || L"htm" == sLower)
+			return AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
+		if (L"pdfa" == sLower)
+			return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA;
+
+		int nFormat = COfficeFileFormatChecker::GetFormatByExtension(L"." + sLower);
+		if (AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormat)
 			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-		else if (L"doc" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-		else if (L"odt" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-		else if (L"rtf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-		else if (L"txt" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-		else if (L"pptx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-		else if (L"odp" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-		else if (L"xlsx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-		else if (L"xls" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-		else if (L"ods" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-		else if (L"csv" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
-		else if (L"pdf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-		else if (L"image" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
-		else if (L"jpg" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
-		else if (L"png" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
-		else if (L"vsdx" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DRAW_VSDX;
-		else if (L"docxf" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF;
-		else if (L"oform" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
-		else if (L"html" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER;
-		else if (L"form" == sExt)
-			nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF;
 		return nFormat;
 	}
 }
@@ -419,6 +402,14 @@ public:
 	}
 };
 
+// x2t reports a failure as the offset of the error constant (getReturnErrorCode,
+// X2tConverter/src/cextracttools.cpp), and the builder passes that number on to
+// the caller - failures the builder detects itself use the same numbering
+static inline int GetBuilderErrorCode(const unsigned long& nError)
+{
+	return (int)(nError - AVS_ERROR_FIRST - AVS_FILEUTILS_ERROR_FIRST);
+}
+
 class CV8RealTimeWorker
 {
 public:
@@ -430,6 +421,16 @@ public:
 	std::string m_sJSCodeStart;
 
 	CJSContextData m_oContextData;
+
+	// PDF Editor
+	std::wstring m_sX2tPath;
+	std::wstring m_sPdfFile;
+	std::wstring m_sPdfPassword;
+	IOfficeDrawingFile* m_pPdfFile;
+	NSFonts::IApplicationFonts* m_pPdfFonts;
+
+	// error code of the last OpenFile (0 while the document is loaded)
+	int m_nOpenError;
 
 public:
 
@@ -449,6 +450,16 @@ public:
 	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
 	bool InitVariables();
 
+#ifdef DOCBUILDER_PDF_EDITOR
+	// PDF editing
+	bool OpenDrawingFile(const std::wstring& sFontsDirectory);
+	// bRewritePassword: the caller named m_sSavePassword, so the written pdf is
+	// rewritten to carry exactly sSavePassword - an empty one meaning no
+	// protection at all. Without it, a copy of a protected source keeps the
+	// protection the source file put on it.
+	bool SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams = L"", const std::wstring& sSavePassword = L"", const bool& isEnterContext = true, const bool& bRewritePassword = false);
+#endif
+
 	bool NewSimpleJSInstance();
 	bool IsSimpleJSInstance();
 };
@@ -464,6 +475,14 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
+
+		// original pdf path when editing a pdf (m_nFileType == 3)
+		std::wstring m_sEditPdfFile;
+		// password the pdf editor needs to decrypt it
+		std::wstring m_sEditPdfPassword;
+
+		// error code of the worker that failed to open the document
+		int m_nWorkerOpenError;
 
 		std::wstring m_sCommandsBeforeContextCreated;
 
@@ -490,7 +509,8 @@ namespace NSDoctRenderer
 	public:
 		CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
 			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsServerSafeVersion(false),
-			  m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_sCommandsBeforeContextCreated(L""), m_bIsOpenedFromSimpleJS(false)
+			  m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_sCommandsBeforeContextCreated(L""), m_bIsOpenedFromSimpleJS(false),
+			  m_nWorkerOpenError(0)
 		{
 		}
 
@@ -575,6 +595,8 @@ namespace NSDoctRenderer
 			}
 
 			m_nFileType = -1;
+			m_sEditPdfFile = L"";
+			m_sEditPdfPassword = L"";
 
 			NSDirectory::CreateDirectory(m_sFileDir);
 		}
@@ -586,38 +608,11 @@ namespace NSDoctRenderer
 			CheckFileDir();
 
 			std::wstring sEmptyPath = m_sX2tPath + L"/empty/";
-
-#if 0
-			if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+			if (!NSFile::CFileBinary::Exists(sEmptyPath + L"new.docx") &&
+				NSDirectory::Exists(sEmptyPath + L"en-US"))
 			{
-				sEmptyPath = sEmptyPath + L"docx.bin";
-				m_nFileType = 0;
+				sEmptyPath += L"/en-US/";
 			}
-			else if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
-			{
-				sEmptyPath = sEmptyPath + L"pptx.bin";
-				m_nFileType = 1;
-			}
-			else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
-			{
-				sEmptyPath = sEmptyPath + L"xlsx.bin";
-				m_nFileType = 2;
-			}
-			else if (type & AVS_OFFICESTUDIO_FILE_DRAW)
-			{
-				sEmptyPath = sEmptyPath + L"vsdx.bin";
-				m_nFileType = 7;
-			}
-			else
-				return false;
-
-			bool bRet = NSFile::CFileBinary::Copy(sEmptyPath, m_sFileDir + L"/Editor.bin");
-			if (bRet)
-			{
-				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
-				NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
-			}
-#endif
 
 			if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 			{
@@ -755,7 +750,7 @@ namespace NSDoctRenderer
 
 			oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
 			oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-			oBuilder.WriteString(sParams);
+			oBuilder.WriteString(RemoveUnsafeX2tParams(sParams));
 
 			std::string sOptions = NSProcessEnv::Save();
 			if (!sOptions.empty())
@@ -916,6 +911,108 @@ namespace NSDoctRenderer
 			return sExtCopy;
 		}
 
+		// reads one top-level parameter out of the x2t xml the caller passes to
+		// OpenFile/SaveFile - the same xml x2t itself parses
+		static std::wstring GetXmlParamValue(const std::wstring& sParams, const std::wstring& sName)
+		{
+			std::wstring sOpen = L"<" + sName + L">";
+			std::wstring sClose = L"</" + sName + L">";
+
+			std::wstring::size_type posOpen = sParams.find(sOpen);
+			if (std::wstring::npos == posOpen)
+				return L"";
+
+			posOpen += sOpen.length();
+			std::wstring::size_type posClose = sParams.find(sClose, posOpen);
+			if (std::wstring::npos == posClose)
+				return L"";
+
+			std::wstring sValue = sParams.substr(posOpen, posClose - posOpen);
+
+			// xml text: &amp; is decoded last, so an escaped entity (&amp;lt;) stays text
+			NSStringUtils::string_replace(sValue, L"&lt;", L"<");
+			NSStringUtils::string_replace(sValue, L"&gt;", L">");
+			NSStringUtils::string_replace(sValue, L"&quot;", L"\"");
+			NSStringUtils::string_replace(sValue, L"&apos;", L"'");
+			NSStringUtils::string_replace(sValue, L"&amp;", L"&");
+
+			return sValue;
+		}
+
+		// Did the caller NAME this parameter at all? GetXmlParamValue answers the
+		// same empty string for a parameter that is absent and for one the caller
+		// deliberately left empty, and the two mean opposite things: "you decide"
+		// and "none". An empty <m_sSavePassword></m_sSavePassword> is how a caller
+		// asks for a file with no protection on it, and an empty <m_sPassword> is
+		// how it says the source needs none.
+		static bool HasXmlParam(const std::wstring& sParams, const std::wstring& sName)
+		{
+			return std::wstring::npos != sParams.find(L"<" + sName + L">") ||
+			       std::wstring::npos != sParams.find(L"<" + sName + L"/>");
+		}
+
+		static bool IsUnsafeX2tParam(const std::wstring& sName)
+		{
+			static const wchar_t* c_arUnsafeParams[] = {
+				L"m_sFileFrom",
+				L"m_sFileTo",
+				L"m_sTempDir"
+			};
+
+			for (const wchar_t* sUnsafe : c_arUnsafeParams)
+			{
+				if (sName == sUnsafe)
+					return true;
+			}
+			return false;
+		}
+
+		static std::wstring RemoveUnsafeX2tParams(const std::wstring& sParams)
+		{
+			XmlUtils::CXmlNode oRoot;
+			if (sParams.empty() || !oRoot.FromXmlString(L"<TaskQueueDataConvert>" + sParams + L"</TaskQueueDataConvert>"))
+				return L"";
+
+			std::wstring sResult;
+			std::vector<XmlUtils::CXmlNode> arNodes;
+			oRoot.GetChilds(arNodes);
+			for (XmlUtils::CXmlNode& oNode : arNodes)
+			{
+				if (!IsUnsafeX2tParam(oNode.GetName()))
+					sResult += oNode.GetXml();
+			}
+			return sResult;
+		}
+
+		// the first four bytes of the internal format name the editor it belongs to
+		static int GetFileTypeFromInternalFormat(const std::wstring& sFile)
+		{
+			BYTE arrSignature[4];
+			DWORD dwSizeRead = 0;
+
+			NSFile::CFileBinary oFile;
+			if (!oFile.OpenFile(sFile))
+				return -1;
+
+			bool bRead = oFile.ReadFile(arrSignature, 4, dwSizeRead);
+			oFile.CloseFile();
+
+			if (!bRead || 4 != dwSizeRead)
+				return -1;
+
+			COfficeFileFormatChecker oChecker;
+			if (oChecker.isBinaryDoctFormatFile(arrSignature, 4))
+				return 0;
+			if (oChecker.isBinaryPpttFormatFile(arrSignature, 4))
+				return 1;
+			if (oChecker.isBinaryXlstFormatFile(arrSignature, 4))
+				return 2;
+			if (oChecker.isBinaryVsdtFormatFile(arrSignature, 4))
+				return 7;
+
+			return -1;
+		}
+
 		int OpenFile(const std::wstring& path, const std::wstring& params)
 		{
 			Init();
@@ -942,12 +1039,53 @@ namespace NSDoctRenderer
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DRAW)
 				m_nFileType = 7;
 
+#ifdef DOCBUILDER_PDF_EDITOR
+			if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF  == oChecker.nFileType ||
+				AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == oChecker.nFileType)
+			{
+				m_nFileType = 3;
+				m_sEditPdfFile = sFileCopy;
+				m_sEditPdfPassword = GetXmlParamValue(params, L"m_sPassword");
+
+				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
+
+				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
+					RELEASEOBJECT(m_pWorker);
+
+				// a pdf does not go through x2t: the editor reads it itself, so it is
+				// loaded here and an encrypted or unreadable pdf becomes an open error
+				// instead of a context holding no document
+				if (!CheckWorker())
+				{
+					int nReturnCode = m_nWorkerOpenError;
+
+					NSDirectory::DeleteDirectory(m_sFileDir);
+					m_sFileDir = L"";
+					m_nFileType = -1;
+					m_sEditPdfFile = L"";
+					m_sEditPdfPassword = L"";
+
+					std::wstring sErrorLog = L"open file error (" + std::to_wstring(nReturnCode) + L")";
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", sErrorLog);
+					return nReturnCode;
+				}
+
+				LOGGER_SPEED_LAP("open_convert");
+				return 0;
+			}
+#endif
+
 			int nReturnCode = ConvertToInternalFormat(m_sFileDir, sFileCopy, params);
 
 			LOGGER_SPEED_LAP("open_convert");
 
 			if (0 == nReturnCode)
 			{
+				// an encrypted source is OTHER_MS_OFFCRYPTO for the format checker, so
+				// the editor is taken from the internal format x2t has just produced
+				if (-1 == m_nFileType)
+					m_nFileType = GetFileTypeFromInternalFormat(m_sFileDir + L"/Editor.bin");
+
 				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
 				{
 					RELEASEOBJECT(m_pWorker);
@@ -974,6 +1112,8 @@ namespace NSDoctRenderer
 
 			m_sFileDir = L"";
 			m_nFileType = -1;
+			m_sEditPdfFile = L"";
+			m_sEditPdfPassword = L"";
 
 			if (m_pWorker)
 				m_sGlobalVariable = m_pWorker->GetGlobalVariable();
@@ -1001,6 +1141,20 @@ namespace NSDoctRenderer
 			return _path;
 		}
 
+		// extracts the json of <m_sJsonParams> from the x2t-style xml params passed to SaveFile,
+		// wherever it stands among the other params - as x2t reads it
+		static std::wstring ExtractJsonParams(const std::wstring& sConvertionParams)
+		{
+			std::wstring sJsonParams = GetXmlParamValue(sConvertionParams, L"m_sJsonParams");
+
+			// json written inside xml: ' stands for the json quote as well
+			NSStringUtils::string_replace(sJsonParams, L"\'", L"\"");
+
+			if (0 != sJsonParams.find(L"{"))
+				sJsonParams = L"";
+			return sJsonParams;
+		}
+
 		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL, const bool& isEnterContext = true)
 		{
 			Init();
@@ -1021,33 +1175,76 @@ namespace NSDoctRenderer
 
 			std::wstring sConvertionParams = L"";
 			if (NULL != params)
+				sConvertionParams = RemoveUnsafeX2tParams(std::wstring(params));
+
+			std::wstring sFileFromOverride = L"";
+
+#ifdef DOCBUILDER_PDF_EDITOR
+			if (3 == m_nFileType)
 			{
-				sConvertionParams = std::wstring(params);
-				NSStringUtils::string_replace(sConvertionParams, L"\'", L"&quot;");
+				if (!CheckWorker())
+					return 1;
+
+				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
+
+				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == type ||
+					AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDFA == type)
+				{
+					std::wstring _path = GetSaveFilePath(path);
+					std::wstring sSavePassword = GetXmlParamValue(sConvertionParams, L"m_sSavePassword");
+
+					// The editor writes a pdf as the source file with the changes
+					// appended, so a protected source hands its own protection to the
+					// copy. Naming m_sSavePassword is how the caller says what the new
+					// file carries: a password encrypts it with that one, and an EMPTY
+					// m_sSavePassword asks for a file with no protection at all - the
+					// pdf is written out again, decrypted. Saying nothing leaves the
+					// copy as the source left it.
+					bool bRewritePassword = HasXmlParam(sConvertionParams, L"m_sSavePassword");
+
+					bool bOk = m_pWorker->SaveEditedPdf(type, _path, m_sFileDir, sJsonParams, sSavePassword, isEnterContext, bRewritePassword);
+
+					LOGGER_SPEED_LAP("save_convert");
+					if (bOk)
+						return 0;
+
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+					return 1;
+				}
+
+				std::wstring sTmpPdf = m_sFileDir + L"/save_tmp.pdf";
+				bool bOk = m_pWorker->SaveEditedPdf(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, sTmpPdf, m_sFileDir, sJsonParams, L"", isEnterContext);
+				if (!bOk)
+				{
+					CV8RealTimeWorker::_LOGGING_ERROR_(L"error: ", L"save pdf error");
+					return 1;
+				}
+
+				sFileFromOverride = sTmpPdf;
+
+				// The temp pdf is the source file with the changes appended, so a
+				// protected source leaves it protected with that same password. The
+				// converter below re-reads it as an ordinary input file: without the
+				// password it reads no pages at all and still writes its target, so the
+				// conversion reports success and produces an empty document. Tell it
+				// the password the document was opened with, unless the caller named one -
+				// naming an empty m_sPassword is how a caller says "read it without one".
+				if (!m_sEditPdfPassword.empty() && !HasXmlParam(sConvertionParams, L"m_sPassword"))
+				{
+					NSStringUtils::CStringBuilder oPassword;
+					oPassword.WriteString(L"<m_sPassword>");
+					oPassword.WriteEncodeXmlString(m_sEditPdfPassword);
+					oPassword.WriteString(L"</m_sPassword>");
+					sConvertionParams += oPassword.GetData();
+				}
 			}
+#endif
 
 			std::wstring sFileBin = L"/Editor.bin";
 
-			if (!m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
+			if (sFileFromOverride.empty() && !m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
 			{
-				std::wstring sJsonParams = sConvertionParams;
-				if (!sJsonParams.empty())
-				{
-					std::wstring::size_type pos1 = sJsonParams.find(L">");
-					std::wstring::size_type pos2 = sJsonParams.find(L"</");
-					if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
-					{
-						sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
-						NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
-
-						if (0 != sJsonParams.find(L"{"))
-							sJsonParams = L"";
-					}
-					else
-					{
-						sJsonParams = L"";
-					}
-				}
+				std::wstring sJsonParams = ExtractJsonParams(sConvertionParams);
 
 				this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams, isEnterContext);
 				sFileBin = L"/Editor2.bin";
@@ -1058,17 +1255,23 @@ namespace NSDoctRenderer
 			std::wstring _path = GetSaveFilePath(path);
 
 			oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
-			oBuilder.WriteEncodeXmlString(m_sFileDir);
-			oBuilder.WriteString(sFileBin + L"</m_sFileFrom><m_sFileTo>");
+			if (!sFileFromOverride.empty())
+				oBuilder.WriteEncodeXmlString(sFileFromOverride);
+			else
+			{
+				oBuilder.WriteEncodeXmlString(m_sFileDir);
+				oBuilder.WriteString(sFileBin);
+			}
+			oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
 			oBuilder.WriteEncodeXmlString(_path);
 			oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
 			oBuilder.WriteString(std::to_wstring(type));
 			oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>");
 			oBuilder.WriteEncodeXmlString(L"./sdkjs/slide/themes");
-			if (!m_oParams.m_bSaveWithDoctrendererMode)
-				oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
-			else
+			if (sFileFromOverride.empty() && m_oParams.m_bSaveWithDoctrendererMode)
 				oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
+			else
+				oBuilder.WriteString(L"</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
 
 			oBuilder.WriteString(L"<m_sFontDir>");
@@ -1233,6 +1436,8 @@ namespace NSDoctRenderer
 
 			NSDirectory::DeleteDirectory(sDstTmpDir);
 			NSFile::CFileBinary::Remove(sTempFileForParams);
+			if (!sFileFromOverride.empty())
+				NSFile::CFileBinary::Remove(sFileFromOverride);
 
 			LOGGER_SPEED_LAP("save_convert");
 
@@ -1255,6 +1460,8 @@ namespace NSDoctRenderer
 				m_pWorker->m_sJSCodeStart = U_TO_UTF8(m_sCommandsBeforeContextCreated);
 
 				m_pWorker->m_nFileType = m_nFileType;
+				m_pWorker->m_sPdfFile = m_sEditPdfFile;
+				m_pWorker->m_sPdfPassword = m_sEditPdfPassword;
 
 				if (-1 != m_nFileType)
 					m_sCommandsBeforeContextCreated = L"";
@@ -1268,7 +1475,14 @@ namespace NSDoctRenderer
 				oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
 				oParams.DocumentDirectory = m_sFileDir;
 
-				return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, editorType, this, &oParams);
+				if (m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, editorType, this, &oParams))
+					return true;
+
+				// a worker that failed to open the document must not stay around: the
+				// next call would find it and work in a context with no document in it
+				m_nWorkerOpenError = m_pWorker->m_nOpenError;
+				RELEASEOBJECT(m_pWorker);
+				return false;
 			}
 			return true;
 		}
@@ -1299,7 +1513,8 @@ namespace NSDoctRenderer
 				if (!bResult && !bIsOpenedFromSimpleJSOld && m_bIsOpenedFromSimpleJS)
 				{
 					RELEASEOBJECT(m_pWorker);
-					CheckWorker();
+					if (!CheckWorker())
+						return false;
 					return m_pWorker->ExecuteCommand(command, retValue, isEnterContext);
 				}
 				else
@@ -1341,6 +1556,8 @@ namespace NSDoctRenderer
 				return NSDoctRenderer::DoctRendererEditorType::SLIDE;
 			case 2:
 				return NSDoctRenderer::DoctRendererEditorType::CELL;
+			case 3:
+				return NSDoctRenderer::DoctRendererEditorType::PDF;
 			case 7:
 				return NSDoctRenderer::DoctRendererEditorType::VISIO;
 			default:

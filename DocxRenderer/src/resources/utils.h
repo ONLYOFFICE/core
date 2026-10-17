@@ -37,6 +37,7 @@
 #include <type_traits>
 #include <limits>
 #include <algorithm>
+#include <functional>
 
 #include "../../../DesktopEditor/common/Types.h"
 
@@ -70,4 +71,12 @@ bool CmpOrEqual(const T& val1,
                 const Cmp& cmp = Cmp())
 {
 	return std::abs(val1 - val2) < eps || cmp(val1, val2);
+}
+
+template <typename T>
+std::function<bool(const T&, const T&)> makeEqualComp(T eps)
+{
+	return [eps](const T& a, const T& b) -> bool {
+		return std::abs(a - b) < eps;
+	};
 }

@@ -53,8 +53,11 @@ private:
 public:
 	COfficeUtils(OnProgressCallback* bCallback = NULL);
 
-	HRESULT ExtractToDirectory		(const std::wstring& zipFile, const std::wstring& unzipDir, wchar_t* password, short extract_without_path);
-	HRESULT ExtractToDirectory		(BYTE* data, size_t len, const std::wstring& unzipDir, wchar_t* password, short extract_without_path);
+	// keepUnixAttributes: restore permissions and symbolic links of entries made on unix-like systems
+	// (a link that could point outside of unzipDir is skipped). Not for untrusted archives such as documents.
+	// Ignored on Windows.
+	HRESULT ExtractToDirectory		(const std::wstring& zipFile, const std::wstring& unzipDir, wchar_t* password, short extract_without_path, bool checkEscapePath = true, bool keepUnixAttributes = false);
+	HRESULT ExtractToDirectory		(BYTE* data, size_t len, const std::wstring& unzipDir, wchar_t* password, short extract_without_path, bool checkEscapePath = true, bool keepUnixAttributes = false);
 
 	HRESULT CompressFileOrDirectory	(const std::wstring& name, const std::wstring& outputFile, bool bSorted = false, int method = Z_DEFLATED, short level = -1, bool bDateTime = true);
 	

@@ -1179,7 +1179,7 @@ namespace Aggplus
 	bool CGraphicsPathSimpleConverter::PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
 					const double& x, const double& y, const double& w, const double& h)
 	{
-		if (NULL == pGids)
+		if (NULL == pGids || 0 == nCount)
 		{
 			pManager->SetStringGID(FALSE);
 			pManager->LoadString1((const unsigned int*)pUnicodes, (unsigned int)nCount, (float)x, (float)y);
@@ -1195,7 +1195,7 @@ namespace Aggplus
 	bool CGraphicsPathSimpleConverter::PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, NSFonts::IFontManager* pManager,
 					const double& x, const double& y, const double& w, const double& h)
 	{
-		if (NULL == pGids)
+		if (NULL == pGids || 0 == nCount)
 		{
 			pManager->SetStringGID(FALSE);
 			pManager->LoadString1(sUnicodes, (float)x, (float)y);

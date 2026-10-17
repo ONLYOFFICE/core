@@ -177,7 +177,6 @@ namespace XmlUtils
 
 	std::wstring GenerateGuid();
 	std::wstring DoubleToString(double value, wchar_t* format);
-	std::string EncodeXmlString(const std::string& data, bool bDeleteNoUnicode = true);
 	std::wstring EncodeXmlString(const std::wstring& data, bool bDeleteNoUnicode = true);
 	std::wstring DeleteNonUnicode(const std::wstring& data);
 	std::wstring EncodeXmlStringExtend(const std::wstring& data, bool bDeleteNoUnicode = true);

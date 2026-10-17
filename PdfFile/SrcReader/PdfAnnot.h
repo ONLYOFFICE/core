@@ -46,6 +46,7 @@
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
 #include "RendererOutputDev.h"
+#include "PdfFont.h"
 
 namespace PdfReader
 {
@@ -354,9 +355,30 @@ public:
 
 private:
 	BYTE m_nH; // Highlight mode - H
+	double m_pRD[4]{}; // Rect and RD differences
 	std::vector<double> m_arrQuadPoints; // Coordinates - QuadPoints
 	CAction* m_pAction; // Action - A&Dest
 	CAction* m_pPA; // URI action - PA
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CScreenAnnot
+//------------------------------------------------------------------------
+
+class CAnnotScreen final : public CAnnot
+{
+public:
+	CAnnotScreen(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
+	virtual ~CAnnotScreen();
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	unsigned int m_unR; // Поворот аннотации относительно страницы - R
+	std::string m_sT; // Title
+	std::vector<double> m_arrBC; // Цвет границ - BC
+	std::vector<double> m_arrBG; // Цвет фона - BG
+	std::vector<CAction*> m_arrAction; // Действия - A&AA
 };
 
 //------------------------------------------------------------------------
@@ -366,25 +388,7 @@ private:
 class CAnnotMarkup : public CAnnot
 {
 public:
-	struct CFontData final
-	{
-		bool bFind;
-		BYTE nAlign;
-		unsigned int unFontFlags; // 0 Bold, 1 Italic, 3 strikethrough, 4 underline, 5 vertical-align, 6 actual font, 7 RTL
-		double dFontSise;
-		double dVAlign;
-		double dColor[3];
-		std::string sFontFamily;
-		std::string sActualFont;
-		std::string sText;
-
-		CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSise(10), dVAlign(0), dColor{0, 0, 0} {}
-		CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSise(oFont.dFontSise), dVAlign(oFont.dVAlign),
-			dColor{oFont.dColor[0], oFont.dColor[1], oFont.dColor[2]}, sFontFamily(oFont.sFontFamily), sActualFont(oFont.sActualFont), sText(oFont.sText) {}
-	};
-
 	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
-	static std::vector<CAnnotMarkup::CFontData*> ReadRC(const std::string& sRC);
 
 protected:
 	CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
@@ -701,6 +705,8 @@ private:
 
 	void getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID);
 
+	BYTE* m_pRoles;
+	int m_nRoles;
 	std::vector<int> m_arrCO; // Calculation order - CO
 	std::vector<CAnnotParent*> m_arrParents; // Parent Fields
 	std::vector<CAnnotWidget*> m_arrAnnots;

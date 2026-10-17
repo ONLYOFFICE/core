@@ -99,6 +99,7 @@ namespace PdfWriter
 	class CXObject;
 	class CObjectBase;
 	class CStringObject;
+	class CStructureTreeRoot;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -109,10 +110,10 @@ namespace PdfWriter
 		CDocument();
 		~CDocument();
 
-		bool              CreateNew();
+		bool              CreateNew(bool bMetadata = true);
 		void              Close();
 		bool              SaveToFile(const std::wstring& wsPath);
-		bool              SaveToMemory(BYTE** pData, int* pLength);
+		bool              SaveToMemory(BYTE** pData, int* pLength, bool bForWasm);
 		bool              SaveNewWithPassword(CXref* pXref, CXref* _pXref, const std::wstring& wsPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword, CDictObject* pTrailer);
 			              
         void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
@@ -125,8 +126,11 @@ namespace PdfWriter
         void              SetSubject (const std::string& sSubject);
         void              SetKeywords(const std::string& sKeywords);
 
+		void              SetRedactInfo(int nFlag);
 		void              SetPDFAConformanceMode(bool isPDFA);
-		bool              IsPDFA() const;
+		void              SetPDFUAConformanceMode(bool isPDFUA);
+		bool              IsPDFA()  const;
+		bool              IsPDFUA() const;
 
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
@@ -147,6 +151,7 @@ namespace PdfWriter
 		CExtGrState*      GetFillAlpha(double dAlpha);
 		CJbig2Global*     GetJbig2Global();
 
+		CAnnotation*      CreateWidget(BYTE nType);
 		CAnnotation*      CreateAnnot(BYTE nType);
 		CAnnotation*      CreateLinkAnnot(const TRect& oRect, CDestination* pDest);
 		CAnnotation*      CreateUriLinkAnnot(const TRect& oRect, const char* sUrl);
@@ -180,6 +185,7 @@ namespace PdfWriter
 		CPictureField*    CreatePictureField();
 		CSignatureField*  CreateSignatureField();
 		CDateTimeField*   CreateDateTimeField();
+		void              AddWidget(CFieldBase* pWidget);
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 
 		bool              HasImage(const std::wstring& wsImagePath, BYTE nAlpha);
@@ -213,11 +219,14 @@ namespace PdfWriter
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 		bool              EditCO(const std::vector< std::pair<int, int> >& arrCO);
+		void              AddOOField(const std::string& sName, BYTE* pMetaData, DWORD nMetaLength, CDictObject* pDict = NULL);
 		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
 		CPageTree*        GetPageTree() { return m_pPageTree; }
 		CEncryptDict*     GetEncrypt() { return m_pEncryptDict; }
+		CCatalog*         GetCatalog() { return m_pCatalog; }
+		CStructureTreeRoot* GetStructureTreeRoot();
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
@@ -226,17 +235,19 @@ namespace PdfWriter
 		void              SetAcroForm(CDictObject* pObj);
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
-		void              RemoveObj(CObjectBase* pObj);
+		void              RemoveObj(CObjectBase* pObj, bool bCascade = false, std::vector<CObjectBase*>* pRemoved = NULL);
 		void              SetEncryption(CEncryptDict* pEncrypt, CObjectBase* pID);
 		void              AddNameTree(CStringObject* pName, CDestination* pDest);
 		CObjectBase*      FindObjByID(unsigned int nObjectId);
+		void              RemoveUnreachableObjects();
 	private:		  
 					  
 		char*             GetTTFontTag();
 		void              AddFreeTypeFont(CFontCidTrueType* pFont);
         FT_Library        GetFreeTypeLibrary();
 		CExtGrState*      FindExtGrState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
-		void              SaveToStream(CStream* pStream);
+		void              ForgetExtGState(CObjectBase* pObj);
+		void              SaveToStream(CStream* pStream, const std::string& sAltTitle = "");
 		void              PrepareEncryption();
 		CDictObject*      CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		CShading*         CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
@@ -347,6 +358,8 @@ namespace PdfWriter
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
+		bool                               m_bPDFUAConformance;
+		int                                m_nRedactInfo;
 		std::wstring                       m_wsDocumentID;
 		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;

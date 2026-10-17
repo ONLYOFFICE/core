@@ -44,6 +44,11 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 
+#ifndef _WIN32
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 // max buffer size for reading a zip file into memory
 #define MAX_SIZE 100000
 
@@ -530,4 +535,126 @@ TEST_F(COfficeUtilsTest, time_folder)
 	EXPECT_EQ(edit_time_before.tm_mon, edit_time_after.tm_mon);
 	EXPECT_EQ(edit_time_before.tm_year, edit_time_after.tm_year);
 }
+
+#ifndef _WIN32
+// zip/unix_attributes is made on UNIX:
+//   bin/tool 0755, bin/data.txt 0644, bin/setuid 04755
+//   Lib.framework/Versions/A/{Lib 0755, Resources/Info.plist 0644}
+//   Lib.framework/Versions/Current -> A, Lib.framework/Lib -> Versions/Current/Lib,
+//   Lib.framework/Resources -> Versions/Current/Resources, dot -> .
+//   and links that must never be created: evil/absolute -> /tmp, evil/parent -> ../../outside,
+//   chain -> dot/../outside (normalizes to "outside", but "dot" is a link: really ../outside)
+
+static bool IsPathPresent(const std::wstring& path)
+{
+	struct stat st;
+	return 0 == lstat(U_TO_UTF8(path).c_str(), &st);
+}
+
+static std::string ReadLink(const std::wstring& path)
+{
+	char buf[4096];
+	ssize_t len = readlink(U_TO_UTF8(path).c_str(), buf, sizeof(buf));
+	return len > 0 ? std::string(buf, len) : std::string();
+}
+
+static mode_t GetMode(const std::wstring& path)
+{
+	struct stat st;
+	if (0 != stat(U_TO_UTF8(path).c_str(), &st))
+		return 0;
+	return st.st_mode & 07777;
+}
+
+TEST_F(COfficeUtilsTest, unix_attributes)
+{
+	std::wstring zip_filename = L"unix_attributes";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + zip_filename;
+
+	if (NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, 0, true, true);
+	ASSERT_EQ(error_code, S_OK);
+
+	// permissions, but never setuid/setgid/sticky
+	EXPECT_EQ(GetMode(unzip_folder + L"/bin/tool"), 0755);
+	EXPECT_EQ(GetMode(unzip_folder + L"/bin/data.txt"), 0644);
+	EXPECT_EQ(GetMode(unzip_folder + L"/bin/setuid"), 0755);
+
+	EXPECT_EQ(ReadLink(unzip_folder + L"/Lib.framework/Versions/Current"), "A");
+	EXPECT_EQ(ReadLink(unzip_folder + L"/Lib.framework/Lib"), "Versions/Current/Lib");
+	EXPECT_EQ(ReadLink(unzip_folder + L"/Lib.framework/Resources"), "Versions/Current/Resources");
+	EXPECT_EQ(ReadLink(unzip_folder + L"/dot"), ".");
+
+	std::string library;
+	EXPECT_TRUE(NSFile::CFileBinary::ReadAllTextUtf8A(unzip_folder + L"/Lib.framework/Lib", library));
+	EXPECT_EQ(library, "library\n");
+	EXPECT_TRUE(NSFile::CFileBinary::Exists(unzip_folder + L"/Lib.framework/Resources/Info.plist"));
+
+	EXPECT_FALSE(IsPathPresent(unzip_folder + L"/evil/absolute"));
+	EXPECT_FALSE(IsPathPresent(unzip_folder + L"/evil/parent"));
+	EXPECT_FALSE(IsPathPresent(unzip_folder + L"/chain"));
+}
+
+TEST_F(COfficeUtilsTest, unix_attributes_off)
+{
+	// by default (documents) nothing changes: a link is a plain file with the target inside
+	std::wstring zip_filename = L"unix_attributes";
+	std::wstring zip_path = zipDirectory + wsep + zip_filename;
+	std::wstring unzip_folder = unzipDirectory + wsep + L"unix_attributes_off";
+
+	if (NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, 0);
+	ASSERT_EQ(error_code, S_OK);
+
+	EXPECT_EQ(ReadLink(unzip_folder + L"/Lib.framework/Versions/Current"), "");
+	EXPECT_EQ(ReadLink(unzip_folder + L"/evil/absolute"), "");
+
+	std::string target;
+	EXPECT_TRUE(NSFile::CFileBinary::ReadAllTextUtf8A(unzip_folder + L"/Lib.framework/Versions/Current", target));
+	EXPECT_EQ(target, "A");
+
+	EXPECT_EQ(GetMode(unzip_folder + L"/bin/tool") & 0111, 0);
+}
+
+TEST_F(COfficeUtilsTest, delete_directory_with_symlinks)
+{
+	std::wstring zip_path = zipDirectory + wsep + L"unix_attributes";
+	std::wstring unzip_folder = tempDirectory + wsep + L"delete_directory_with_symlinks";
+	std::wstring outside_folder = tempDirectory + wsep + L"delete_directory_outside";
+
+	if (NSDirectory::Exists(unzip_folder))
+		NSDirectory::DeleteDirectory(unzip_folder);
+	NSDirectory::CreateDirectories(unzip_folder);
+
+	if (NSDirectory::Exists(outside_folder))
+		NSDirectory::DeleteDirectory(outside_folder);
+	NSDirectory::CreateDirectories(outside_folder);
+
+	NSFile::CFileBinary file;
+	file.CreateFileW(outside_folder + wsep + L"keep.txt");
+	file.WriteStringUTF8(L"keep");
+	file.CloseFile();
+
+	HRESULT error_code = utils.ExtractToDirectory(zip_path, unzip_folder, NULL, 0, true, true);
+	ASSERT_EQ(error_code, S_OK);
+
+	// a link to a directory outside: removing the tree must not go through it
+	std::wstring outside_link = unzip_folder + wsep + L"outside_link";
+	ASSERT_EQ(symlink(U_TO_UTF8(outside_folder).c_str(), U_TO_UTF8(outside_link).c_str()), 0);
+
+	NSDirectory::DeleteDirectory(unzip_folder);
+
+	EXPECT_FALSE(IsPathPresent(unzip_folder));
+	EXPECT_TRUE(NSFile::CFileBinary::Exists(outside_folder + wsep + L"keep.txt"));
+
+	NSDirectory::DeleteDirectory(outside_folder);
+}
+#endif
 

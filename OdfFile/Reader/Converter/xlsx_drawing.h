@@ -56,9 +56,10 @@ struct xlsx_drawing_position
 class _xlsx_drawing : public _oox_drawing
 {
 public:
-	_xlsx_drawing() : _oox_drawing(), type_anchor(1) {}
+	_xlsx_drawing() : _oox_drawing(), type_anchor(1), anchor_absolute(false) {}
 	
 	int type_anchor;
+	bool anchor_absolute;
     
 	xlsx_drawing_position	from_;
     xlsx_drawing_position	to_;

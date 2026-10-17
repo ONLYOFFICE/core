@@ -41,7 +41,7 @@ namespace PPTX
 	{		
 		Orient::Orient()
 		{
-			m_strValue = L"vert";
+			m_strValue = L"horz";
 		}
 		void Orient::set(const std::wstring& strValue)
 		{

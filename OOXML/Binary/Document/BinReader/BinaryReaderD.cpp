@@ -238,7 +238,7 @@ else if (c_oSerBordersType::bottom == type)\
 	}\
 	else if (c_oSerProp_RevisionType::Date == type)\
 	{\
-		poResult->m_oDate.Init(); poResult->m_oDate->SetValue(m_oBufferedStream.GetString3(length));\
+		poResult->m_oDate = m_oBufferedStream.GetString3(length);\
 	}\
 	else if (c_oSerProp_RevisionType::Id == type)\
 	{\
@@ -325,6 +325,53 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevision2(long length, T
 {
 	int res = c_oSerConstants::ReadOk;
 	READ1_DEF(length, res, this->ReadTrackRevisionInner2, poResult);
+	return res;
+}
+int Binary_CommonReader2::ReadEastAsianLayout(BYTE type, long length, void* poResult)
+{
+	if (length < 0)
+		return 0;
+
+	int res = c_oSerConstants::ReadOk;
+	ComplexTypes::Word::CEastAsianLayout* pEastAsianLayout = static_cast<ComplexTypes::Word::CEastAsianLayout*>(poResult);
+
+	if (!pEastAsianLayout)
+	{
+		m_oBufferedStream.Skip(length);
+		return 0;
+	}
+	switch (type)
+	{
+	case c_oSerProp_EastAsianLayoute::ID:
+	{
+		pEastAsianLayout->m_oID.Init();
+		pEastAsianLayout->m_oID->SetValue(m_oBufferedStream.GetLong());
+	}break;
+	case c_oSerProp_EastAsianLayoute::Combine:
+	{
+		pEastAsianLayout->m_oCombine.Init();
+		pEastAsianLayout->m_oCombine->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	case c_oSerProp_EastAsianLayoute::CombineBrackets:
+	{
+		pEastAsianLayout->m_oCombineBrackets.Init();
+		pEastAsianLayout->m_oCombineBrackets->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}break;
+	case c_oSerProp_EastAsianLayoute::Vert:
+	{
+		pEastAsianLayout->m_oVert.Init();
+		pEastAsianLayout->m_oVert->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	case c_oSerProp_EastAsianLayoute::VertCompress:
+	{
+		pEastAsianLayout->m_oVertCompress.Init();
+		pEastAsianLayout->m_oVertCompress->FromBool(m_oBufferedStream.GetBool());
+	}break;
+	default:
+	{
+		res = c_oSerConstants::ReadUnknown;
+	}break;
+	}
 	return res;
 }
 int Binary_CommonReader2::ReadShdComplexType(BYTE type, long length, void* poResult)
@@ -887,7 +934,11 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			pRPr->m_oKern.Init(); pRPr->m_oKern->m_oVal.Init();
 			pRPr->m_oKern->m_oVal->FromHps(m_oBufferedStream.GetLong());
 		}break;
-		
+		case c_oSerProp_rPrType::EastAsianLayout:
+		{
+			pRPr->m_oEastAsianLayout.Init();
+			READ2_DEF(length, res, oBinary_CommonReader2.ReadEastAsianLayout, pRPr->m_oEastAsianLayout.GetPointer());
+		}break;
 		default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -4128,6 +4179,11 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 		pSettings->m_oDisplayVerticalDrawingGridEvery.Init();
 		pSettings->m_oDisplayVerticalDrawingGridEvery->m_oVal = m_oBufferedStream.GetLong();
 	}
+	else if (c_oSer_SettingsType::CharacterSpacingControl == type)
+	{
+		pSettings->m_oCharacterSpacingControl.Init();
+		pSettings->m_oCharacterSpacingControl->m_oVal.SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5384,8 +5440,7 @@ int Binary_DocumentTableReader::ReadMoveFromRangeStart(BYTE type, long length, v
     {
         std::wstring strValue = m_oBufferedStream.GetString3(length);
 
-		pMoveFromRangeStart->m_oDate.Init();
-        pMoveFromRangeStart->m_oDate->SetValue(strValue);
+		pMoveFromRangeStart->m_oDate = strValue;
 	}
 	else if (c_oSerMoveRange::DisplacedByCustomXml == type)
 	{
@@ -5434,8 +5489,7 @@ int Binary_DocumentTableReader::ReadMoveToRangeStart(BYTE type, long length, voi
     {
         std::wstring strValue = m_oBufferedStream.GetString3(length);
 
-		pMoveToRangeStart->m_oDate.Init();
-        pMoveToRangeStart->m_oDate->SetValue(strValue);
+		pMoveToRangeStart->m_oDate = strValue;
 	}
 	else if (c_oSerMoveRange::DisplacedByCustomXml == type)
 	{
@@ -9929,10 +9983,7 @@ int Binary_DocumentTableReader::ReadSdtPrDate(BYTE type, long length, void* poRe
 	OOX::Logic::CDate* pDate = static_cast<OOX::Logic::CDate*>(poResult);
 	if (c_oSerSdt::FullDate == type)
 	{
-        std::wstring sVal = m_oBufferedStream.GetString3(length);
-
-        pDate->m_oFullDate.Init();
-        pDate->m_oFullDate->SetValue(sVal);
+		pDate->m_oFullDate = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerSdt::Calendar == type)
 	{
@@ -10052,6 +10103,10 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 	else if (c_oSerSdt::FormPrRequired == type)
 	{
 		pFormPr->m_oRequired = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::FormPrSpellCheck== type)
+	{
+		pFormPr->m_oSpellCheck = m_oBufferedStream.GetBool();
 	}
 	else if (c_oSerSdt::FormPrBorder == type)
 	{

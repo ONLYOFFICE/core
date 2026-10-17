@@ -62,11 +62,11 @@ public:
 	virtual void save(CFRecord& record);
 
 	_UINT32	idField = 1;
-	_UINT32	lfdt = 1;
+	_UINT32	lfdt = 0;
 	_UINT32	lfxidt = 0;
 	_UINT32	ilta = 0;
 	_UINT32	cbFmtAgg = 0;
-	_UINT32	istnAgg = 0;
+	_UINT32	istnAgg = 0xFFFFFFFF;
 
 	bool	fAutoFilter = false;
 	bool	fAutoFilterHidden = false;

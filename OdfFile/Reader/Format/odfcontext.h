@@ -70,9 +70,11 @@ public:
         bool							IsDefault,
         const std::wstring				& ParentStyleName,
         const std::wstring				& NextStyleName,
+        const std::wstring              & LinkStyleName,
         const std::wstring				& DataStyleName,
         const std::wstring				& PercentageDataStyleName,
 		const std::wstring				& StyleClass,
+        _CP_OPT(bool)                   PrimaryFormat,
         _CP_OPT(std::wstring)			ListStyleName,
 		_CP_OPT(int)					ListLevel,
 		_CP_OPT(int)					OutlineLevel
@@ -85,8 +87,10 @@ public:
     style_instance					* parent()		const;
     const std::wstring				& parent_name()	const;
     style_instance					* next()		const;
+    style_instance                  * link()		const;
     const std::wstring				& next_name()	const;
-	const styles_container			* container()	const { return container_; }
+    const std::wstring              & link_name()	const;
+    const styles_container			* container()	const { return container_; }
     const std::wstring				& data_style_name() const;
 	const std::wstring				& percentage_data_style_name() const;
 	const std::wstring				& style_class() const;
@@ -97,6 +101,7 @@ public:
 
 	_CP_OPT(int)					list_level()	const;
 	_CP_OPT(int)					outline_level()	const;
+    _CP_OPT(bool)                   primary_format() const;
 private:
     styles_container				* container_;
 
@@ -112,13 +117,16 @@ private:
     std::wstring					style_class_;
     std::wstring					parent_name_;
     std::wstring					next_name_;
+    std::wstring					link_name_;
     mutable style_instance			* parent_;
     mutable style_instance			* next_;   
+    mutable style_instance          * link_;
     std::wstring					data_style_name_;
 	std::wstring					percentage_data_style_name_;
     _CP_OPT(std::wstring)			list_style_name_;
 	_CP_OPT(int)					list_level_;
 	_CP_OPT(int)					outline_level_;
+    _CP_OPT(bool)                   primary_format_;
 };
 
 class presentation_layouts_instance
@@ -171,10 +179,12 @@ public:
 					bool							IsDefault,
 					const std::wstring				& ParentStyleName,
 					const std::wstring				& NextStyleName,
-					const std::wstring				& DataStyleName,
+                    const std::wstring              & LinkStyleName,
+                    const std::wstring				& DataStyleName,
 					const std::wstring				& PercentageDataStyleName,
 					const std::wstring				& StyleClass,
-					_CP_OPT(std::wstring)			ListStyleName = boost::none,
+                    _CP_OPT(bool)			        PrimaryFormat = boost::none,
+                    _CP_OPT(std::wstring)			ListStyleName = boost::none,
 					_CP_OPT(int)					ListLevel = boost::none,
 					_CP_OPT(int)					OutlineLevel = boost::none);
 

@@ -629,6 +629,18 @@ namespace OOX
 					m_arrItems.push_back( pFill );
 					m_mapFills.insert(std::make_pair(index++, pFill));
 				}
+				else if (L"AlternateContent" == sName)
+				{
+					int nSubDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nSubDepth))
+					{
+						std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
+						if (L"Choice" == sSubName)
+						{
+							fromXML(oReader);
+						}
+					}
+				}
 			}
 		}
 		void CFills::fromBin(std::vector<XLS::BaseObjectPtr>& obj)

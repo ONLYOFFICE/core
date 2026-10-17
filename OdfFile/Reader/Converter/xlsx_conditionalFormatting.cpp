@@ -37,6 +37,7 @@
 #include "xlsx_utils.h"
 
 #include <vector>
+#include <map>
 #include <boost/lexical_cast.hpp>
 #include "../../Common/xml/simple_xml_writer.h"
 #include "../../../OOXML/Base/Unit.h"
@@ -45,6 +46,30 @@
 
 namespace cpdoccore {
 namespace oox {
+
+	static size_t find_args_separator(const std::wstring& args)
+	{// "1,90", "SUM([.A1];[.A2]),5"
+		int level = 0;
+		bool bQuote = false;
+		for (size_t i = 0; i < args.size(); i++)
+		{
+			wchar_t c = args[i];
+			if (c == L'"') bQuote = !bQuote;
+			else if (bQuote) continue;
+			else if (c == L'(' || c == L'[') level++;
+			else if (c == L')' || c == L']') level--;
+			else if (c == L',' && level == 0) return i;
+		}
+		return std::wstring::npos;
+	}
+	static std::wstring trim_spaces(const std::wstring& val)
+	{
+		size_t pos_start = val.find_first_not_of(L" \t");
+		if (pos_start == std::wstring::npos) return L"";
+
+		size_t pos_end = val.find_last_not_of(L" \t");
+		return val.substr(pos_start, pos_end - pos_start + 1);
+	}
 
 	struct _cfvo
 	{
@@ -516,6 +541,9 @@ public:
 	}
 
     std::vector<conditionalFormatting> conditionalFormattings_;
+	std::map<std::wstring, size_t> map_conditionalFormattings_;
+
+	bool bCalcextFormats = false;
 };
 
 xlsx_conditionalFormatting_context::xlsx_conditionalFormatting_context() :
@@ -533,14 +561,40 @@ void xlsx_conditionalFormatting_context::serializeEx(std::wostream& _Wostream)
 {
 	return impl_->serializeEx(_Wostream);
 }
-void xlsx_conditionalFormatting_context::start(std::wstring ref)
+void xlsx_conditionalFormatting_context::set_calcext_formats(bool val)
 {
-	formulasconvert::odf2oox_converter converter;
-	impl_->conditionalFormattings_.push_back(conditionalFormatting());
+	impl_->bCalcextFormats = val;
+}
+bool xlsx_conditionalFormatting_context::is_calcext_formats()
+{
+	return impl_->bCalcextFormats;
+}
+void xlsx_conditionalFormatting_context::start(const std::wstring& ref)
+{
+	impl_->conditionalFormattings_.emplace_back();
 	
+	formulasconvert::odf2oox_converter converter;
 	impl_->conditionalFormattings_.back().ref = converter.convert_named_ref(ref, false, L" ");
 }
+bool xlsx_conditionalFormatting_context::start_by(const std::wstring &val, const std::wstring& ref)
+{
+	formulasconvert::odf2oox_converter converter;
 
+	auto pFind = impl_->map_conditionalFormattings_.find(val);
+	if (pFind != impl_->map_conditionalFormattings_.end())
+	{
+		impl_->conditionalFormattings_[pFind->second].ref += L" " + converter.convert_named_ref(ref, false, L" ");
+		return false;
+	}
+	else
+	{
+		impl_->map_conditionalFormattings_.insert(std::make_pair(val, impl_->conditionalFormattings_.size()));
+		impl_->conditionalFormattings_.emplace_back();
+
+		impl_->conditionalFormattings_.back().ref = converter.convert_named_ref(ref, false, L" ");
+		return true;
+	}
+}
 void xlsx_conditionalFormatting_context::add_rule(int type)
 {
 	if (false == impl_->conditionalFormattings_.back().rules.empty())
@@ -593,37 +647,37 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	else if ( 0 <= (pos = f.find(L"formula-is(")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
-		val = f.substr(11, f.size() - 12);
+		val = f.substr(pos + 11, f.size() - pos - 12);
 
-		if (0 == (pos = val.find(L"\"")))	//Raport_7A.ods or remove enclosing quotes from formula?
+		if (0 == val.find(L"\""))	//Raport_7A.ods or remove enclosing quotes from formula?
 		{
 			impl_->conditionalFormattings_.back().rules.back().text = val;
 			val.clear();
 		}
-		
+
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert(val);
-	}
-	else if (0 <= (pos = f.find(L"is-between(")))
-	{
-		val = f.substr(11, f.size() - 12);
-		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
-		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
 	}
 	else if (0 <= (pos = f.find(L"is-time(")))
 	{
-		val = f.substr(8, f.size() - 9);
+		val = f.substr(pos + 8, f.size() - pos - 9);
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
 		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
+	}
+	else if (0 <= (pos = f.find(L"is-no-error")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"notContainsErrors";
 	}
 	else if (0 <= (pos = f.find(L"is-error")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsErrors";
 		impl_->conditionalFormattings_.back().rules.back().formula = L"0";
 	}
-	else if (0 <= (pos = f.find(L"is-no-error")))
+	else if (0 <= (pos = f.find(L"is-true-formula(")))
 	{
-		impl_->conditionalFormattings_.back().rules.back().formula_type = L"notContainsErrors";
-	}	
+		val = f.substr(pos + 16, f.size() - pos - 17);
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"expression";
+		impl_->conditionalFormattings_.back().rules.back().formula = converter.convert_named_expr(val);
+	}
 	else if (0 <= (pos = f.find(L"duplicate")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";
@@ -739,56 +793,57 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 			val = converter.convert_named_expr( f );
 		}
 		else if (0 <= (pos = f.find(L"between")))
-		{
-			if (0 <= (pos = f.find(L"not-between")))
-			{
+		{//between(a,b), not-between(a,b) - calcext; cell-content-is-between(a,b), cell-content-is-not-between(a,b) - style:map
+			if (std::wstring::npos != f.find(L"not-between"))
 				impl_->conditionalFormattings_.back().rules.back().operator_ = L"notBetween";
-				val = f.substr(12, f.length() - 13);
-			}
 			else
-			{
 				impl_->conditionalFormattings_.back().rules.back().operator_ = L"between";
-				val = f.substr(8, f.length() - 9);
-			}
 
-			XmlUtils::replace_all(val, L"(", L"");
-			XmlUtils::replace_all(val, L")", L"");
-			if (0 <= (pos = val.find(L",")))
+			size_t pos_start = f.find(L"(", pos);
+			size_t pos_end = f.rfind(L")");
+
+			if (pos_start != std::wstring::npos && pos_end != std::wstring::npos && pos_end > pos_start)
+				val = f.substr(pos_start + 1, pos_end - pos_start - 1);
+			else
+				val.clear();
+
+			size_t pos_sep = find_args_separator(val);
+			if (pos_sep != std::wstring::npos)
 			{
-				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr(val.substr(pos + 1));
-				val = val.substr(0, pos);
+				impl_->conditionalFormattings_.back().rules.back().formula2 = converter.convert_named_expr(trim_spaces(val.substr(pos_sep + 1)));
+				val = val.substr(0, pos_sep);
 			}
-			val = converter.convert_named_expr(val);
+			val = converter.convert_named_expr(trim_spaces(val));
 		}
 		else if (0 <= (pos = f.find(L"!=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"notEqual";
-			val = converter.convert_named_expr( f.substr(2) );
+			val = converter.convert_named_expr( f.substr(pos + 2) );
 		}
 		else if (0 <= (pos = f.find(L"<=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"lessThanOrEqual";
-			val = converter.convert_named_expr( f.substr(2) );
-		}	
+			val = converter.convert_named_expr( f.substr(pos + 2) );
+		}
 		else if (0 <= (pos = f.find(L">=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThanOrEqual";
-			val = converter.convert_named_expr( f.substr(2) );
+			val = converter.convert_named_expr( f.substr(pos + 2) );
 		}
 		else if (0 <= (pos = f.find(L"=")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"equal";
-			val = converter.convert_named_expr( f.substr(1) );
+			val = converter.convert_named_expr( f.substr(pos + 1) );
 		}
 		else if (0 <= (pos = f.find(L"<")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"lessThan";
-			val = converter.convert_named_expr( f.substr(1) );
+			val = converter.convert_named_expr( f.substr(pos + 1) );
 		}
 		else if (0 <= (pos = f.find(L">")))
 		{
 			impl_->conditionalFormattings_.back().rules.back().operator_ = L"greaterThan";
-			val = converter.convert_named_expr( f.substr(1) );
+			val = converter.convert_named_expr( f.substr(pos + 1) );
 		}
 		else
 		{

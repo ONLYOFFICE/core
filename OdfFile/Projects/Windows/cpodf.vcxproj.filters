@@ -172,6 +172,9 @@
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\shakey.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Reader\Converter\conversionelement.h" />
@@ -357,6 +360,9 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\TFormulaSize.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\shakey.h">
       <Filter>math</Filter>
     </ClInclude>
   </ItemGroup>

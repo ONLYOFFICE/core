@@ -33,8 +33,6 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #pragma once
-#ifndef PPTX_SLIDES_SLIDEMASTER_INCLUDE_H_
-#define PPTX_SLIDES_SLIDEMASTER_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -42,6 +40,7 @@
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
 #include "Logic/XmlId.h"
+#include "Presentation/PresentationChildElements.h"
 
 namespace OOX
 {
@@ -103,7 +102,9 @@ namespace PPTX
 		nullable<Logic::TxStyles>	txStyles;
 		nullable_bool				preserve;
 
-        smart_ptr<Theme>			theme;
+		nullable<nsPresentation::ExtendedGuideList> sldGuideLst;
+		
+		smart_ptr<Theme>			theme;
         smart_ptr<TableStyles>		tableStyles;
 		smart_ptr<OOX::CVmlDrawing>	Vml;
 		
@@ -111,5 +112,3 @@ namespace PPTX
 		std::wstring GetVmlXmlBySpid(const std::wstring& spid);
 	};
 } // namespace PPTX
-
-#endif // PPTX_SLIDES_SLIDEMASTER_INCLUDE_H_

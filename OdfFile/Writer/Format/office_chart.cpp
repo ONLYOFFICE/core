@@ -264,6 +264,23 @@ void chart_plot_area::create_child_element(const std::wstring & Ns, const std::w
 {
 	CP_CREATE_ELEMENT(content_);
  }
+// chart:coordinate-region
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * chart_coordinate_region::ns = L"chart";
+const wchar_t * chart_coordinate_region::name = L"coordinate-region";
+
+void chart_coordinate_region::serialize(std::wostream & _Wostream)
+{
+	CP_XML_WRITER(_Wostream)
+    {
+		CP_XML_NODE_SIMPLE()
+        {
+			common_draw_position_attlist_.serialize(CP_GET_XML_NODE());
+			common_draw_size_attlist_.serialize(CP_GET_XML_NODE());
+		}
+	}
+}
+
 void chart_plot_area::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
@@ -271,6 +288,9 @@ void chart_plot_area::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {
 			chart_plot_area_attlist_.serialize(CP_GET_XML_NODE());
+
+			if (coordinate_region_)
+				coordinate_region_->serialize(CP_XML_STREAM());
 
 			for (size_t i = 0; i < content_.size(); i++)
 			{

@@ -119,6 +119,14 @@ const bool PIVOTCORE::saveContent(BinProcessor& proc)
 {
     if(m_SxView == nullptr)
         return false;
+	else
+	{
+		auto castedView = static_cast<SxView*>(m_SxView.get());
+		auto globInfo = proc.getGlobalWorkbookInfo();
+		auto cacheIndex = globInfo->mapPivotCacheIndex.find(castedView->iCache);
+		if(cacheIndex == globInfo->mapPivotCacheIndex.end())
+			return false;
+	}
     proc.mandatory(*m_SxView);
     for(auto i : m_arPIVOTVD)
         if(i!= nullptr)

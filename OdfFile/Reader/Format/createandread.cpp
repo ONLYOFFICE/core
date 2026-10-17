@@ -44,16 +44,16 @@ namespace odf_reader {
 
 
 bool create_element_and_read(xml::sax * Reader,
-                             const std::wstring & Ns,
-                             const std::wstring & Name,
-                             office_element_ptr & _Element,
-                             document_context * Context,
-                             bool isRoot)
+							 const std::wstring & Ns,
+							 const std::wstring & Name,
+							 office_element_ptr & _Element,
+							 document_context * Context,
+							 bool isRoot)
 {
     if (office_element_ptr elm = office_element_creator::get()->create(Ns, Name, Context, isRoot))
     {
 		elm->afterCreate();
-			elm->read_sax( Reader );
+			elm->read_sax( Reader);
         elm->afterReadContent();
         
         if (_Element) // element is being read repeatedly

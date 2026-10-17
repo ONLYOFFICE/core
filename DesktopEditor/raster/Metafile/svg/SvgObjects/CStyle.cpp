@@ -36,6 +36,8 @@
 #include "CStyle.h"
 #include "CObjectBase.h"
 
+#include "../../../../../Common/3dParty/html/css/src/CCssCalculator_Private.h"
+
 namespace SVG
 {
 	CSvgCalculator::CSvgCalculator()

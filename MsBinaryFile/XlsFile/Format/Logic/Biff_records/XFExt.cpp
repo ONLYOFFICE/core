@@ -71,7 +71,7 @@ void XFExt::readFields(CFRecord& record)
 
 void XFExt::writeFields(CFRecord& record)
 {
-    frtHeader.rt = 0x0892;
+	frtHeader.rt = 0x087D;
     record << frtHeader;
     record.reserveNunBytes(2); // reserved
     record << ixfe;

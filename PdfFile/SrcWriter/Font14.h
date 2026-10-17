@@ -79,12 +79,21 @@ namespace PdfWriter
 		const char* GetFontKey() const { return m_sFontKey.c_str(); }
 		void UpdateKey(const std::string& sFontKey) { m_sFontKey = sFontKey; }
 		void SetDW(unsigned int unDW) { m_unDW = unDW; }
+		void SetFontPath(const std::wstring& wsFontPath) { m_wsFontPath = wsFontPath; }
+		std::wstring GetFontPath() { return m_wsFontPath; }
+		void SetFontIndex(unsigned int unIndex) { m_unIndex = unIndex; }
+		unsigned int GetFontIndex() { return m_unIndex; }
 
 	private:
+		unsigned int FindPreferredCode(const std::map<unsigned int, unsigned int>& mCodeToValue, unsigned int unValue) const;
+
 		unsigned int m_unDW;
 		std::string m_sFontKey;
 		EFontType m_eFontType;
 		CObjectBase* m_pObj;
+
+		std::wstring m_wsFontPath;
+		unsigned int m_unIndex;
 
 		std::map<unsigned int, unsigned int> m_mCodeToUnicode;
 		std::map<unsigned int, unsigned int> m_mCodeToGID;

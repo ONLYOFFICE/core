@@ -576,7 +576,7 @@ namespace OOX
 			if (m_oSmallCaps.IsInit())	sResult += m_oSmallCaps->ValNode(L"w:smallCaps");
 			if (m_oStrike.IsInit())		sResult += m_oStrike->ValNode(L"w:strike");
 			if ((m_oDStrike.IsInit()) && (m_oDStrike->m_oVal.ToBool()))
-										sResult += m_oDStrike->ValNode(L"w:dstrike");
+											sResult += m_oDStrike->ValNode(L"w:dstrike");
 			if (m_oOutline.IsInit())		sResult += m_oOutline->ValNode(L"w:outline");
 			if (m_oShadow.IsInit())			sResult += m_oShadow->ValNode(L"w:shadow");
 			if (m_oEmboss.IsInit())			sResult += m_oEmboss->ValNode(L"w:emboss");
@@ -600,7 +600,7 @@ namespace OOX
 			if (m_oFitText.IsInit())		sResult += m_oFitText->ValNode(L"w:fitText");
 			if (m_oVertAlign.IsInit())		sResult += m_oVertAlign->ValNode(L"w:vertAlign");
 			if (m_oRtL.IsInit())			sResult += m_oRtL->ValNode(L"w:rtl");
-			if (m_oCs.IsInit())			sResult += m_oCs->ValNode(L"w:cs");
+			if (m_oCs.IsInit())				sResult += m_oCs->ValNode(L"w:cs");
 			if (m_oEm.IsInit())				sResult += m_oEm->ValNode(L"w:em");
 			if (m_oLang.IsInit())			sResult += m_oLang->ValNode(L"w:lang");
 			if (m_oEastAsianLayout.IsInit())sResult += m_oEastAsianLayout->ValNode(L"w:eastAsianLayout");	

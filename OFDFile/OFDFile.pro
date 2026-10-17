@@ -44,7 +44,6 @@ CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
-include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 
 DEFINES += OFD_USE_DYNAMIC_LIBRARY \
            CRYPTOPP_DISABLE_ASM
@@ -64,7 +63,9 @@ INCLUDEPATH += \
 
 HEADERS += \
 	OFDFile.h \
+	src/Action.h \
 	src/Annotation.h \
+	src/Bookmark.h \
 	src/Content/ImageObject.h \
 	src/Content/PageBlock.h \
 	src/Content/PathObject.h \
@@ -77,6 +78,7 @@ HEADERS += \
 	src/Content/Layer.h \
 	src/Content/TextObject.h \
 	src/Document.h \
+	src/OutlineElem.h \
 	src/Page.h \
 	src/Res.h \
 	src/Types/Color.h \
@@ -88,15 +90,20 @@ HEADERS += \
 	src/Types/MultiMedia.h \
 	src/Types/PageArea.h \
 	src/Types/PenSettings.h \
+	src/Types/Region.h \
 	src/Types/Signature.h \
 	src/Types/TemplatePage.h \
+	src/Utils/CFontChecker.h \
+	src/Utils/PackageFolder.h \
 	src/Utils/Types.h \
 	src/Utils/Utils.h \
 	src/Utils/XmlReader.h
 
 SOURCES += \
 	OFDFile.cpp \
+	src/Action.cpp \
 	src/Annotation.cpp \
+	src/Bookmark.cpp \
 	src/Content/ImageObject.cpp \
 	src/Content/PageBlock.cpp \
 	src/Content/PathObject.cpp \
@@ -107,6 +114,7 @@ SOURCES += \
 	src/Content/Layer.cpp \
 	src/Content/TextObject.cpp \
 	src/Document.cpp \
+	src/OutlineElem.cpp \
 	src/Page.cpp \
 	src/Res.cpp \
 	src/Types/Color.cpp \
@@ -118,7 +126,9 @@ SOURCES += \
 	src/Types/MultiMedia.cpp \
 	src/Types/PageArea.cpp \
 	src/Types/PenSettings.cpp \
+	src/Types/Region.cpp \
 	src/Types/Signature.cpp \
 	src/Types/TemplatePage.cpp \
+	src/Utils/CFontChecker.cpp \
 	src/Utils/Types.cpp \
 	src/Utils/XmlReader.cpp

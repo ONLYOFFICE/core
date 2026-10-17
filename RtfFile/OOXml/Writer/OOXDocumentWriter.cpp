@@ -273,17 +273,67 @@ bool OOXDocumentWriter::SaveBySection()
 			{
                 if (m_oDocument.GetCount() == 2)
                 {
-                    section.props->m_bFinalize = false;
+                    _section lastSection;
+                    bool bLastEmpty = true;
+                    if (m_oDocument.GetItem(lastSection, 1))
+                    {
+                        for (int k = 0; k < lastSection.props->GetCount(); k++)
+                        {
+                            RtfParagraph* pLastPara = dynamic_cast<RtfParagraph*>(lastSection.props->operator[](k).get());
+                            if (NULL == pLastPara || pLastPara->GetCount() > 0)
+                            {
+                                bLastEmpty = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (bLastEmpty)
+                        section.props->m_bFinalize = false;
                 }
                 sXmlSectProp = section.props->RenderToOOX(oNewParam);
-			}	
+			}
 		}
 		RtfParagraph *para = dynamic_cast<RtfParagraph *>(m_oDocument[0].props->operator[](i).get());
+		int nBlankPageBreaks = 0;
+		if (NULL != para
+			&& false == sXmlSectProp.empty()
+			&& std::wstring::npos == sXmlSectProp.find(L"w:val=\"continuous\"")
+			&& std::wstring::npos == sXmlSectProp.find(L"w:val=\"nextColumn\""))
+		{
+			while (false == para->m_aArray.empty())
+			{
+				RtfCharSpecial *pSpecial = dynamic_cast<RtfCharSpecial *>(para->m_aArray.back().get());
+				if (NULL != pSpecial && RtfCharSpecial::rsc_page == pSpecial->m_eType)
+				{
+					para->m_aArray.pop_back();
+					++nBlankPageBreaks;
+				}
+				else
+					break;
+			}
+		}
+
 		bParaCurrEmpty = (para) ? (para->GetCount() < 1) : true;
 
 		sXml = m_oDocument[0].props->operator[](i)->RenderToOOX(oNewParam); 
 
-		if (!sXml.empty() || !sXmlSectProp.empty())
+		if (nBlankPageBreaks > 0)
+		{
+			// [remaining real content] + [ (N+1) page-break paragraphs ] + [ empty sectPr paragraph ]
+			std::wstring sOut;
+			if (para && para->GetCount() > 0)
+				sOut += sXml;
+			for (int k = 0; k <= nBlankPageBreaks; ++k)
+				sOut += L"<w:p><w:r><w:br w:type=\"page\"/></w:r></w:p>";
+			sOut += L"<w:p><w:pPr>" + sXmlSectProp + L"</w:pPr></w:p>";
+
+			std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sOut);
+			if (m_oFileWriter)
+			{
+				m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+			}
+		}
+		else if (!sXml.empty() || !sXmlSectProp.empty())
 		{
 			if (sXml.empty())
 			{
@@ -325,9 +375,9 @@ bool OOXDocumentWriter::SaveBySection()
 								sXml.insert(nFindP + 5, L"<w:pPr>" + sXmlSectProp + L"</w:pPr>" );
 						}
 					}
-				}	
+				}
 			}
-			
+
 			std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 			if (m_oFileWriter)
 			{
@@ -391,8 +441,8 @@ bool OOXDocumentWriter::SaveByItem()
 				else
 				{
 					size_t Find = sXml.rfind( L"<w:p>" );
-					if( std::wstring::npos != nFind )
-						sXml.insert( nFind + 5, L"<w:pPr>" + sectPr + L"</w:pPr>" );
+					if( std::wstring::npos != Find )
+						sXml.insert( Find + 5, L"<w:pPr>" + sectPr + L"</w:pPr>" );
 				}
 			}
 			else

@@ -225,7 +225,10 @@ namespace BinXlsxRW{
 					
 					m_pExternalDrawingConverter->WriteRels(sChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
 
-					chart_file->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
+					if (NULL == chart_file->m_oChartSpace.m_externalData)
+					{
+						chart_file->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
+					}
 					chart_file->m_oChartSpace.m_externalData->m_id = L"rId" + std::to_wstring(rId);
 					chart_file->m_oChartSpace.m_externalData->m_autoUpdate = false;
 				}
@@ -301,7 +304,7 @@ namespace BinXlsxRW{
 		if (oChart.IsInit() == false) return false;
 	//analyze chart
 		BinXlsxRW::ChartWriter helper;
-		helper.parseChart(oChart->m_oChartSpace.m_chart);
+		if (false == helper.parseChart(oChart->m_oChartSpace.m_chart)) return false;
 	//create temp
 		std::wstring sTempDir = NSSystemPath::GetDirectoryName(sDstFile) + FILE_SEPARATOR_STR + NSSystemPath::GetFileName(sDstFile) + L"_TEMP";
 		NSDirectory::CreateDirectory(sTempDir);

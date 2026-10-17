@@ -56,6 +56,20 @@ void style_chart_properties::add_attributes(const xml::attributes_wc_ptr & Attri
 {
 	content_.add_attributes(Attributes);
 }
+_CP_OPT(int) oox_convert_rotation_angle(const _CP_OPT(unsigned int) & angle)
+{
+	_CP_OPT(int) result;
+
+	if (!angle) return result;
+
+	int degree = (int)(*angle % 360);
+
+	if (degree > 180) degree -= 360;
+
+	result = -degree * 60000;
+
+	return result;
+}
 void chart_format_properties::apply_from(const chart_format_properties & Other)
 {
 	common_rotation_angle_attlist_.apply_from(Other.common_rotation_angle_attlist_);
@@ -70,6 +84,7 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	_CP_OPT(bool) bVal;// later can remove this separation - replace variant
 
 	CP_APPLY_ATTR(L"chart:scale-text",			bVal);		if (bVal) push_back(_property(L"scale-text",			bVal.get()));
+	CP_APPLY_ATTR(L"chart:auto-position",		bVal);		if (bVal) push_back(_property(L"auto-position",			bVal.get()));
     CP_APPLY_ATTR(L"chart:three-dimensional",	bVal);		if (bVal) push_back(_property(L"three-dimensional",		bVal.get()));
     CP_APPLY_ATTR(L"chart:vertical",			bVal);		if (bVal) push_back(_property(L"vertical",				bVal.get()));
     CP_APPLY_ATTR(L"chart:stacked",				bVal);		if (bVal) push_back(_property(L"stacked",				bVal.get()));
@@ -78,6 +93,7 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
     CP_APPLY_ATTR(L"chart:percentage",			bVal);		if (bVal) push_back(_property(L"percentage",			bVal.get()));
     CP_APPLY_ATTR(L"chart:connect-bars",		bVal);		if (bVal) push_back(_property(L"connect-bars",			bVal.get()));
     CP_APPLY_ATTR(L"chart:deep",				bVal);		if (bVal) push_back(_property(L"deep",					bVal.get()));
+    CP_APPLY_ATTR(L"chart:right-angled-axes",	bVal);		if (bVal) push_back(_property(L"right-angled-axes",		bVal.get()));
     CP_APPLY_ATTR(L"chart:tick-marks-major-inner",bVal);	if (bVal) push_back(_property(L"tick-marks-major-inner",bVal.get()));
     CP_APPLY_ATTR(L"chart:tick-marks-major-outer",bVal);	if (bVal) push_back(_property(L"tick-marks-major-outer",bVal.get()));
     CP_APPLY_ATTR(L"chart:tick-marks-minor-inner",bVal);	if (bVal) push_back(_property(L"tick-marks-minor-inner",bVal.get()));
@@ -108,6 +124,9 @@ void chart_format_properties::add_attributes( const xml::attributes_wc_ptr & Att
 			if (strVal) push_back(_property(L"axis-type", strVal.get()));
 		}
 	}
+
+	CP_APPLY_ATTR(L"chart:treat-empty-cells", strVal);
+	if (strVal) push_back(_property(L"treat-empty-cells", strVal.get()));
 
 	CP_APPLY_ATTR(L"chart:symbol-type",		strVal);	
 	if (strVal) push_back(_property(L"symbol-type",chart_symbol_type(chart_symbol_type::parse(strVal.get())).get_type()));

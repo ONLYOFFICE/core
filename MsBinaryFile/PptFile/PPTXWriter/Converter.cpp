@@ -458,11 +458,32 @@ namespace PPT
         NSFile::CFileBinary oFile;
 
         // tableStyles.xml
-        oFile.CreateFileW(m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"tableStyles.xml");
+        std::wstring strTableStylesPath = m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"tableStyles.xml";
+        bool bTableStylesWrite = false;
 
-        oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+        if (m_pUserInfo)
+        {
+            std::vector<RoundTripCustomTableStyles12Atom*> arrRTTableStyles;
+            m_pUserInfo->m_oDocument.GetRecordsByType(&arrRTTableStyles, false, true);
+
+            if (!arrRTTableStyles.empty() && m_pUserInfo->m_pDocumentInfo && m_pUserInfo->m_pDocumentInfo->m_pCommonInfo)
+            {
+                RoundTripExtractor extractor(arrRTTableStyles[0], m_pUserInfo->m_pDocumentInfo->m_pCommonInfo->tempPath);
+                std::wstring strRTTableStylesPath = extractor.getOneFile(L"tableStyles.xml");
+
+                if (!strRTTableStylesPath.empty())
+                    bTableStylesWrite = NSFile::CFileBinary::Copy(strRTTableStylesPath, strTableStylesPath);
+
+                NSDirectory::DeleteDirectory(extractor.extractedFolderPath());
+            }
+        }
+        if (!bTableStylesWrite)
+        {
+            oFile.CreateFileW(strTableStylesPath);
+            oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                           <a:tblStyleLst xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" def=\"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}\"/>");
-        oFile.CloseFile();
+            oFile.CloseFile();
+        }
 
         // presProps.xml
         oFile.CreateFileW(m_strDestPath + FILE_SEPARATOR_STR + L"ppt" + FILE_SEPARATOR_STR + L"presProps.xml");
@@ -1059,20 +1080,27 @@ namespace PPT
 
         WriteColorScheme(oStringWriter, L"Default", pTheme->m_arColorScheme);
 
-        if (!pTheme->m_arFonts.empty())
+        if (!pTheme->m_sRoundTripFontScheme.empty())
         {
-            oStringWriter.WriteString(std::wstring(L"<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\""));
-            oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
-            oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont>"));
-
-            oStringWriter.WriteString(std::wstring(L"<a:minorFont><a:latin typeface=\""));
-
-            if (pTheme->m_arFonts.size() > 1)	oStringWriter.WriteString(pTheme->m_arFonts[1].Name);
-            else                                oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+            oStringWriter.WriteString(pTheme->m_sRoundTripFontScheme);
         }
+        else
+        {
+            if (!pTheme->m_arFonts.empty())
+            {
+                oStringWriter.WriteString(std::wstring(L"<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\""));
+                oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+                oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont>"));
 
-        oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont>"));
-        oStringWriter.WriteString(std::wstring(L"</a:fontScheme>"));
+                oStringWriter.WriteString(std::wstring(L"<a:minorFont><a:latin typeface=\""));
+
+                if (pTheme->m_arFonts.size() > 1)	oStringWriter.WriteString(pTheme->m_arFonts[1].Name);
+                else                                oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+            }
+
+            oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont>"));
+            oStringWriter.WriteString(std::wstring(L"</a:fontScheme>"));
+        }
 
         oStringWriter.WriteString(std::wstring(L"<a:fmtScheme name=\"Default\">\
                                            <a:fillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\">\

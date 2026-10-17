@@ -77,6 +77,7 @@
 #include "../../XlsbFormat/Biff12_unions/DYNAMICARRAYMETADATA.h"
 #include "../../XlsbFormat/Biff12_unions/RICHDATAMETADATA.h"
 #include "../../XlsbFormat/Biff12_records/FRTBegin.h"
+#include "../../PPTXFormat/Logic/CNvPr.h"
 
 namespace OOX
 {
@@ -179,6 +180,7 @@ namespace OOX
 			m_oChartFiltering.reset();
 			m_oTimelineRefs.reset();
 			m_oTimelineCacheRefs.reset();
+			m_oCNvPr.reset();
 
 			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{
@@ -197,18 +199,18 @@ namespace OOX
 			ReadAttributes( oReader );
 
 			if ((m_sUri.IsInit()) && *m_sUri == L"{CE6537A1-D6FC-4f65-9D91-7224C49458BB}")
-			{// http://schemas.microsoft.com/office/drawing/2012/chart)
+			{// http://schemas.microsoft.com/office/drawing/2012/chart
 				m_oChartDataLabel.Init();
 				m_oChartDataLabel->fromXML(oReader);
 				return;
 			}
 			if ((m_sUri.IsInit()) && *m_sUri == L"{02D57815-91ED-43cb-92C2-25804820EDAC}")
-			{// http://schemas.microsoft.com/office/drawing/2012/chart)
+			{// http://schemas.microsoft.com/office/drawing/2012/chart
 				m_oChartFiltering.Init();
 				m_oChartFiltering->fromXML(oReader);
 				return;
 			}
-            if ((m_sUri.IsInit()) && (	*m_sUri == L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}" ||
+			if ((m_sUri.IsInit()) && (	*m_sUri == L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}" ||
 										*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}" ||
 										*m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}" ||
 										*m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}" ||
@@ -236,6 +238,8 @@ namespace OOX
 										*m_sUri == L"{3e2802c4-a4d2-4d8b-9148-e3be6c30e623}" ||			
 										*m_sUri == L"{bdbb8cdc-fa1e-496e-a857-3c3f30c029c3}" ||
                                         *m_sUri == L"{876F7934-8845-4945-9796-88D515C7AA90}" ||
+										*m_sUri == L"{C7286773-470A-42A8-94C5-96B5CB345126}" ||
+										*m_sUri == L"{E40237B7-FDA0-4F09-8148-C483321AD2D9}" ||
 										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -356,6 +360,13 @@ namespace OOX
 							WritingElement_ReadAttributes_Read_else_if (oReader, L"instanceId", m_oInstanceId)
 						WritingElement_ReadAttributes_End_No_NS(oReader)
 					}
+					else if (sName == L"xfComplement")
+					{
+						m_sAdditionalNamespace = L"xmlns:xfpb=\"http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag\"";
+						WritingElement_ReadAttributes_Start_No_NS(oReader)
+							WritingElement_ReadAttributes_ReadSingle(oReader, L"i", m_oXfComplement)
+						WritingElement_ReadAttributes_End_No_NS(oReader)						
+					}
 					else if (sName == L"userProtectedRanges")
 					{
 						m_oUserProtectedRanges = oReader;
@@ -394,6 +405,10 @@ namespace OOX
                         m_oWorkbookPivotCaches = oReader;
                         m_oWorkbookPivotCaches->pivotCaches14 = true;
                     }
+					else if (sName == L"cNvPr")
+					{
+						m_oCNvPr = oReader;
+					}
 				}
 			}
 			else
@@ -580,7 +595,7 @@ namespace OOX
 			}
 			if (m_oId.IsInit())
 			{
-				sResult += L"<" + sNamespace + L"id>" + *m_oId + L"</" + sNamespace + L"id>";
+				sResult += L"<" + sNamespace + L"id>" + m_oId->ToString() + L"</" + sNamespace + L"id>";
 			}
 			if (m_oChartDataLabel.IsInit())
 			{
@@ -634,6 +649,21 @@ namespace OOX
                 m_oWorkbookPivotCaches->toXML(writer);
                 sResult += writer.GetData().c_str();
             }
+			if (m_oXfComplement.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				writer.StartNode(L"xfpb:xfComplement");
+				writer.StartAttributes();
+				writer.WriteAttribute(L"i", *m_oXfComplement);
+				writer.EndAttributesAndNode();
+				sResult += writer.GetData().c_str();
+			}
+			if (m_oCNvPr.IsInit())
+			{
+				NSBinPptxRW::CXmlWriter oWriter;
+				m_oCNvPr->toXmlWriter(&oWriter);
+				sResult += oWriter.GetXmlString();
+			}
 			sResult += L"</" + sNamespace + L"ext>";
 
 			return sResult;

@@ -293,7 +293,7 @@ Object *ObjectStream::getObject(int objIdx, int objNum, Object *obj) {
 
 XRef::XRef(BaseStream *strA, GBool repair) {
   GFileOffset pos;
-  Object obj;
+  Object obj, root, rootType;
   XRefPosSet *posSet;
   int i;
 
@@ -370,6 +370,17 @@ XRef::XRef(BaseStream *strA, GBool repair) {
   if (obj.isRef()) {
     rootNum = obj.getRefNum();
     rootGen = obj.getRefGen();
+
+	fetch(rootNum, rootGen, &root);
+	if (!root.isDict() || root.dictLookupNF("Pages", &rootType)->isNull())
+	{
+		root.free(); rootType.free();
+		errCode = errDamaged;
+		ok = gFalse;
+		return;
+	}
+	root.free(); rootType.free();
+
     obj.free();
   } else {
     obj.free();
@@ -972,6 +983,39 @@ GBool XRef::constructXRef() {
     error(errSyntaxError, -1, "Couldn't find trailer dictionary");
     return gFalse;
   }
+
+  // validate the catalog object found by the initial xref scan
+  if (!quickCheckCatalog(str, entries[rootNum].offset + start)) {
+	error(errSyntaxWarning, -1, "invalid Catalog, trying repair scan");
+	// reset state before repair scan
+	rootNum = -1;
+	rootGen = -1;
+
+	gfree(entries);
+	entries = NULL;
+	size = 0;
+	last = -1;
+
+	for (int i = 0; i < xrefCacheSize; ++i) {
+	  if (cache[i].num >= 0) {
+		cache[i].num = -1;
+		cache[i].obj.free();
+	  }
+	}
+	for (int i = 0; i < objStrCacheLength; ++i) {
+	  delete objStrs[i];
+	  objStrs[i] = NULL;
+	}
+	objStrCacheLength = 0;
+
+	gfree(xrefTablePos);
+	xrefTablePos = NULL;
+	xrefTablePosLen = 0;
+
+	if (!trailerDict.isNone()) trailerDict.free();
+	return constructXRefRepair();
+  }
+
   return gTrue;
 }
 
@@ -1014,6 +1058,316 @@ GBool XRef::saveTrailerDict(Dict *dict, GBool isXRefStream) {
   }
   obj.free();
   return bRes;
+}
+
+// quick check: is the object at the given offset a /Type /Catalog dict?
+GBool XRef::quickCheckCatalog(BaseStream *str, GFileOffset pos) {
+  if (pos < 0) return gFalse;
+  char buf[512];
+  str->setPos(pos);
+  int n = str->getBlock(buf, sizeof(buf) - 1);
+  if (n <= 0) return gFalse;
+  buf[n] = '\0';
+
+  // skip "N G obj"
+  char *p = strstr(buf, " obj");
+  if (!p) return gFalse;
+  p += 4;
+
+  // look for /Type key
+  char *t = strstr(p, "/Type");
+  if (!t || t - buf > 450) return gFalse;
+  t += 5;
+
+  // skip whitespace between /Type and its value
+  while (*t == ' ' || *t == '\t' || *t == '\r' || *t == '\n') ++t;
+
+  // value may be "/Catalog" or "/ Catalog" — skip the slash
+  if (*t == '/') ++t;
+  while (*t == ' ' || *t == '\t') ++t;
+
+  return strncmp(t, "Catalog", 7) == 0;
+}
+
+GFileOffset XRef::findValidCutoff(XRefTempEntry *tempEntries, int tempSize, std::vector<XRefTrailerCandidate> &candidates) {
+  for (auto it = candidates.rbegin(); it != candidates.rend(); ++it) {
+	XRefTrailerCandidate &c = *it;
+
+	GFileOffset rootPos = c.rootObjPos;
+	if (rootPos < 0 && c.rootNum < tempSize && tempEntries[c.rootNum].used)
+	  rootPos = tempEntries[c.rootNum].offset;
+
+	if (rootPos < 0) continue;
+
+	if (quickCheckCatalog(str, rootPos + start)) {
+	  return (c.sectionEnd >= 0) ? c.sectionEnd : c.trailerPos;
+	}
+  }
+  return -1;
+}
+
+GBool XRef::constructXRefRepair() {
+  int tempSize = 0;
+  XRefTempEntry *tempEntries = NULL;
+
+  auto ensureTemp = [&](int num) {
+	if (num >= tempSize) {
+	  int newSize = num + 256;
+	  tempEntries = (XRefTempEntry *)greallocn(
+		  tempEntries, newSize, sizeof(XRefTempEntry));
+	  for (int i = tempSize; i < newSize; ++i) {
+		tempEntries[i].offset = -1;
+		tempEntries[i].gen    = 0;
+		tempEntries[i].used   = gFalse;
+	  }
+	  tempSize = newSize;
+	}
+  };
+
+  std::vector<XRefTrailerCandidate> candidates;
+
+  int tmpStreamEndsSize = 0;
+  int tmpStreamEndsLen  = 0;
+  GFileOffset *tmpStreamEnds = NULL;
+
+  // ---------- PASS 1 ----------
+  {
+	char buf[4096 + 1];
+	str->reset();
+	GFileOffset bufPos = start;
+	char *p   = buf;
+	char *end = buf;
+	GBool startOfLine = gTrue;
+	GBool eof = gFalse;
+
+	GFileOffset sectionStart = start;
+
+	while (1) {
+	  if (end - p < 256 && !eof) {
+		memmove(buf, p, end - p);
+		bufPos += p - buf;
+		p   = buf + (end - p);
+		int n = (int)(buf + 4096 - p);
+		int m = str->getBlock(p, n);
+		end = p + m;
+		*end = '\0';
+		p   = buf;
+		eof = m < n;
+	  }
+	  if (p == end && eof) break;
+
+	  GFileOffset curPos = (GFileOffset)(bufPos + (p - buf));
+
+	  // %%EOF — close current section
+	  if (startOfLine && p[0] == '%' && !strncmp(p, "%%EOF", 5)) {
+		for (auto &c : candidates)
+		  if (c.sectionEnd < 0 && c.sectionStart == sectionStart)
+			c.sectionEnd = curPos;
+		sectionStart = curPos + 5;
+		p += 5;
+		startOfLine = gFalse;
+		continue;
+	  }
+
+	  if (startOfLine && !strncmp(p, "endstream", 9)) {
+		if (tmpStreamEndsLen == tmpStreamEndsSize) {
+		  tmpStreamEndsSize += 64;
+		  tmpStreamEnds = (GFileOffset *)greallocn(
+			  tmpStreamEnds, tmpStreamEndsSize, sizeof(GFileOffset));
+		}
+		tmpStreamEnds[tmpStreamEndsLen++] = curPos;
+		p += 9;
+		startOfLine = gFalse;
+		continue;
+	  }
+
+	  if (startOfLine && !strncmp(p, "trailer", 7)) {
+		GFileOffset tPos = (GFileOffset)(bufPos + (p + 7 - buf));
+		Object tDict, obj;
+		obj.initNull();
+		Parser *parser = new Parser(
+			NULL,
+			new Lexer(NULL, str->makeSubStream(tPos, gFalse, 0, &obj)),
+			gFalse);
+		parser->getObj(&tDict);
+		if (tDict.isDict()) {
+		  Object rootRef;
+		  tDict.getDict()->lookupNF("Root", &rootRef);
+		  if (rootRef.isRef()) {
+			int rNum = rootRef.getRefNum();
+			ensureTemp(rNum);
+			XRefTrailerCandidate c;
+			c.trailerPos   = tPos;
+			c.sectionStart = sectionStart;
+			c.sectionEnd   = -1;
+			c.rootNum      = rNum;
+			c.rootGen      = rootRef.getRefGen();
+			// rootObjPos — берём то что уже видели к этому моменту
+			c.rootObjPos   = tempEntries[rNum].used
+							   ? tempEntries[rNum].offset
+							   : -1;
+			candidates.push_back(c);
+		  }
+		  rootRef.free();
+		}
+		tDict.free();
+		delete parser;
+		p += 7;
+		startOfLine = gFalse;
+		continue;
+	  }
+
+	  // N G obj — write to tempEntries only
+	  if (startOfLine && *p >= '0' && *p <= '9') {
+		char *q = p;
+		int num = 0, gen = 0;
+		do { num = num * 10 + (*q - '0'); ++q; }
+		while (*q >= '0' && *q <= '9' && num < 100000000);
+		if (*q == '\t' || *q == '\x0c' || *q == ' ') {
+		  do { ++q; } while (*q == '\t' || *q == '\x0c' || *q == ' ');
+		  if (*q >= '0' && *q <= '9') {
+			do { gen = gen * 10 + (*q - '0'); ++q; }
+			while (*q >= '0' && *q <= '9' && gen < 100000000);
+			if ((*q == '\t' || *q == '\x0c' || *q == ' ') &&
+				!strncmp(q + 1, "obj", 3)) {
+			  ensureTemp(num);
+			  // will be overwritten — pass 2 is bounded by cutoff
+			  tempEntries[num].offset = curPos - start;
+			  tempEntries[num].gen    = gen;
+			  tempEntries[num].used   = gTrue;
+			}
+		  }
+		}
+		while (*p && *p != '\n' && *p != '\r') ++p;
+		startOfLine = gFalse;
+		continue;
+	  }
+
+	  startOfLine = (*p == '\n' || *p == '\r');
+	  ++p;
+	}
+  } // end of pass 1
+
+  // ---------- VALIDATION ----------
+  GFileOffset cutoffPos = findValidCutoff(tempEntries, tempSize, candidates);
+  gfree(tempEntries);
+  gfree(tmpStreamEnds);
+
+  if (cutoffPos < 0) {
+	error(errSyntaxWarning, -1, "no valid Catalog found, scanning entire file");
+	cutoffPos = str->getPos();
+  }
+
+  // ---------- PASS 2 ----------
+  // identical to original constructXRef, but stops at curPos >= cutoffPos
+
+  int streamObjNumsSize = 0;
+  int streamObjNumsLen  = 0;
+  int *streamObjNums    = NULL;
+  int lastObjNum = -1;
+  rootNum = -1;
+
+  gfree(streamEnds);
+  streamEnds    = NULL;
+  streamEndsLen = 0;
+  int streamEndsSize = 0;
+
+  {
+	char buf[4096 + 1];
+	str->reset();
+	GFileOffset bufPos = start;
+	char *p   = buf;
+	char *end = buf;
+	GBool startOfLine = gTrue;
+	GBool eof = gFalse;
+
+	while (1) {
+	  if (end - p < 256 && !eof) {
+		memmove(buf, p, end - p);
+		bufPos += p - buf;
+		p   = buf + (end - p);
+		int n = (int)(buf + 4096 - p);
+		int m = str->getBlock(p, n);
+		end = p + m;
+		*end = '\0';
+		p   = buf;
+		eof = m < n;
+	  }
+	  if (p == end && eof) break;
+
+	  GFileOffset curPos = (GFileOffset)(bufPos + (p - buf));
+
+	  if (curPos - start >= cutoffPos)
+		  break;
+
+	  if (startOfLine && !strncmp(p, "trailer", 7)) {
+		constructTrailerDict((GFileOffset)(bufPos + (p + 7 - buf)));
+		p += 7;
+		startOfLine = gFalse;
+	  } else if (startOfLine && !strncmp(p, "endstream", 9)) {
+		if (streamEndsLen == streamEndsSize) {
+		  streamEndsSize += 64;
+		  streamEnds = (GFileOffset *)greallocn(
+			  streamEnds, streamEndsSize, sizeof(GFileOffset));
+		}
+		streamEnds[streamEndsLen++] = curPos;
+		p += 9;
+		startOfLine = gFalse;
+	  } else if (startOfLine && *p >= '0' && *p <= '9') {
+		p = constructObjectEntry(p, (GFileOffset)(bufPos + (p - buf)),
+								 &lastObjNum);
+		startOfLine = gFalse;
+	  } else if (p[0] == '>' && p[1] == '>') {
+		p += 2;
+		startOfLine = gFalse;
+		while (*p == '\t' || *p == '\n' || *p == '\x0c' ||
+			   *p == '\r'  || *p == ' ') {
+		  startOfLine = (*p == '\n' || *p == '\r');
+		  ++p;
+		}
+		if (!strncmp(p, "stream", 6)) {
+		  if (lastObjNum >= 0) {
+			if (streamObjNumsLen == streamObjNumsSize) {
+			  streamObjNumsSize += 64;
+			  streamObjNums = (int *)greallocn(
+				  streamObjNums, streamObjNumsSize, sizeof(int));
+			}
+			streamObjNums[streamObjNumsLen++] = lastObjNum;
+		  }
+		  p += 6;
+		  startOfLine = gFalse;
+		}
+	  } else {
+		startOfLine = (*p == '\n' || *p == '\r');
+		++p;
+	  }
+	}
+  } // end of pass 2
+
+  GBool bRoot = gFalse;
+  for (int i = 0; i < streamObjNumsLen; ++i) {
+	Object obj;
+	fetch(streamObjNums[i], entries[streamObjNums[i]].gen, &obj);
+	if (obj.isStream()) {
+	  Dict *dict = obj.streamGetDict();
+	  Object type;
+	  dict->lookup("Type", &type);
+	  if (type.isName("XRef") && !bRoot) {
+		bRoot = saveTrailerDict(dict, gTrue);
+	  } else if (type.isName("ObjStm")) {
+		constructObjectStreamEntries(&obj, streamObjNums[i]);
+	  }
+	  type.free();
+	}
+	obj.free();
+  }
+  gfree(streamObjNums);
+
+  if (rootNum < 0) {
+	error(errSyntaxError, -1, "Couldn't find trailer dictionary");
+	return gFalse;
+  }
+  return gTrue;
 }
 
 // Look for an object header ("nnn ggg obj") at [p].  The first

@@ -71,6 +71,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/AutoFilter12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/DXFN12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/AF12Criteria.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/AF12DateInfo.h"
 
 namespace OOX
 {
@@ -1245,6 +1246,55 @@ namespace OOX
 					ptr->yr = 0;
 				return objectPtr;
 			}
+			XLS::BiffStructurePtr CDateGroupItem::toXLS()
+			{
+				auto ptr(new XLS::AF12DateInfo);
+
+				if (m_oDateTimeGrouping == SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupYear)
+				{
+					ptr->nodeType = 0x00000000;
+				}
+				else if (m_oDateTimeGrouping == SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupMonth)
+				{
+					ptr->nodeType = 0x00000001;
+				}
+				else if (m_oDateTimeGrouping == SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupDay)
+				{
+					ptr->nodeType = 0x00000002;
+				}
+				else if (m_oDateTimeGrouping == SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupHour)
+				{
+					ptr->nodeType = 0x00000003;
+				}
+				else if (m_oDateTimeGrouping == SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupMinute)
+				{
+					ptr->nodeType = 0x00000004;
+				}
+				else if (m_oDateTimeGrouping == SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupSecond)
+				{
+					ptr->nodeType = 0x00000005;
+				}
+
+				if(m_oDay.IsInit())
+					ptr->day = m_oDay->GetValue();
+
+				if(m_oHour.IsInit())
+					ptr->hour = m_oHour->GetValue();
+
+				if(m_oMinute.IsInit())
+					ptr->minute = m_oMinute->GetValue();
+
+				if(m_oMonth.IsInit())
+					ptr->month = m_oMonth->GetValue();
+
+				if(m_oSecond.IsInit())
+					ptr->second = m_oSecond->GetValue();
+
+				if(m_oYear.IsInit())
+					ptr->year = m_oYear->GetValue();
+
+				return XLS::BiffStructurePtr(ptr);
+			}
 			EElementType CDateGroupItem::getType () const
 			{
 				return et_x_DateGroupItem;
@@ -1661,17 +1711,29 @@ namespace OOX
 				{
 					if(m_oFilters.IsInit())
 					{
-						ptr->cCriteria +=  m_oFilters->m_arrItems.size();
 						for(auto i :  m_oFilters->m_arrItems)
 						{
-							auto castedFilter = static_cast<CFilter*>(i);
-							ptr->arAF12Criteries.push_back(castedFilter->toXLS());
+							if(i->getType() == et_x_Filter)
+							{
+								auto castedFilter = static_cast<CFilter*>(i);
+								ptr->arAF12Criteries.push_back(castedFilter->toXLS());
+								ptr->cCriteria++;
+							}
+							else if(i->getType() == et_x_DateGroupItem)
+							{
+								auto castedFilter = static_cast<CDateGroupItem*>(i);
+								ptr->arAF12DateInfo.push_back(castedFilter->toXLS());
+								ptr->cDateGroupings++;
+								//todo
+							}
+							else
+								continue;
 						}
 					}
 					if(m_oCustomFilters.IsInit())
 					{
-						ptr->cCriteria +=  m_oCustomFilters->m_arrItems.size();
-						for(auto i :  m_oCustomFilters->m_arrItems)
+						ptr->cCriteria += m_oCustomFilters->m_arrItems.size();
+						for(auto i : m_oCustomFilters->m_arrItems)
 						{
 							auto castedFilter = static_cast<CCustomFilter*>(i);
 							ptr->arAF12Criteries.push_back(castedFilter->toXLS());

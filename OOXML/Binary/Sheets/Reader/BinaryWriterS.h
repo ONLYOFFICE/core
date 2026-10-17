@@ -116,6 +116,15 @@ namespace OOX
 		class CRichValueType;
 		class CRichValueTypeReservedKey;
 		class CRichValueTypeKeyFlags;
+		class CRichValueRels;
+		class CFeaturePropertyBags;
+		class CFeaturePropertyBag;
+		class CArrayFeatureProperty;
+		class CIntFeatureProperty;
+		class CStringFeatureProperty;
+		class CBoolFeatureProperty;
+		class CDoubleFeatureProperty;
+		class CBagFeatureProperty;
 	}
 }
 
@@ -280,6 +289,7 @@ namespace BinXlsxRW
 		void WriteMdxMemeberProp(OOX::Spreadsheet::CMdxMemeberProp* pMdxMemeberProp);
 		void WriteMetadataStringIndex(OOX::Spreadsheet::CMetadataStringIndex* pStringIndex);
 
+		void WriteRichValueRels(OOX::Spreadsheet::CRichValueRels* pData);
 		void WriteRichValueData(OOX::Spreadsheet::CRichValueData* pData);
 		void WriteRichValue(OOX::Spreadsheet::CRichValue* pData);
 		void WriteRichValueFallback(OOX::Spreadsheet::CRichValueFallback* pData);
@@ -289,6 +299,15 @@ namespace BinXlsxRW
 		void WriteRichValueType(OOX::Spreadsheet::CRichValueType* pTypeInfo);
 		void WriteRichValueTypeKeyFlags(OOX::Spreadsheet::CRichValueTypeKeyFlags* pKeyFlags);
 		void WriteRichValueTypeReservedKey(OOX::Spreadsheet::CRichValueTypeReservedKey* pReservedKey);
+		
+		void WriteFeaturePropertyBags(OOX::Spreadsheet::CFeaturePropertyBags* pFeaturePropertyBags);
+		void WriteFeaturePropertyBag(OOX::Spreadsheet::CFeaturePropertyBag* pFeaturePropertyBag);
+		void WriteFeaturePropertyArray(OOX::Spreadsheet::CArrayFeatureProperty* pArrayFeatureProperty);
+		void WriteFeaturePropertyBagId(OOX::Spreadsheet::CBagFeatureProperty* pBagFeatureProperty);
+		void WriteFeaturePropertyInt(OOX::Spreadsheet::CIntFeatureProperty* pIntFeatureProperty);
+		void WriteFeaturePropertyBool(OOX::Spreadsheet::CBoolFeatureProperty* pBoolFeatureProperty);
+		void WriteFeaturePropertyString(OOX::Spreadsheet::CStringFeatureProperty* pStringFeatureProperty);
+		void WriteFeaturePropertyDouble(OOX::Spreadsheet::CDoubleFeatureProperty* pDoubleFeatureProperty);
 	};
 	class BinaryPersonTableWriter
 	{
@@ -372,11 +391,11 @@ namespace BinXlsxRW
 		void WritemRowColBreaks(const OOX::Spreadsheet::CRowColBreaks& oRowColBreaks);		
 		void WritemBreak(const OOX::Spreadsheet::CBreak& oBreak);
 		void WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
+			std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteConditionalFormatting(const OOX::Spreadsheet::CConditionalFormatting& oConditionalFormatting,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
+			std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteConditionalFormattingRule(const OOX::Spreadsheet::CConditionalFormattingRule& oConditionalFormattingRule,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
+			std::unordered_map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteColorScale(const OOX::Spreadsheet::CColorScale& oColorScale);
 		void WriteDataBar(const OOX::Spreadsheet::CDataBar& oDataBar);
 		void WriteIconSet(const OOX::Spreadsheet::CIconSet& oIconSet);

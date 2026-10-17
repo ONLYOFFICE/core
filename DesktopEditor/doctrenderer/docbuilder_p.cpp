@@ -35,6 +35,11 @@
 #include "docbuilder_p.h"
 #include "server.h"
 
+#ifdef DOCBUILDER_PDF_EDITOR
+#include "../../PdfFile/PdfFile.h"
+#include "embed/DrawingFileEmbed.h"
+#endif
+
 std::wstring NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = L"";
 
 void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
@@ -50,6 +55,10 @@ using namespace NSJSBase;
 CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, const NSDoctRenderer::DoctRendererEditorType& type, NSDoctRenderer::CDoctRendererConfig* config)
 {
 	m_nFileType = -1;
+	m_nOpenError = 0;
+
+	m_pPdfFile = NULL;
+	m_pPdfFonts = NULL;
 
 	if (NSDoctRenderer::DoctRendererEditorType::INVALID == type)
 		m_context = new CJSContext();
@@ -79,11 +88,18 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, cons
 	CBuilderEmbed* pBuilderJSNative = static_cast<CBuilderEmbed*>(oBuilderJS->getNative());
 	pBuilderJSNative->SetExternalize(true);
 	pBuilderJSNative->m_pBuilder = pBuilder;
+
+	m_sX2tPath = pBuilder->GetPrivate()->m_sX2tPath;
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
 	m_oContextData.Clear();
 	m_context->Dispose();
+
+#ifdef DOCBUILDER_PDF_EDITOR
+	RELEASEOBJECT(m_pPdfFile);
+	RELEASEINTERFACE(m_pPdfFonts);
+#endif
 }
 
 bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue, const bool& isEnterContextSrc)
@@ -236,7 +252,7 @@ bool CV8RealTimeWorker::InitVariables()
 
 		NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
 		NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
-		std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
+		std::string sArgument = "window.isNativeBuilder = true;var Argument = JSON.parse(\"" + sArg + "\");";
 
 		m_context->runScript(sArgument, try_catch);
 		if (try_catch->Check())
@@ -271,6 +287,9 @@ bool CV8RealTimeWorker::InitVariables()
 bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const NSDoctRenderer::DoctRendererEditorType& editorType, NSDoctRenderer::CDoctRendererConfig* config, CV8Params* pParams)
 {
 	LOGGER_SPEED_START();
+
+	// the reader below may recognize the file as encrypted and refine this
+	m_nOpenError = GetBuilderErrorCode(AVS_FILEUTILS_ERROR_CONVERT);
 
 	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
@@ -312,6 +331,15 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		}
 
 		pNative->m_strFontsDirectory = sBasePath + L"/sdkjs/common";
+		// the fonts are where AllFonts.js and font_selection.bin are (CheckFonts): moved to the app data
+		// folder when the work directory cannot be written (CDoctRendererConfig::Parse), or given by
+		// --all-fonts-path (the desktop's font cache)
+		if (config && !config->m_strAllFonts.empty())
+		{
+			std::wstring sAllFontsDir = NSFile::GetDirectoryName(config->m_strAllFonts);
+			if (NSDirectory::Exists(sAllFontsDir))
+				pNative->m_strFontsDirectory = sAllFontsDir;
+		}
 		pNative->m_strImagesDirectory = path + L"/media";
 
 		pNative->CheckFonts();
@@ -320,6 +348,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 			pNative->m_strEditorType = L"document";
 		else if (1 == m_nFileType)
 			pNative->m_strEditorType = L"presentation";
+		else if (3 == m_nFileType)
+			pNative->m_strEditorType = L"pdf";
 		else if (7 == m_nFileType)
 			pNative->m_strEditorType = L"visio";
 		else
@@ -335,18 +365,40 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 	// OPEN
 	if (!bIsBreak)
 	{
-		CChangesWorker oWorkerLoader;
-		int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+#ifdef DOCBUILDER_PDF_EDITOR
+		if (NSDoctRenderer::DoctRendererEditorType::PDF == editorType)
+		{
+			if (!OpenDrawingFile(pNative->m_strFontsDirectory))
+				bIsBreak = true;
 
-		JSSmart<CJSValue> args_open[3];
-		args_open[0] = oWorkerLoader.GetDataFull()->toObject()->toValue();
-		args_open[1] = CJSContext::createInt(nVersion);
-		std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
-		args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
+			if (!bIsBreak)
+			{
+				JSSmart<CJSValue> args_open[3];
+				args_open[0] = CJSContext::createUndefined();
+				args_open[1] = CJSContext::createInt(-1);
+				args_open[2] = CJSContext::createUndefined();
 
-		global_js->call_func("NativeOpenFileData", 3, args_open);
-		if (try_catch->Check())
-			bIsBreak = true;
+				global_js->call_func("NativeOpenFileData", 3, args_open);
+				if (try_catch->Check())
+					bIsBreak = true;
+			}
+		}
+		else
+#endif
+		{
+			CChangesWorker oWorkerLoader;
+			int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+
+			JSSmart<CJSValue> args_open[3];
+			args_open[0] = oWorkerLoader.GetDataFull()->toObject()->toValue();
+			args_open[1] = CJSContext::createInt(nVersion);
+			std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+			args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
+
+			global_js->call_func("NativeOpenFileData", 3, args_open);
+			if (try_catch->Check())
+				bIsBreak = true;
+		}
 	}
 
 	if (!bIsBreak)
@@ -358,8 +410,166 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	LOGGER_SPEED_LAP("open");
 
+	if (!bIsBreak)
+		m_nOpenError = 0;
+
 	return !bIsBreak;
 }
+
+#ifdef DOCBUILDER_PDF_EDITOR
+bool CV8RealTimeWorker::OpenDrawingFile(const std::wstring& sFontsDirectory)
+{
+	if (m_sPdfFile.empty() || !NSFile::CFileBinary::Exists(m_sPdfFile))
+		return false;
+
+	// fonts for the drawing file - use the same font set as the editor
+	m_pPdfFonts = NSFonts::NSApplication::Create();
+	if (!sFontsDirectory.empty() && NSDirectory::Exists(sFontsDirectory))
+		m_pPdfFonts->InitializeFromFolder(sFontsDirectory);
+	else
+		m_pPdfFonts->Initialize();
+
+	CPdfFile* pPdfFile = new CPdfFile(m_pPdfFonts);
+	pPdfFile->SetTempDirectory(NSDirectory::GetFolderPath(m_sPdfFile));
+	pPdfFile->SetCMapFile(m_sX2tPath + L"/cmap.bin");
+
+	const wchar_t* wsPassword = m_sPdfPassword.empty() ? NULL : m_sPdfPassword.c_str();
+
+	if (!pPdfFile->LoadFromFile(m_sPdfFile, L"", wsPassword, wsPassword))
+	{
+		// an encrypted pdf is reported with the codes x2t uses for the same case
+		if (PdfFile::errorEncrypted == pPdfFile->GetError())
+			m_nOpenError = m_sPdfPassword.empty()
+					? GetBuilderErrorCode(AVS_FILEUTILS_ERROR_CONVERT_DRM)
+					: GetBuilderErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PASSWORD);
+
+		RELEASEOBJECT(pPdfFile);
+		return false;
+	}
+
+	m_pPdfFile = pPdfFile;
+
+	return EmbedDrawingFile(m_context, m_pPdfFile);
+}
+
+// writes the pdf again through the encrypting writer - the route x2t takes for a
+// pdf to pdf conversion with <m_sSavePassword>. An EMPTY sPassword is the other
+// half of the same job: the document is written out with no /Encrypt at all, so
+// this is also how the protection comes OFF a pdf.
+// sOpenPassword is the password sFile itself is encrypted with: the editor writes
+// the result as the source file plus an incremental update, so a protected source
+// hands this function a file that is still protected, and the writer reads a
+// document it cannot decrypt as no document at all.
+static bool EncryptPdf(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile, const std::wstring& sTempDir, const std::wstring& sOpenPassword, const std::wstring& sPassword)
+{
+	std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTempDir, L"PDF_");
+	if (NSFile::CFileBinary::Exists(sTmpFile))
+		NSFile::CFileBinary::Remove(sTmpFile);
+
+	bool bResult = false;
+
+	const wchar_t* wsOpenPassword = sOpenPassword.empty() ? NULL : sOpenPassword.c_str();
+
+	CPdfFile oPdf(pFonts);
+	oPdf.SetTempDirectory(sTempDir);
+	if (oPdf.LoadFromFile(sFile, L"", wsOpenPassword, wsOpenPassword))
+		bResult = (S_OK == oPdf.ChangePassword(sTmpFile, sPassword));
+	oPdf.Close();
+
+	if (bResult)
+	{
+		NSFile::CFileBinary::Remove(sFile);
+		bResult = NSFile::CFileBinary::Move(sTmpFile, sFile);
+	}
+
+	if (NSFile::CFileBinary::Exists(sTmpFile))
+		NSFile::CFileBinary::Remove(sTmpFile);
+
+	return bResult;
+}
+
+bool CV8RealTimeWorker::SaveEditedPdf(int type, const std::wstring& sDstFile, const std::wstring& sMediaDir, const std::wstring& sJsonParams, const std::wstring& sSavePassword, const bool& isEnterContext, const bool& bRewritePassword)
+{
+	if (NULL == m_pPdfFile)
+		return false;
+
+	std::wstring sCompiled = sMediaDir + L"/compiled_changes.pdf";
+	if (NSFile::CFileBinary::Exists(sCompiled))
+		NSFile::CFileBinary::Remove(sCompiled);
+
+	bool bError = SaveFileWithChanges(type, sCompiled, sJsonParams, isEnterContext);
+	if (bError)
+		return false;
+
+	CPdfFile* pPdf = (CPdfFile*)m_pPdfFile;
+
+	CConvertFromBinParams oConvertParams;
+	oConvertParams.m_sInternalMediaDirectory = sMediaDir;
+	oConvertParams.m_sMediaDirectory         = sMediaDir;
+
+	bool bResult = false;
+	bool bIsCompiledChanges = false;
+
+	NSFile::CFileBinary oFile;
+	if (oFile.OpenFile(sCompiled))
+	{
+		char signature[4];
+		if (oFile.ReadFile((BYTE*)signature, 4) &&
+			'%' == signature[0] && 'P' == signature[1] && 'D' == signature[2] && 'F' == signature[3])
+		{
+			DWORD dwChangesSize = (DWORD)(oFile.GetFileSize() - 4);
+			BYTE* pChangesData = new BYTE[dwChangesSize];
+
+			if (oFile.ReadFile(pChangesData, dwChangesSize) && pPdf->EditPdf(sDstFile))
+			{
+				bResult = (S_OK == pPdf->AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams));
+				bIsCompiledChanges = true;
+			}
+
+			RELEASEARRAYOBJECTS(pChangesData);
+		}
+
+		oFile.CloseFile();
+	}
+
+	// no compiled changes (editor returned null) - save the original pdf unchanged
+	if (!bIsCompiledChanges)
+		bResult = pPdf->EditPdf(sDstFile);
+
+	// Saving does not end the document: the session keeps it open and the JS side
+	// holds this very CPdfFile through EmbedDrawingFile. EditPdf() cleaned the
+	// document's reader up and handed it to the editor, so finish the write and
+	// put the object back into the readable state it was in before the save -
+	// ScanPage(), which backs ApiPage.RecognizeContent(), walks that reader.
+	// EditClose() rather than Close(): it releases the editor as well, so it no
+	// longer shadows the reader loaded below. Mirrors what EditPdfToMemory()
+	// already does for the in-memory variant.
+	pPdf->EditClose();
+
+	// The file written above is the source plus an incremental update, so a
+	// protected source leaves it protected with the source's own password. It is
+	// rewritten when the caller said what the copy carries: a new password, or -
+	// with an empty one - no protection at all, which is how the password comes
+	// off a pdf. A caller that said nothing gets the copy as the editor wrote it.
+	if (bResult && (bRewritePassword || !sSavePassword.empty()))
+	{
+		bResult = EncryptPdf(m_pPdfFonts, sDstFile, sMediaDir, m_sPdfPassword, sSavePassword);
+
+		// neither an unprotected file where a password was asked for, nor a
+		// protected one where the caller asked for the protection to come off
+		if (!bResult && NSFile::CFileBinary::Exists(sDstFile))
+			NSFile::CFileBinary::Remove(sDstFile);
+	}
+
+	const wchar_t* wsPassword = m_sPdfPassword.empty() ? NULL : m_sPdfPassword.c_str();
+	pPdf->LoadFromFile(m_sPdfFile, L"", wsPassword, wsPassword);
+
+	if (NSFile::CFileBinary::Exists(sCompiled))
+		NSFile::CFileBinary::Remove(sCompiled);
+
+	return bResult;
+}
+#endif
 
 bool CV8RealTimeWorker::NewSimpleJSInstance()
 {
@@ -1209,6 +1419,9 @@ namespace NSDoctRenderer
 	CDocBuilderValue CDocBuilderContext::GetGlobal()
 	{
 		CDocBuilderValue ret;
+		if (!m_internal->m_context.is_init())
+			return ret;
+
 		ret.m_internal->m_context = m_internal->m_context;
 		JSSmart<CJSObject> obj = m_internal->m_context->GetGlobal();
 		ret.m_internal->m_value = obj->toValue();
@@ -1218,6 +1431,12 @@ namespace NSDoctRenderer
 	CDocBuilderContextScope CDocBuilderContext::CreateScope()
 	{
 		CDocBuilderContextScope ret;
+		// the context is empty when the document failed to open - an empty scope
+		// lets the caller see the failure instead of entering a context that is
+		// not there
+		if (!m_internal->m_context.is_init() || NULL == m_internal->m_context_data)
+			return ret;
+
 		ret.m_internal->m_scope_wrap = new CDocBuilderContextScopeWrap();
 		ret.m_internal->m_scope_wrap->m_scope = new CJSContextScope(m_internal->m_context);
 		ret.m_internal->m_context_data = m_internal->m_context_data;
@@ -1228,6 +1447,9 @@ namespace NSDoctRenderer
 
 	bool CDocBuilderContext::IsError()
 	{
+		if (!m_internal->m_context.is_init())
+			return true;
+
 		JSSmart<CJSTryCatch> oTry = m_internal->m_context->GetExceptions();
 		return oTry->Check();
 	}
@@ -1596,6 +1818,10 @@ namespace NSDoctRenderer
 		else if (sParam == "--options")
 		{
 			NSProcessEnv::Load(std::wstring(value));
+		}
+		else if (sParam == "--sdkjs-dir")
+		{
+			m_pInternal->SetSdkPathExternal(std::wstring(value));
 		}
 	}
 	void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)

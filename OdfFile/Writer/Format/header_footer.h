@@ -64,8 +64,7 @@ public:
     odf_types::common_padding_attlist				common_padding_attlist_;
     odf_types::common_background_color_attlist		common_background_color_attlist_;
     odf_types::common_shadow_attlist				common_shadow_attlist_;
-    _CP_OPT(odf_types::Bool)						style_dynamic_spacing_;
-    
+    _CP_OPT(odf_types::Bool)						style_dynamic_spacing_;    
 };
 
 // style:header-footer-properties
@@ -85,8 +84,8 @@ public:
     }
 	virtual void serialize(std::wostream & strm);
 
-    style_header_footer_properties_attlist	style_header_footer_properties_attlist_;
-    office_element_ptr						style_background_image_;
+    style_header_footer_properties_attlist style_header_footer_properties_attlist_;
+    office_element_ptr style_background_image_;
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(style_header_footer_properties)

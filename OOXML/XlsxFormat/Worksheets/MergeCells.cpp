@@ -61,9 +61,60 @@ namespace OOX
 		}
 		void CMergeCell::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(_T("<mergeCell"));
-			WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef.get());
-			writer.WriteString(_T("/>"));
+		    writer.WriteString(_T("<mergeCell"));
+		    
+		    // 1. Extract the current reference string. 
+		    // If it's not initialized, fallback to an empty string.
+		    std::wstring sFinalRef = m_oRef.IsInit() ? m_oRef.get() : L"";
+		
+		    // 2. Process only if there is a valid reference string.
+		    if (!sFinalRef.empty())
+		    {
+		        // Look for the colon ':' that acts as the delimiter in a cell range.
+		        size_t nColon = sFinalRef.find(L':');
+		        if (nColon != std::wstring::npos)
+		        {
+		            // Split the string into left and right boundaries.
+		            // e.g., in "A:C", sLeft is "A" and sRight is "C".
+		            // e.g., in "1:2", sLeft is "1" and sRight is "2".
+		            std::wstring sLeft = sFinalRef.substr(0, nColon);
+		            std::wstring sRight = sFinalRef.substr(nColon + 1);
+		
+		            bool bIsAlpha = true, bIsDigit = true;
+		            
+		            // 3. Validation: Check if the range consists EXCLUSIVELY of letters.
+		            // This indicates a full-column merge (shorthand notation).
+		            for (wchar_t c : sLeft)  if (!iswalpha(c)) bIsAlpha = false;
+		            for (wchar_t c : sRight) if (!iswalpha(c)) bIsAlpha = false;
+		            
+		            // 4. Validation: Check if the range consists EXCLUSIVELY of numbers.
+		            // This indicates a full-row merge (shorthand notation).
+		            for (wchar_t c : sLeft)  if (!iswdigit(c)) bIsDigit = false;
+		            for (wchar_t c : sRight) if (!iswdigit(c)) bIsDigit = false;
+		
+		            // 5. Dynamic Strict Formatting Application:
+		            // Stricter parsers (like Google Sheets/Drive) do not support shorthand notations 
+		            // inside the <mergeCell> tag and require explicit grid boundaries.
+		            if (bIsAlpha && !sLeft.empty() && !sRight.empty())
+		            {
+		                // Convert full-column range to strict boundaries.
+		                // It appends row 1 to the left side and the maximum Excel row (1048576) to the right.
+		                // Result example: "A:C" becomes "A1:C1048576".
+		                sFinalRef = sLeft + L"1:" + sRight + L"1048576";
+		            }
+		            else if (bIsDigit && !sLeft.empty() && !sRight.empty())
+		            {
+		                // Convert full-row range to strict boundaries.
+		                // It prepends column A to the left side and the maximum Excel column (XFD) to the right.
+		                // Result example: "1:2" becomes "A1:XFD2".
+		                sFinalRef = L"A" + sLeft + L":XFD" + sRight;
+		            }
+		        }
+		    }
+		
+		    // 6. Write the final strict reference string to the XML output.
+		    WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, sFinalRef);
+		    writer.WriteString(_T("/>"));
 		}
 		void CMergeCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{

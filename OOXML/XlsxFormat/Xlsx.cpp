@@ -43,6 +43,10 @@
 #include "Styles/Styles.h"
 #include "Worksheets/Worksheet.h"
 #include "CalcChain/CalcChain.h"
+#include "Drawing/WpsCellImages.h"
+#include "Drawing/FromTo.h"
+#include "../PPTXFormat/Logic/Pic.h"
+#include "../DocxFormat/Media/Image.h"
 #include "ExternalLinks/ExternalLinks.h"
 #include "ExternalLinks/ExternalLinkPath.h"
 #include "Pivot/PivotTable.h"
@@ -69,6 +73,10 @@
 #include "../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCACHE.h"
 
 #include <iomanip>
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <memory>
 
 OOX::Spreadsheet::CXlsx::CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 {
@@ -129,8 +137,27 @@ bool OOX::Spreadsheet::CXlsx::ReadNative(const CPath& oFilePath)
 	m_sDocumentPath = oFilePath.GetPath();
 
 	OOX::CRels oRels(oFilePath / FILE_SEPARATOR_STR);
+	// Desktop's no-base64 path normally streams cells straight to the binary
+	// writer. These workbooks need the in-memory path so photos can replace the
+	// formulas before serialization; ordinary workbooks retain streaming.
+	NSBinPptxRW::CXlsbBinaryWriter* streamingWriter = m_pXlsbWriter;
+	if (streamingWriter)
+	{
+		for (auto relation : oRels.m_arRelations)
+		{
+			if (!relation || relation->IsExternal() || !(relation->Type() == OOX::Spreadsheet::FileTypes::Workbook))
+				continue;
+			OOX::CRels workbookRels(oFilePath / relation->Filename());
+			for (auto workbookRel : workbookRels.m_arRelations)
+				if (workbookRel && !workbookRel->IsExternal() && workbookRel->Type() == WpsCellImages::RelationshipType)
+					m_pXlsbWriter = NULL;
+		}
+	}
 	IFileContainer::Read(oRels, oFilePath, oFilePath);
 
+	if (m_pWorkbook)
+		ImportWpsCellImages(oFilePath);
+	m_pXlsbWriter = streamingWriter;
 	if (!m_pWorkbook) return false;
 
 	CXlsb* xlsb = dynamic_cast<CXlsb*>(this);
@@ -141,6 +168,180 @@ bool OOX::Spreadsheet::CXlsx::ReadNative(const CPath& oFilePath)
 	}
 
 	return true;
+}
+
+void OOX::Spreadsheet::CXlsx::ImportWpsCellImages(const CPath& oRootPath)
+{
+	if (!m_pWorkbook->m_pCurRels.IsInit() || m_pXlsbWriter)
+		return;
+	std::wstring packageRoot = oRootPath.GetPath();
+	if (!packageRoot.empty() && packageRoot.back() != FILE_SEPARATOR_CHAR)
+		packageRoot += FILE_SEPARATOR_STR;
+
+	// Resolve the part through the workbook relationships, not its usual name.
+	for (auto relation : m_pWorkbook->m_pCurRels->m_arRelations)
+	{
+		if (!relation || relation->IsExternal() ||
+			relation->Type() != WpsCellImages::RelationshipType)
+			continue;
+		CPath target = relation->Filename();
+		const CPath part = target.GetIsRoot() ? oRootPath / target :
+			m_pWorkbook->GetReadPath().GetDirectory() / target;
+		if (part.GetPath().compare(0, packageRoot.size(), packageRoot) != 0)
+			continue;
+		XmlUtils::CXmlNode root;
+		if (!root.FromXmlFile(part.GetPath()) || XmlUtils::GetNameNoNS(root.GetName()) != L"cellImages")
+			continue;
+
+		// Only embedded package images are imported; never fetch external links.
+		OOX::CRels imageRels(part);
+		std::map<std::wstring, XmlUtils::CXmlNode> pictures;
+		for (auto imageNode : root.ReadNodesNoNS(L"cellImage"))
+		{
+			auto pic = imageNode.ReadNodeNoNS(L"pic");
+			auto nv = pic.ReadNodeNoNS(L"nvPicPr").ReadNodeNoNS(L"cNvPr");
+			const std::wstring id = nv.GetAttribute(L"name");
+			if (pic.IsValid() && !id.empty())
+				pictures.emplace(id, pic);
+		}
+		if (pictures.empty())
+			continue;
+
+		for (auto sheet : m_arWorksheets)
+		{
+			if (!sheet || !sheet->m_oSheetData.IsInit())
+				continue;
+			smart_ptr<OOX::File> drawingFile;
+			if (sheet->m_oDrawing.IsInit() && sheet->m_oDrawing->m_oId.IsInit())
+				drawingFile = sheet->Find(OOX::RId(sheet->m_oDrawing->m_oId->GetValue()));
+			auto drawing = drawingFile.smart_dynamic_cast<OOX::Spreadsheet::CDrawing>();
+			// Do not replace an existing drawing relationship we could not read.
+			if (sheet->m_oDrawing.IsInit() && !drawing.IsInit())
+				continue;
+			int nextId = 1;
+			if (drawing.IsInit())
+			{
+				// Include all kinds of shapes, not just pictures, in the ID scan.
+				XmlUtils::CXmlNode existing;
+				if (existing.FromXmlFile(drawing->GetReadPath().GetPath()))
+				{
+					std::vector<XmlUtils::CXmlNode> pending(1, existing);
+					while (!pending.empty())
+					{
+						auto node = pending.back(); pending.pop_back();
+						if (XmlUtils::GetNameNoNS(node.GetName()) == L"cNvPr")
+						{
+							const int existingId = node.GetAttributeInt(L"id");
+							nextId = std::max(nextId, existingId < std::numeric_limits<int>::max() ? existingId + 1 : existingId);
+						}
+						std::vector<XmlUtils::CXmlNode> children;
+						node.GetChilds(children);
+						pending.insert(pending.end(), children.begin(), children.end());
+					}
+				}
+				for (auto anchor : drawing->m_arrItems)
+					if (anchor && anchor->m_oElement.IsInit() && anchor->m_oElement->is<PPTX::Logic::Pic>())
+					{
+						const int existingId = anchor->m_oElement->as<PPTX::Logic::Pic>().nvPicPr.cNvPr.id;
+						nextId = std::max(nextId, existingId < std::numeric_limits<int>::max() ? existingId + 1 : existingId);
+					}
+			}
+			for (auto row : sheet->m_oSheetData->m_arrItems)
+			{
+				if (!row) continue;
+				for (auto cell : row->m_arrItems)
+				{
+					std::wstring id;
+					if (nextId == std::numeric_limits<int>::max() || !cell || !cell->m_oFormula.IsInit() ||
+						!WpsCellImages::GetImageId(cell->m_oFormula->m_sText, id))
+						continue;
+					auto found = pictures.find(id);
+					if (found == pictures.end()) continue;
+					std::unique_ptr<PPTX::Logic::Pic> pic(new PPTX::Logic::Pic(found->second));
+					if (!pic->blipFill.blip.IsInit() || !pic->blipFill.blip->embed.IsInit())
+						continue;
+					OOX::Rels::CRelationShip* imageRel = NULL;
+					imageRels.GetRel(*pic->blipFill.blip->embed, &imageRel);
+					if (!imageRel || imageRel->IsExternal() || !(imageRel->Type() == OOX::FileTypes::Image))
+						continue;
+					CPath imageTarget = imageRel->Filename();
+					const CPath imagePath = imageTarget.GetIsRoot() ? oRootPath / imageTarget :
+						part.GetDirectory() / imageTarget;
+					if (imagePath.GetPath().compare(0, packageRoot.size(), packageRoot) != 0 ||
+						!NSFile::CFileBinary::Exists(imagePath.GetPath())) continue;
+					int r = 0, c = 0;
+					if (cell->m_oRef.IsInit())
+					{
+						if (!CCell::parseRefA(cell->m_oRef->c_str(), r, c)) continue;
+						--r; --c;
+					}
+					else if (!cell->getRowCol(r, c)) continue;
+					if (r < 0 || r >= 1048576 || c < 0 || c >= 16384) continue;
+
+					double columnWidth = 8.43, rowHeight = 15.;
+					if (sheet->m_oSheetFormatPr.IsInit())
+					{
+						if (sheet->m_oSheetFormatPr->m_oDefaultColWidth.IsInit())
+							columnWidth = *sheet->m_oSheetFormatPr->m_oDefaultColWidth;
+						if (sheet->m_oSheetFormatPr->m_oDefaultRowHeight.IsInit())
+							rowHeight = *sheet->m_oSheetFormatPr->m_oDefaultRowHeight;
+					}
+					if (row->m_oHt.IsInit()) rowHeight = row->m_oHt->GetValue();
+					if (sheet->m_oCols.IsInit())
+						for (auto col : sheet->m_oCols->m_arrItems)
+							if (col && col->m_oMin.IsInit() && col->m_oMax.IsInit() && col->m_oWidth.IsInit() &&
+								col->m_oMin->GetValue() <= c+1 && col->m_oMax->GetValue() >= c+1)
+								columnWidth = col->m_oWidth->GetValue();
+					// Fit the picture using its stored aspect ratio. Positions in
+					// the WPS part describe its source size, not the target cell.
+					double width = std::floor(columnWidth * 7. + 5.) * 9525.;
+					double height = rowHeight * 12700.;
+					if (!std::isfinite(width) || !std::isfinite(height) || width <= 0 || height <= 0 ||
+						width > std::numeric_limits<int>::max() || height > std::numeric_limits<int>::max())
+						continue;
+					double pictureWidth = width, pictureHeight = height;
+					if (pic->spPr.xfrm.IsInit() && pic->spPr.xfrm->extX.IsInit() && pic->spPr.xfrm->extY.IsInit() &&
+						*pic->spPr.xfrm->extX > 0 && *pic->spPr.xfrm->extY > 0)
+					{
+						const double scale = std::min(width / *pic->spPr.xfrm->extX, height / *pic->spPr.xfrm->extY);
+						pictureWidth = *pic->spPr.xfrm->extX * scale;
+						pictureHeight = *pic->spPr.xfrm->extY * scale;
+					}
+					if (!drawing.IsInit())
+					{
+						drawingFile = smart_ptr<OOX::File>(new CDrawing(this));
+						drawing = drawingFile.smart_dynamic_cast<CDrawing>();
+						sheet->m_oDrawing.Init();
+						sheet->m_oDrawing->m_oId.Init();
+						sheet->m_oDrawing->m_oId->SetValue(sheet->Add(drawingFile).get());
+					}
+					smart_ptr<OOX::File> image(new OOX::Image(this, imagePath));
+					pic->blipFill.blip->embed = drawing->Add(image);
+					pic->nvPicPr.cNvPr.id = nextId++;
+					if (!pic->spPr.xfrm.IsInit()) pic->spPr.xfrm.Init();
+					pic->spPr.xfrm->offX = 0; pic->spPr.xfrm->offY = 0;
+					pic->spPr.xfrm->extX = static_cast<int>(pictureWidth);
+					pic->spPr.xfrm->extY = static_cast<int>(pictureHeight);
+					std::unique_ptr<CCellAnchor> anchor(new CCellAnchor(SimpleTypes::Spreadsheet::cellanchorOneCell));
+					anchor->m_oFrom.Init();
+					anchor->m_oFrom->m_oCol.Init(); anchor->m_oFrom->m_oCol->SetValue(c);
+					anchor->m_oFrom->m_oRow.Init(); anchor->m_oFrom->m_oRow->SetValue(r);
+					anchor->m_oFrom->m_oColOff.Init(); anchor->m_oFrom->m_oColOff->SetValue((width-pictureWidth)/2.);
+					anchor->m_oFrom->m_oRowOff.Init(); anchor->m_oFrom->m_oRowOff->SetValue((height-pictureHeight)/2.);
+					anchor->m_oExt.Init();
+					anchor->m_oExt->m_oCx.Init(); anchor->m_oExt->m_oCx->SetValue(pictureWidth);
+					anchor->m_oExt->m_oCy.Init(); anchor->m_oExt->m_oCy->SetValue(pictureHeight);
+					anchor->m_oElement.Init();
+					anchor->m_oElement->InitElem(pic.release());
+					drawing->m_arrItems.push_back(anchor.release());
+					// Clear only a successfully materialized photo. Unresolved IDs
+					// keep their formula and cached value for diagnostics/recovery.
+					cell->m_oFormula.reset(); cell->m_oValue.reset(); cell->m_oType.reset();
+					cell->m_oCacheValue.reset();
+				}
+			}
+		}
+	}
 }
 bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 {

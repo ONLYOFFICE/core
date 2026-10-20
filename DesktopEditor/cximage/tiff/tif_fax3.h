@@ -478,6 +478,12 @@ done1d:									\
 	    break;							\
 	case S_VL:							\
 	    CHECK_b1;							\
+	    if (b1 <= (int) (a0 + TabEnt->Param)) {			\
+		if (b1 < (int) (a0 + TabEnt->Param) || pa != thisrun) {	\
+		    unexpected("VL", a0);				\
+		    goto eol2d;						\
+		}							\
+	    }								\
 	    SETVALUE(b1 - a0 - TabEnt->Param);				\
 	    b1 -= *--pb;						\
 	    break;							\

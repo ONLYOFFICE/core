@@ -629,7 +629,14 @@ extern int g_nCurFormatVersion;
 		linebreakClearAll = 32,
 		linebreakClearLeft = 33,
 		linebreakClearRight = 34,
+		ptab = 35,
 		pptxDrawingAlternative = 0x99
+	};}
+	namespace c_oSerPTabType{enum c_oSerPTabType
+	{
+		Alignment = 0,
+		RelativeTo = 1,
+		Leader = 2
 	};}
 	namespace c_oSerVbaProjectTypes{enum c_oSerVbaProjectType
 	{

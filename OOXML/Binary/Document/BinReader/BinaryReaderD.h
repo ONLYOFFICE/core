@@ -322,6 +322,7 @@ public:
 	int ReadMoveFromRangeEnd(BYTE type, long length, void* poResult);
 	int ReadMoveToRangeEnd(BYTE type, long length, void* poResult);
 	int ReadFldChar(BYTE type, long length, void* poResult);
+	int ReadPTab(BYTE type, long length, void* poResult);
 	int ReadFldSimple(BYTE type, long length, void* poResult);
 	int ReadFFData(BYTE type, long length, void* poResult);
 	int ReadFFCheckBox(BYTE type, long length, void* poResult);

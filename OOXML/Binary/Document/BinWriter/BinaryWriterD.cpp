@@ -4396,6 +4396,40 @@ void BinaryDocumentTableWriter::WriteFldChar(OOX::Logic::CFldChar* pFldChar)
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
+void BinaryDocumentTableWriter::WritePTab(OOX::Logic::CPTab* pPTab)
+{
+	int nCurPos = 0;
+	if (pPTab->m_oAlignment.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPTabType::Alignment);
+		switch (pPTab->m_oAlignment->GetValue())
+		{
+			case SimpleTypes::ptabalignmentCenter: m_oBcw.m_oStream.WriteBYTE(SimpleTypes::tabjcCenter); break;
+			case SimpleTypes::ptabalignmentRight:  m_oBcw.m_oStream.WriteBYTE(SimpleTypes::tabjcRight); break;
+			default:                               m_oBcw.m_oStream.WriteBYTE(SimpleTypes::tabjcLeft); break;
+		}
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPTab->m_oRelativeTo.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPTabType::RelativeTo);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)pPTab->m_oRelativeTo->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPTab->m_oLeader.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPTabType::Leader);
+		switch (pPTab->m_oLeader->GetValue())
+		{
+			case SimpleTypes::ptableaderDot:        m_oBcw.m_oStream.WriteBYTE(SimpleTypes::tabtlcDot); break;
+			case SimpleTypes::ptableaderHyphen:     m_oBcw.m_oStream.WriteBYTE(SimpleTypes::tabtlcHyphen); break;
+			case SimpleTypes::ptableaderMiddleDot:  m_oBcw.m_oStream.WriteBYTE(SimpleTypes::tabtlcMiddleDot); break;
+			case SimpleTypes::ptableaderUnderscore: m_oBcw.m_oStream.WriteBYTE(SimpleTypes::tabtlcUnderscore); break;
+			default:                                m_oBcw.m_oStream.WriteBYTE(SimpleTypes::tabtlcNone); break;
+		}
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
 void BinaryDocumentTableWriter::WriteFldSimple(OOX::Logic::CFldSimple* pFldSimple)
 {
 	int nCurPos = 0;
@@ -6726,6 +6760,12 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 			}
 			break;
 		case OOX::et_w_ptab:
+			{
+				OOX::Logic::CPTab* pPTab = static_cast<OOX::Logic::CPTab*>(item);
+				int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::ptab);
+				WritePTab(pPTab);
+				m_oBcw.WriteItemEnd(nCurPos);
+			}
 			break;
 		case OOX::et_w_rPr:
 			break;

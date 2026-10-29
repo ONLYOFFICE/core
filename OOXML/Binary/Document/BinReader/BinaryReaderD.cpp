@@ -5546,6 +5546,43 @@ int Binary_DocumentTableReader::ReadMoveToRangeEnd(BYTE type, long length, void*
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int Binary_DocumentTableReader::ReadPTab(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Logic::CPTab* pPTab = static_cast<OOX::Logic::CPTab*>(poResult);
+	
+	if (c_oSerPTabType::Alignment == type)
+	{
+		pPTab->m_oAlignment.Init();
+		switch (m_oBufferedStream.GetUChar())
+		{
+			case SimpleTypes::tabjcCenter: pPTab->m_oAlignment->SetValue(SimpleTypes::ptabalignmentCenter); break;
+			case SimpleTypes::tabjcRight:  pPTab->m_oAlignment->SetValue(SimpleTypes::ptabalignmentRight); break;
+			default:                       pPTab->m_oAlignment->SetValue(SimpleTypes::ptabalignmentLeft); break;
+		}
+	}
+	else if (c_oSerPTabType::RelativeTo == type)
+	{
+		pPTab->m_oRelativeTo.Init();
+		pPTab->m_oRelativeTo->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerPTabType::Leader == type)
+	{
+		pPTab->m_oLeader.Init();
+		switch (m_oBufferedStream.GetUChar())
+		{
+			case SimpleTypes::tabtlcDot:        pPTab->m_oLeader->SetValue(SimpleTypes::ptableaderDot); break;
+			case SimpleTypes::tabtlcHyphen:     pPTab->m_oLeader->SetValue(SimpleTypes::ptableaderHyphen); break;
+			case SimpleTypes::tabtlcMiddleDot:  pPTab->m_oLeader->SetValue(SimpleTypes::ptableaderMiddleDot); break;
+			case SimpleTypes::tabtlcHeavy:
+			case SimpleTypes::tabtlcUnderscore: pPTab->m_oLeader->SetValue(SimpleTypes::ptableaderUnderscore); break;
+			default:                            pPTab->m_oLeader->SetValue(SimpleTypes::ptableaderNone); break;
+		}
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -8364,6 +8401,12 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	else if (c_oSerRunType::tab == type)
 	{
         GetCurrentStringWriter().WriteString(std::wstring(_T("<w:tab/>")));
+	}
+	else if (c_oSerRunType::ptab == type)
+	{
+		OOX::Logic::CPTab oPTab;
+		READ1_DEF(length, res, this->ReadPTab, &oPTab);
+		GetCurrentStringWriter().WriteString(oPTab.toXML());
 	}
 	else if (c_oSerRunType::cr == type)
 	{

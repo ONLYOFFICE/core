@@ -348,6 +348,7 @@ namespace BinDocxRW
 		template<typename T> void WriteMoveRangeEnd(const T& elem);
 		void WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber>& oId);
 		void WriteFldChar(OOX::Logic::CFldChar* pFldChar);
+		void WritePTab(OOX::Logic::CPTab* pPTab);
 		void WritePermission(unsigned char type, OOX::Logic::CPermStart* pPerm);
 		void WritePermission(unsigned char type, OOX::Logic::CPermEnd* pPerm);
 		void WriteFldSimple(OOX::Logic::CFldSimple* pFldSimple);

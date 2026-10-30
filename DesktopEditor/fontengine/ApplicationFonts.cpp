@@ -33,6 +33,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "ApplicationFonts.h"
+#include "CharMapFilter.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
 #include "../common/SystemUtils.h"
@@ -1976,7 +1977,9 @@ namespace NSFonts
 
 		for (int nCharMap = 0; nCharMap < pFace->num_charmaps; nCharMap++)
 		{
-			FT_Set_Charmap(pFace, pFace->charmaps[nCharMap]);
+			FT_CharMap pCharMap = pFace->charmaps[nCharMap];
+			if (IsLegacyMacScriptCharMap(pCharMap) || FT_Set_Charmap(pFace, pCharMap))
+				continue;
 
 			FT_UInt indexG;
 			FT_ULong character = FT_Get_First_Char(pFace, &indexG);

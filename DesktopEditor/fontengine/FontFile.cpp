@@ -33,6 +33,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 #include "FontManager.h"
+#include "CharMapFilter.h"
 #include "internal/ftobjs.h"
 #include "../common/Types.h"
 #include "../common/File.h"
@@ -745,6 +746,9 @@ int CFontFile::SetCMapForCharCode(long lUnicode, int *pnCMapIndex)
 	for ( int nIndex = 0; nIndex < m_pFace->num_charmaps; ++nIndex )
 	{
 		FT_CharMap pCharMap = m_pFace->charmaps[nIndex];
+
+		if (IsLegacyMacScriptCharMap(pCharMap))
+			continue;
 
 		if ( FT_Set_Charmap( m_pFace, pCharMap ) )
 			continue;

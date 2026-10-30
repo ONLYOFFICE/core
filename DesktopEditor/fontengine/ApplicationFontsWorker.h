@@ -39,7 +39,7 @@
 #include <vector>
 #include "../graphics/pro/Fonts.h"
 
-#define ONLYOFFICE_FONTS_VERSION     15
+#define ONLYOFFICE_FONTS_VERSION     16
 #define ONLYOFFICE_ALL_FONTS_VERSION 2
 
 class CApplicationFontsWorkerBreaker

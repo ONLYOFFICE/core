@@ -35,6 +35,7 @@
 
 #include "./TextShaper.h"
 #include "./TextShaper_p.h"
+#include "CharMapFilter.h"
 
 namespace NSShaper
 {
@@ -263,6 +264,9 @@ namespace NSShaper
 		for ( int nIndex = 0; nIndex < face->num_charmaps; ++nIndex )
 		{
 			FT_CharMap pCharMap = face->charmaps[nIndex];
+
+			if (IsLegacyMacScriptCharMap(pCharMap))
+				continue;
 
 			if ( FT_Set_Charmap( face, pCharMap ) )
 				continue;

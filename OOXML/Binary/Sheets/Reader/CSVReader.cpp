@@ -384,7 +384,9 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			{
 				nStartCell = 0;
 				sFileDataW.erase(0, nIndex + nDelimiterSize);
-				nSize -= (nIndex + nDelimiterSize); nIndex = 0;
+				nSize -= (nIndex + nDelimiterSize);
+				// The loop increment must resume at the first remaining character.
+				nIndex = static_cast<size_t>(-1);
 				pTemp = sFileDataW.c_str();
 			}
 			else
@@ -419,7 +421,9 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			{
 				nStartCell = 0;
 				sFileDataW.erase(0, nIndex + 1);
-				nSize -= (nIndex + 1); nIndex = 0;
+				nSize -= (nIndex + 1);
+				// The loop increment must resume at the first remaining character.
+				nIndex = static_cast<size_t>(-1);
 				pTemp = sFileDataW.c_str();
 			}
 			else

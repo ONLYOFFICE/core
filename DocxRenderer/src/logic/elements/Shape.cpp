@@ -920,15 +920,20 @@ namespace NSDocxRenderer
 				long count = m_oPen.Count;
 				m_oPen.GetDashPattern(dash_pattern.data(), count);
 
+				// An odd-length dash array repeats, e.g. [3 2 1] == [3 2 1 3 2 1],
+				// so emit it twice to get whole dash/space pairs.
+				const size_t n = dash_pattern.size();
+				const size_t total = (n % 2) ? 2 * n : n;
+
 				oWriter.WriteString(L"<a:custDash>");
-				for (size_t i = 0; i < count; i+= 2)
+				for (size_t i = 0; i < total; i+= 2)
 				{
 					double to_percentage = 100.0 * 1000.0 / m_oPen.Size;
 					oWriter.WriteString(L"<a:ds d=\"");
-					oWriter.AddUInt(ClampUIntSign(dash_pattern[i] * to_percentage));
+					oWriter.AddUInt(ClampUIntSign(dash_pattern[i % n] * to_percentage));
 					oWriter.WriteString(L"\" ");
 					oWriter.WriteString(L"sp=\"");
-					oWriter.AddUInt(ClampUIntSign(dash_pattern[i + 1] * to_percentage));
+					oWriter.AddUInt(ClampUIntSign(dash_pattern[(i + 1) % n] * to_percentage));
 					oWriter.WriteString(L"\" />");
 				}
 				oWriter.WriteString(L"</a:custDash>");

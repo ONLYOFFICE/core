@@ -55,6 +55,9 @@
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 
+#include <algorithm>
+#include <vector>
+
 #ifndef BUILDING_WASM_MODULE
 #define FONTS_USE_AFM_SETTINGS
 #else
@@ -474,6 +477,56 @@ USHORT StretchToWidthClass(double fStretch)
 	if (fStretch <= 1.25)  return 7; // Expanded
 	if (fStretch <= 1.50)  return 8; // Extra-expanded
 	return 9;                        // Ultra-expanded
+}
+// Scale that makes the substitute face's glyph advances match the PDF /Widths
+// array. Positions already come from those widths. A wider face drawn at
+// scale 1 (Arial standing in for Arial Narrow) collides with the next glyph.
+// Returns 0 when the face cannot be measured, so the name-based stretch stays.
+double MeasureSubstituteStretch(NSFonts::IFontManager* pFontManager, const std::wstring& wsFileName, Gfx8BitFont* pFont, int* pCodeToGID, int nLen)
+{
+	if (!pFontManager || !pFont || !pCodeToGID || nLen <= 0 || wsFileName.empty())
+		return 0;
+
+	if (!pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72))
+		return 0;
+
+	NSFonts::IFontFile* pFile = pFontManager->GetFile();
+	if (!pFile)
+		return 0;
+
+	std::vector<double> aRatio;
+	int nLimit = nLen < 256 ? nLen : 256;
+	for (int nCode = 0; nCode < nLimit; ++nCode)
+	{
+		int nGid = pCodeToGID[nCode];
+		if (nGid <= 0)
+			continue;
+
+		double dPdf = pFont->getWidth((Guchar)nCode);
+		if (dPdf < 0.02)
+			continue;
+
+		double dFont = pFile->GetCharWidth(nGid);
+		if (dFont < 0.02)
+			continue;
+
+		double dRatio = dPdf / dFont;
+		if (dRatio < 0.2 || dRatio > 3.0)
+			continue;
+
+		aRatio.push_back(dRatio);
+	}
+
+	if (aRatio.size() < 8)
+		return 0;
+
+	std::sort(aRatio.begin(), aRatio.end());
+	double dMedian = aRatio[aRatio.size() / 2];
+	// A face with the same metrics (Arial for Arial, Times for Times) is left alone.
+	if (std::abs(dMedian - 1.0) < 0.015)
+		return 1.0;
+
+	return dMedian;
 }
 Ref FindMatchInAnnotFonts(PdfReader::CPdfFontList *pFontList, const std::vector<Ref>& annotFonts, const std::wstring& wsRCName, bool bBold, bool bItalic)
 {
@@ -2208,6 +2261,12 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 		pEntry->unLenGID       = (unsigned int)nLen;
 		pEntry->unLenUnicode   = (unsigned int)nToUnicodeLen;
 		pEntry->bAvailable     = true;
+		if (bFontSubstitution && !pFont->isCIDFont() && pCodeToGID && nLen > 0)
+		{
+			double dMeasured = MeasureSubstituteStretch(pFontManager, wsFileName, (Gfx8BitFont*)pFont, pCodeToGID, nLen);
+			if (dMeasured > 0)
+				dStretch = dMeasured;
+		}
 		pEntry->dStretch       = dStretch;
 		pEntry->bFontSubstitution = bFontSubstitution;
 		pEntry->bIsIdentity = pFont->isCIDFont() == gTrue ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;

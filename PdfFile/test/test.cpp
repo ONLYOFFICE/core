@@ -44,6 +44,8 @@
 #include "../PdfFile.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 class CPdfFileTest : public testing::Test
 {
@@ -956,4 +958,118 @@ TEST_F(CPdfFileTest, ImgDiff)
 			oFrameAll.SaveFile(sPageDiff, 4);
 		}
 	}
+}
+
+// Non-embedded Arial Narrow is substituted with a wider face. Glyph positions
+// follow /Widths; the substitute outline has to be scaled to those widths or
+// the letters collide. Arial itself already matches, so it must stay at scale 1.
+TEST_F(CPdfFileTest, NonEmbeddedWidthStretch)
+{
+	auto sWidths = [](int nCount, int nWidth)
+	{
+		std::string s;
+		for (int i = 0; i < nCount; ++i)
+		{
+			if (i)
+				s += " ";
+			s += std::to_string(nWidth);
+		}
+		return s;
+	};
+	auto sFont = [](int nObj, int nDesc, const char* sName, const std::string& sWidths)
+	{
+		return std::to_string(nObj) + " 0 obj\n<< /Type /Font /Subtype /TrueType /BaseFont /" + sName +
+			" /Encoding /WinAnsiEncoding /FirstChar 32 /LastChar 72 /Widths [" + sWidths +
+			"] /FontDescriptor " + std::to_string(nDesc) + " 0 R >>\nendobj\n";
+	};
+	auto sDesc = [](int nObj, const char* sName)
+	{
+		return std::to_string(nObj) + " 0 obj\n<< /Type /FontDescriptor /FontName /" + sName +
+			" /Flags 32 /FontBBox [-665 -325 2000 1006] /ItalicAngle 0 /Ascent 905 /Descent -212 /CapHeight 716 /StemV 44 >>\nendobj\n";
+	};
+
+	const std::string sStream =
+		"BT\n"
+		"/F1 72 Tf\n"
+		"1 0 0 1 36 520 Tm\n"
+		"(HHHHHHHH) Tj\n"
+		"/F2 72 Tf\n"
+		"1 0 0 1 36 300 Tm\n"
+		"(HHHHHHHH) Tj\n"
+		"ET\n";
+
+	std::string sBody;
+	sBody += "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
+	sBody += "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n";
+	sBody += "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 7 0 R >> >> >>\nendobj\n";
+	sBody += "4 0 obj\n<< /Length " + std::to_string(sStream.size()) + " >>\nstream\n" + sStream + "endstream\nendobj\n";
+	sBody += sFont(5, 6, "ArialNarrow", sWidths(41, 547));
+	sBody += sDesc(6, "ArialNarrow");
+	sBody += sFont(7, 8, "Arial", sWidths(41, 722));
+	sBody += sDesc(8, "Arial");
+
+	std::string sPdf = "%PDF-1.4\n" + sBody;
+	std::vector<int> aOff;
+	for (int nObj = 1; nObj <= 8; ++nObj)
+	{
+		std::string sMark = std::to_string(nObj) + " 0 obj\n";
+		int nFound = (int)sPdf.find(sMark);
+		ASSERT_GE(nFound, 0);
+		aOff.push_back(nFound);
+	}
+	int nXref = (int)sPdf.size();
+	sPdf += "xref\n0 9\n0000000000 65535 f \n";
+	for (int nOff : aOff)
+	{
+		std::string sOff = std::to_string(nOff);
+		sPdf += std::string(10 - sOff.size(), '0') + sOff + " 00000 n \n";
+	}
+	sPdf += "trailer\n<< /Size 9 /Root 1 0 R >>\nstartxref\n" + std::to_string(nXref) + "\n%%EOF\n";
+
+	std::wstring wsPdf = NSFile::GetProcessDirectory() + L"/narrow-width.pdf";
+	std::wstring wsPng = NSFile::GetProcessDirectory() + L"/narrow-width.png";
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.CreateFileW(wsPdf));
+	ASSERT_TRUE(oFile.WriteFile((BYTE*)sPdf.data(), (DWORD)sPdf.size()));
+	oFile.CloseFile();
+
+	LoadFromFile(wsPdf);
+	ASSERT_EQ(1, pdfFile->GetPagesCount());
+	pdfFile->ConvertToRaster(0, wsPng, 4, 612, 792, true, pdfFile->GetFontManager());
+
+	CBgraFrame oFrame;
+	ASSERT_TRUE(oFrame.OpenFile(wsPng));
+	ASSERT_EQ(612, oFrame.get_Width());
+	ASSERT_EQ(792, oFrame.get_Height());
+
+	auto nRightInk = [&](int nTop, int nBottom) -> int
+	{
+		BYTE* pData = oFrame.get_Data();
+		int nW = oFrame.get_Width();
+		int nRight = -1;
+		for (int y = nTop; y < nBottom; ++y)
+		{
+			BYTE* pRow = pData + (size_t)y * nW * 4;
+			for (int x = 0; x < nW; ++x)
+			{
+				BYTE* p = pRow + x * 4;
+				if (p[0] < 200 || p[1] < 200 || p[2] < 200)
+					nRight = std::max(nRight, x);
+			}
+		}
+		return nRight;
+	};
+
+	// PDF y is up. Raster y is down. Baseline 520 -> 792-520 = 272, caps sit above it.
+	int nNarrowRight = nRightInk(200, 280);
+	int nArialRight = nRightInk(420, 500);
+	if (nNarrowRight < 0 || nArialRight < 0)
+		GTEST_SKIP() << "substitute fonts did not draw; font cache has no Arial-like face";
+
+	// 8 * 547/1000 * 72 = 314.9, plus the 36pt origin. The unscaled Arial H outline ends past that.
+	EXPECT_LT(nNarrowRight, 354);
+	EXPECT_GT(nNarrowRight, 36 + 315 - 20);
+	// Arial /Widths already match the face, so the run keeps the full 722-unit advance.
+	EXPECT_LT(nArialRight, 36 + 416 + 8);
+	EXPECT_GT(nArialRight, 36 + 416 - 24);
 }

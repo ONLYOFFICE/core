@@ -478,13 +478,70 @@ USHORT StretchToWidthClass(double fStretch)
 	if (fStretch <= 1.50)  return 8; // Extra-expanded
 	return 9;                        // Ultra-expanded
 }
-// Per-code scale that makes the substitute glyph's advance equal the PDF
-// /Widths entry. Positions already come from those widths. One scale for the
-// whole face is not enough: Arial Bold, Arial Narrow and Times each differ
-// from a stand-in face by a different ratio on each character, so a median
-// leaves some glyphs colliding and others sitting in a gap.
-// Returns NULL when the face cannot be measured. The caller then keeps the
-// name-based stretch. Codes that do not measure keep dFallback.
+// Lower case, with spaces, hyphens, commas and underscores removed, so
+// "ArialNarrow,Bold" and "Arial Narrow" share one key.
+std::wstring FontNameKey(const std::wstring& sName)
+{
+	std::wstring sKey;
+	sKey.reserve(sName.size());
+	for (size_t nIndex = 0; nIndex < sName.size(); ++nIndex)
+	{
+		wchar_t nChar = sName[nIndex];
+		if (nChar == L' ' || nChar == L'-' || nChar == L',' || nChar == L'_')
+			continue;
+		if (nChar >= L'A' && nChar <= L'Z')
+			nChar = nChar - L'A' + L'a';
+		sKey.push_back(nChar);
+	}
+	return sKey;
+}
+// Spaced family name the font list can match. An installed "Arial Narrow"
+// is then an exact match. Liberation Sans Narrow is the metrically compatible
+// substitute (same like-group), and it stays behind a real Arial Narrow face.
+const wchar_t* CondensedSansAlias(const std::wstring& sKey)
+{
+	if (sKey.find(L"narrow") == std::wstring::npos)
+		return NULL;
+	if (sKey.find(L"arial") != std::wstring::npos)
+		return L"Arial Narrow";
+	if (sKey.find(L"helvetica") != std::wstring::npos)
+		return L"Helvetica Narrow";
+	if (sKey.find(L"nimbus") != std::wstring::npos)
+		return L"Nimbus Sans Narrow";
+	if (sKey.find(L"liberationsans") != std::wstring::npos)
+		return L"Liberation Sans Narrow";
+	return NULL;
+}
+// True when /Widths is not a single advance. A FixedPitch flag on such a font
+// is not a monospace request.
+bool WidthsVary(GfxFont* pFont)
+{
+	if (!pFont || pFont->isCIDFont())
+		return false;
+
+	Gfx8BitFont* pSimple = (Gfx8BitFont*)pFont;
+	double dMin = 0.0;
+	double dMax = 0.0;
+	bool bAny = false;
+	for (int nCode = 0; nCode < 256; ++nCode)
+	{
+		double dWidth = pSimple->getWidth((Guchar)nCode);
+		if (dWidth < 0.02)
+			continue;
+		if (!bAny || dWidth < dMin)
+			dMin = dWidth;
+		if (!bAny || dWidth > dMax)
+			dMax = dWidth;
+		bAny = true;
+	}
+	return bAny && (dMax - dMin) > 0.05;
+}
+// Residual per-code scale, applied after the substitute face is chosen.
+// Positions already come from /Widths. A matching face (Arial Bold, Arial
+// Narrow, Times) needs no scale. A remaining advance error is corrected per
+// code; one scale for the whole face leaves some glyphs colliding and others
+// in a gap. Returns NULL when the face cannot be measured. The caller then
+// keeps the name-based stretch. Codes that do not measure keep dFallback.
 double* BuildWidthScale(NSFonts::IFontManager* pFontManager, const std::wstring& wsFileName, Gfx8BitFont* pFont, int* pCodeToGID, int nLen, double dFallback)
 {
 	if (!pFontManager || !pFont || !pCodeToGID || nLen <= 0 || wsFileName.empty())
@@ -1526,13 +1583,45 @@ NSFonts::CFontInfo* GetFontByParams(XRef* pXref, NSFonts::IFontManager* pFontMan
 			oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
 			oDictItem.free();
 		}
-		else
-			oFontSelect.wsName = new std::wstring(wsFontBaseName);
-		oFontDescriptor.free(); oDescendantFonts.free();
+	else
+		oFontSelect.wsName = new std::wstring(wsFontBaseName);
+	oFontDescriptor.free(); oDescendantFonts.free();
 	}
 	else
 		oFontSelect.wsName = new std::wstring(wsFontBaseName);
 	oFontObject.free();
+
+	// Flags bit 0 is FixedPitch. Generated files set it on proportional faces
+	// (Flags 33 on Arial, Arial Narrow and Times). The picker then prefers any
+	// monospace face over the named family. Honor the bit only when /Widths
+	// is actually a single advance.
+	if (oFontSelect.bFixedWidth && *oFontSelect.bFixedWidth && WidthsVary(pFont))
+		RELEASEOBJECT(oFontSelect.bFixedWidth);
+
+	// "ArialNarrow" shares the Arial prefix, so regular Arial beats a condensed
+	// face whose AvgWidth matches. Search the spaced narrow name and width
+	// class 3, and leave "narrow" in the name so an installed Arial Narrow
+	// still matches. The like-group then selects Liberation Sans Narrow when
+	// that face is the one on the machine. Style flags stay on the format;
+	// the outline is the bold or italic face, not a stretched regular glyph.
+	std::wstring sKey;
+	if (oFontSelect.wsName)
+		sKey += FontNameKey(*oFontSelect.wsName);
+	if (oFontSelect.wsAltName)
+		sKey += FontNameKey(*oFontSelect.wsAltName);
+	if (sKey.find(L"narrow") != std::wstring::npos)
+	{
+		if (!oFontSelect.usWidth)
+			oFontSelect.usWidth = new USHORT(3);
+		const wchar_t* sAlias = CondensedSansAlias(sKey);
+		if (sAlias)
+		{
+			RELEASEOBJECT(oFontSelect.wsName);
+			oFontSelect.wsName = new std::wstring(sAlias);
+			if (oFontSelect.wsAltName && FontNameKey(*oFontSelect.wsAltName).find(L"narrow") == std::wstring::npos)
+				RELEASEOBJECT(oFontSelect.wsAltName);
+		}
+	}
 
 	pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 	return pFontInfo;

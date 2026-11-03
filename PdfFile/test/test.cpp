@@ -960,9 +960,10 @@ TEST_F(CPdfFileTest, ImgDiff)
 	}
 }
 
-// Non-embedded Arial Narrow is substituted with a wider face. Glyph positions
-// follow /Widths; the substitute outline has to be scaled to those widths or
-// the letters collide. Arial itself already matches, so it must stay at scale 1.
+// Non-embedded Arial Narrow must resolve to a condensed face, and Arial to
+// Arial. Flags 33 sets FixedPitch on both proportional faces. Glyph positions
+// follow /Widths. The right edge of the run is not enough: each letter has to
+// sit in its own slot. Arial already matches, so it stays at scale 1.
 TEST_F(CPdfFileTest, NonEmbeddedWidthStretch)
 {
 	auto sWidths = [](int nCount, int nWidth)
@@ -972,7 +973,8 @@ TEST_F(CPdfFileTest, NonEmbeddedWidthStretch)
 		{
 			if (i)
 				s += " ";
-			s += std::to_string(nWidth);
+			// Space is narrower than H, so Flags 33 is not a real monospace request.
+			s += std::to_string(i == 0 ? nWidth / 3 : nWidth);
 		}
 		return s;
 	};
@@ -985,7 +987,7 @@ TEST_F(CPdfFileTest, NonEmbeddedWidthStretch)
 	auto sDesc = [](int nObj, const char* sName)
 	{
 		return std::to_string(nObj) + " 0 obj\n<< /Type /FontDescriptor /FontName /" + sName +
-			" /Flags 32 /FontBBox [-665 -325 2000 1006] /ItalicAngle 0 /Ascent 905 /Descent -212 /CapHeight 716 /StemV 44 >>\nendobj\n";
+			" /Flags 33 /FontBBox [-665 -325 2000 1006] /ItalicAngle 0 /Ascent 905 /Descent -212 /CapHeight 716 /StemV 44 >>\nendobj\n";
 	};
 
 	const std::string sStream =
@@ -1073,4 +1075,49 @@ TEST_F(CPdfFileTest, NonEmbeddedWidthStretch)
 	// Arial /Widths already match the face, so the run keeps the full 722-unit advance.
 	EXPECT_LT(nArialRight, 36 + 416 + 8);
 	EXPECT_GT(nArialRight, 36 + 416 - 24);
+
+	auto aGlyphRuns = [&](int nTop, int nBottom)
+	{
+		BYTE* pData = oFrame.get_Data();
+		int nW = oFrame.get_Width();
+		std::vector<char> aInk(nW, 0);
+		for (int y = nTop; y < nBottom; ++y)
+		{
+			BYTE* pRow = pData + (size_t)y * nW * 4;
+			for (int x = 0; x < nW; ++x)
+			{
+				BYTE* p = pRow + x * 4;
+				if (p[0] < 200 || p[1] < 200 || p[2] < 200)
+					aInk[x] = 1;
+			}
+		}
+		std::vector<std::pair<int, int>> aRuns;
+		int nStart = -1;
+		for (int x = 0; x <= nW; ++x)
+		{
+			bool bInk = x < nW && aInk[x];
+			if (bInk && nStart < 0)
+				nStart = x;
+			if (!bInk && nStart >= 0)
+			{
+				if (!aRuns.empty() && nStart - aRuns.back().second <= 3)
+					aRuns.back().second = x - 1;
+				else
+					aRuns.push_back(std::make_pair(nStart, x - 1));
+				nStart = -1;
+			}
+		}
+		return aRuns;
+	};
+
+	auto aNarrowRuns = aGlyphRuns(200, 280);
+	auto aArialRuns = aGlyphRuns(420, 500);
+	ASSERT_EQ(8, (int)aNarrowRuns.size());
+	ASSERT_EQ(8, (int)aArialRuns.size());
+	for (int i = 0; i < 7; ++i)
+	{
+		// A hole wider than the sidebearings means the outline is not in its slot.
+		EXPECT_LT(aNarrowRuns[i + 1].first - aNarrowRuns[i].second, 16);
+		EXPECT_LT(aArialRuns[i + 1].first - aArialRuns[i].second, 22);
+	}
 }

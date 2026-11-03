@@ -1063,8 +1063,9 @@ TEST_F(CPdfFileTest, NonEmbeddedWidthStretch)
 	// PDF y is up. Raster y is down. Baseline 520 -> 792-520 = 272, caps sit above it.
 	int nNarrowRight = nRightInk(200, 280);
 	int nArialRight = nRightInk(420, 500);
-	if (nNarrowRight < 0 || nArialRight < 0)
-		GTEST_SKIP() << "substitute fonts did not draw; font cache has no Arial-like face";
+	// Missing a substitute face must fail the test. A skip would hide a run that never drew.
+	ASSERT_GT(nNarrowRight, 0) << "Arial Narrow run drew no ink; the font cache has no Arial-like face";
+	ASSERT_GT(nArialRight, 0) << "Arial run drew no ink; the font cache has no Arial-like face";
 
 	// 8 * 547/1000 * 72 = 314.9, plus the 36pt origin. The unscaled Arial H outline ends past that.
 	EXPECT_LT(nNarrowRight, 354);

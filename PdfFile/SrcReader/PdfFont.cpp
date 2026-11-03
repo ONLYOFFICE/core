@@ -478,55 +478,62 @@ USHORT StretchToWidthClass(double fStretch)
 	if (fStretch <= 1.50)  return 8; // Extra-expanded
 	return 9;                        // Ultra-expanded
 }
-// Scale that makes the substitute face's glyph advances match the PDF /Widths
-// array. Positions already come from those widths. A wider face drawn at
-// scale 1 (Arial standing in for Arial Narrow) collides with the next glyph.
-// Returns 0 when the face cannot be measured, so the name-based stretch stays.
-double MeasureSubstituteStretch(NSFonts::IFontManager* pFontManager, const std::wstring& wsFileName, Gfx8BitFont* pFont, int* pCodeToGID, int nLen)
+// Per-code scale that makes the substitute glyph's advance equal the PDF
+// /Widths entry. Positions already come from those widths. One scale for the
+// whole face is not enough: Arial Bold, Arial Narrow and Times each differ
+// from a stand-in face by a different ratio on each character, so a median
+// leaves some glyphs colliding and others sitting in a gap.
+// Returns NULL when the face cannot be measured. The caller then keeps the
+// name-based stretch. Codes that do not measure keep dFallback.
+double* BuildWidthScale(NSFonts::IFontManager* pFontManager, const std::wstring& wsFileName, Gfx8BitFont* pFont, int* pCodeToGID, int nLen, double dFallback)
 {
 	if (!pFontManager || !pFont || !pCodeToGID || nLen <= 0 || wsFileName.empty())
-		return 0;
+		return NULL;
 
 	if (!pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72))
-		return 0;
+		return NULL;
 
 	NSFonts::IFontFile* pFile = pFontManager->GetFile();
 	if (!pFile)
-		return 0;
+		return NULL;
 
-	std::vector<double> aRatio;
-	int nLimit = nLen < 256 ? nLen : 256;
-	for (int nCode = 0; nCode < nLimit; ++nCode)
+	int nCount = nLen < 256 ? nLen : 256;
+	double* pScale = (double*)PdfReader::MemUtilsMallocArray(nCount, sizeof(double));
+	if (!pScale)
+		return NULL;
+
+	int nMeasured = 0;
+	for (int nCode = 0; nCode < nCount; ++nCode)
 	{
+		pScale[nCode] = dFallback;
 		int nGid = pCodeToGID[nCode];
 		if (nGid <= 0)
 			continue;
 
 		double dPdf = pFont->getWidth((Guchar)nCode);
-		if (dPdf < 0.02)
-			continue;
-
 		double dFont = pFile->GetCharWidth(nGid);
-		if (dFont < 0.02)
+		if (dPdf < 0.02 || dFont < 0.02)
 			continue;
 
 		double dRatio = dPdf / dFont;
 		if (dRatio < 0.2 || dRatio > 3.0)
 			continue;
 
-		aRatio.push_back(dRatio);
+		// A face that already matches this code is left alone.
+		if (std::abs(dRatio - 1.0) < 0.015)
+			dRatio = 1.0;
+
+		pScale[nCode] = dRatio;
+		++nMeasured;
 	}
 
-	if (aRatio.size() < 8)
-		return 0;
+	if (nMeasured < 8)
+	{
+		PdfReader::MemUtilsFree(pScale);
+		return NULL;
+	}
 
-	std::sort(aRatio.begin(), aRatio.end());
-	double dMedian = aRatio[aRatio.size() / 2];
-	// A face with the same metrics (Arial for Arial, Times for Times) is left alone.
-	if (std::abs(dMedian - 1.0) < 0.015)
-		return 1.0;
-
-	return dMedian;
+	return pScale;
 }
 Ref FindMatchInAnnotFonts(PdfReader::CPdfFontList *pFontList, const std::vector<Ref>& annotFonts, const std::wstring& wsRCName, bool bBold, bool bItalic)
 {
@@ -2261,12 +2268,9 @@ void GetFont(XRef* pXref, NSFonts::IFontManager* pFontManager, CPdfFontList* pFo
 		pEntry->unLenGID       = (unsigned int)nLen;
 		pEntry->unLenUnicode   = (unsigned int)nToUnicodeLen;
 		pEntry->bAvailable     = true;
+		pEntry->pWidthScale = NULL;
 		if (bFontSubstitution && !pFont->isCIDFont() && pCodeToGID && nLen > 0)
-		{
-			double dMeasured = MeasureSubstituteStretch(pFontManager, wsFileName, (Gfx8BitFont*)pFont, pCodeToGID, nLen);
-			if (dMeasured > 0)
-				dStretch = dMeasured;
-		}
+			pEntry->pWidthScale = BuildWidthScale(pFontManager, wsFileName, (Gfx8BitFont*)pFont, pCodeToGID, nLen, dStretch);
 		pEntry->dStretch       = dStretch;
 		pEntry->bFontSubstitution = bFontSubstitution;
 		pEntry->bIsIdentity = pFont->isCIDFont() == gTrue ? ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID() || ((GfxCIDFont*)pFont)->ctuUsesCharCodeToUnicode() || pFont->getType() == fontCIDType0C : false;
@@ -2595,6 +2599,7 @@ void CPdfFontList::Remove(Ref oRef)
 		{
 			MemUtilsFree(pEntry->pCodeToGID);
 			MemUtilsFree(pEntry->pCodeToUnicode);
+			MemUtilsFree(pEntry->pWidthScale);
 		}
 		delete pEntry;
 		m_oFontMap.erase(oPos);
@@ -2609,6 +2614,7 @@ void CPdfFontList::Clear()
 		{
 			MemUtilsFree(pEntry->pCodeToGID);
 			MemUtilsFree(pEntry->pCodeToUnicode);
+			MemUtilsFree(pEntry->pWidthScale);
 		}
 		delete pEntry;
 	}

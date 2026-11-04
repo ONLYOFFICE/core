@@ -225,6 +225,8 @@ namespace NSDocxRenderer
 			{
 				s->m_bIsNoFill = false;
 				s->m_oBrush = m_oBrush;
+				// A later stroke-only command must not clear the rule already recorded.
+				s->m_bEvenOddFill = (lType & c_nEvenOddFillMode) != 0;
 			}
 			s->m_oPen = m_oPen;
 			s->m_oPen.Size *= transform_det;
@@ -234,7 +236,7 @@ namespace NSDocxRenderer
 		{
 			auto& last_shape = m_arShapes.back();
 			bool is_type_diff = lType == c_nStroke && (m_lLastType == c_nWindingFillMode || m_lLastType == c_nEvenOddFillMode);
-			is_type_diff = is_type_diff || (m_lLastType == c_nStroke && (lType == c_nWindingFillMode || m_lLastType == c_nEvenOddFillMode));
+			is_type_diff = is_type_diff || (m_lLastType == c_nStroke && (lType == c_nWindingFillMode || lType == c_nEvenOddFillMode));
 			if (last_shape->IsEqual(top, bot, left, right) && rotation == last_shape->m_dRotation && is_type_diff && m_lLastType != 0)
 			{
 				set_fill_mode(last_shape);
@@ -1630,8 +1632,14 @@ namespace NSDocxRenderer
 					if (lines_x_groups[i][j])
 						groups_taken.push_back(j);
 				}
-				if (groups_taken.size() != 1 ||
-				        text_lines[i]->m_dTop - text_line_groups[groups_taken[0]]->m_dBot > c_dLINE_GROUP_SPLIT_MM)
+				// Faux-bold PDFs paint the same glyphs again a fraction of a point
+				// lower. That overlap is not a following paragraph line: folding
+				// it in computes a near-zero line height and shifts the text.
+				double dLineGap = 0.0;
+				if (groups_taken.size() == 1)
+					dLineGap = text_lines[i]->m_dTop - text_line_groups[groups_taken[0]]->m_dBot;
+				bool bOverlappingPaint = groups_taken.size() == 1 && dLineGap < -c_dOVERLAP_TEXT_LINE_ERROR_MM;
+				if (groups_taken.size() != 1 || dLineGap > c_dLINE_GROUP_SPLIT_MM || bOverlappingPaint)
 				{
 					for (const auto& taken : groups_taken)
 						ar_is_group_open[taken] = false;

@@ -1177,6 +1177,12 @@ namespace NSDocxRenderer
 				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
 				oWriter.WriteBYTE(2); oWriter.AddInt(height * c_dMMToEMU); // pathH
 				oWriter.WriteBYTE(4); oWriter.AddInt(width * c_dMMToEMU); // pathW
+				if (m_bEvenOddFill)
+				{
+					// Asc.c_oAscPathFillMode.EVEN_ODD. Omitted means nonzero winding.
+					oWriter.WriteBYTE(1);
+					oWriter.WriteBYTE(6);
+				}
 				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				oWriter.StartRecord(0);
 				oWriter.AddInt(static_cast<unsigned int>(data.size()));

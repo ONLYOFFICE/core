@@ -83,6 +83,7 @@ namespace NSDocxRenderer
 		double m_dRotation {0.0};
 
 		bool m_bIsNoFill    {true};
+		bool m_bEvenOddFill {false};
 		bool m_bIsNoStroke  {true};
 		bool m_bIsBehindDoc {true};
 		bool m_bIsUseInTable{false};

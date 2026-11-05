@@ -2103,6 +2103,7 @@ namespace Aggplus
 		c_c_path.approximation_scale(25.0);
 		c_c_path.approximation_method(agg::curve_inc);
 		DashStyle eStyle = (DashStyle)pPen->DashStyle;
+		bool bSkipDegenerateDash = false;
 
 		if (DashStyleCustom == eStyle)
 		{
@@ -2121,14 +2122,19 @@ namespace Aggplus
 						break;
 					}
 				}
+				// An all-zero pattern is invalid. Promoting it to a solid stroke
+				// paints the path at the full pen width.
 				if (!bFoundNormal)
-					eStyle = DashStyleSolid;
+					bSkipDegenerateDash = true;
 			}
 		}
 
 		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
 		if (bIsUseIdentity)
 			pAffine = new agg::trans_affine();
+
+		if (bSkipDegenerateDash)
+			return bIsUseIdentity ? pAffine : NULL;
 
 		if (DashStyleSolid == eStyle)
 		{
@@ -2184,6 +2190,17 @@ namespace Aggplus
 				double* params	= pPen->DashPattern;
 				LONG lCount		= pPen->Count;
 				LONG lCount2	= lCount / 2;
+				double dDashTotal = 0;
+
+				// [0] is repeated to [0 0]. AGG does not advance a zero-length
+				// dash and the closed path is painted solid. Paint nothing.
+				for (LONG nDash = 0; nDash < lCount; ++nDash)
+				{
+					if (params && params[nDash] > 0)
+						dDashTotal += params[nDash];
+				}
+				if (lCount > 0 && dDashTotal == 0)
+					break;
 
 				double dKoef = 1.0;
 				if (bIsUseIdentity)

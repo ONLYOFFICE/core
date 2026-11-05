@@ -5412,8 +5412,25 @@ void Gfx::drawAnnot(Object *strRef, AnnotBorderStyle *borderStyle,
   str.free();
 
   // draw the border
+  // An all-zero dash pattern is invalid (ISO 32000-1 8.4.3.6). Acrobat paints
+  // nothing. Falling through to a solid stroke fills the annotation rectangle.
+  GBool bDegenerateDash = gFalse;
+  if (borderStyle && borderStyle->getType() == annotBorderDashed) {
+    double *dashCheck;
+    int dashCheckLen, k;
+    double dDashTotal = 0;
+    borderStyle->getDash(&dashCheck, &dashCheckLen);
+    if (dashCheckLen > 0) {
+      for (k = 0; k < dashCheckLen; ++k) {
+	if (dashCheck[k] > 0)
+	  dDashTotal += dashCheck[k];
+      }
+      if (dDashTotal == 0)
+	bDegenerateDash = gTrue;
+    }
+  }
   if (borderStyle && borderStyle->getWidth() > 0 &&
-      borderStyle->getNumColorComps() > 0) {
+      borderStyle->getNumColorComps() > 0 && !bDegenerateDash) {
     borderColor = borderStyle->getColor();
     switch (borderStyle->getNumColorComps()) {
     case 1:

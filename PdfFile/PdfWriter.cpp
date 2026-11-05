@@ -4824,11 +4824,7 @@ unsigned char* CPdfWriter::EncodeString(const unsigned int *pUnicodes, const uns
 			if (pGIDs)
 				m_pFont14->EncodeUnicode(pGIDs[unIndex], pUnicodes[unIndex], bNew);
 			if (bNew)
-			{
-				TBBoxAdvance oBox = m_pFontManager->MeasureChar2(*pUnicodes);
-				double dWidth = oBox.fAdvanceX / m_oFont.GetSize() * 1000.0;
-				m_pFont14->AddWidth(dWidth);
-			}
+				AddFont14Width(pUnicodes[unIndex]);
 
 			pCodes[2 * unIndex + 0] = (pUnicodes[unIndex] >> 8) & 0xFF;
 			pCodes[2 * unIndex + 1] = pUnicodes[unIndex] & 0xFF;
@@ -4862,6 +4858,17 @@ unsigned char* CPdfWriter::EncodeString(const unsigned int *pUnicodes, const uns
 
 	return pCodes;
 }
+void CPdfWriter::AddFont14Width(const unsigned int& unUnicode)
+{
+	// Width in 1/1000 em. It is the advance the page's text positions are
+	// measured against when the line is written as TJ. m_pFontManager may
+	// hold this face at an older size (put_FontSize does not reload it), or
+	// another face entirely, so load the face at 1000 units before measuring.
+	double dWidth = 0;
+	if (m_pFontManager->LoadFontFromFile(m_pFont14->GetFontPath(), m_pFont14->GetFontIndex(), 1000.0, 72, 72))
+		dWidth = m_pFontManager->MeasureChar2(unUnicode).fAdvanceX;
+	m_pFont14->AddWidth((unsigned int)(dWidth + 0.5));
+}
 unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount)
 {
 	if (m_bNeedUpdateTextFont)
@@ -4875,11 +4882,7 @@ unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned i
 		bool bNew = false;
 		m_pFont14->EncodeUnicode(unGID, *pUnicodes, bNew);
 		if (bNew)
-		{
-			TBBoxAdvance oBox = m_pFontManager->MeasureChar2(*pUnicodes);
-			double dWidth = oBox.fAdvanceX / m_oFont.GetSize() * 1000.0;
-			m_pFont14->AddWidth(dWidth);
-		}
+			AddFont14Width(*pUnicodes);
 		unsigned char* pCodes = new unsigned char[2];
 		pCodes[0] = (*pUnicodes >> 8) & 0xFF;
 		pCodes[1] = *pUnicodes & 0xFF;

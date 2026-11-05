@@ -41,6 +41,7 @@
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DjVuFile/DjVu.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../PdfFile.h"
 
 #include <algorithm>
@@ -1119,5 +1120,97 @@ TEST_F(CPdfFileTest, NonEmbeddedWidthStretch)
 		// A hole wider than the sidebearings means the outline is not in its slot.
 		EXPECT_LT(aNarrowRuns[i + 1].first - aNarrowRuns[i].second, 16);
 		EXPECT_LT(aArialRuns[i + 1].first - aArialRuns[i].second, 22);
+	}
+}
+
+// Edit Text writes unchanged text back with the base-14 font of the source
+// PDF. The writer measures each new code once and writes the TJ gaps against
+// that width. The first line here is 8 pt and the second 27 pt with a letter
+// the first line does not use. Measured at the stale 8 pt size and divided by
+// 27 pt, the width is 8/27 of the real advance, so each L is written with a
+// -430 gap and the line spreads apart. Positions are the real advances, so
+// the 27 pt line has to come out with no gaps.
+TEST_F(CPdfFileTest, Base14WidthAfterFontSizeChange)
+{
+	const double dPtToMM = 25.4 / 72.0;
+
+	pdfFile->CreatePdf();
+	pdfFile->NewPage();
+	pdfFile->put_Width(612 * dPtToMM);
+	pdfFile->put_Height(792 * dPtToMM);
+	pdfFile->put_BrushColor1(0);
+	pdfFile->put_FontName(L"Embedded: Helvetica-Bold");
+	pdfFile->put_FontStyle(0);
+
+	pdfFile->put_FontSize(8);
+	pdfFile->CommandDrawTextExCHAR('O', 'O', 36 * dPtToMM, 100 * dPtToMM, 0, 0);
+
+	// Helvetica-Bold L is 611/1000 em.
+	const double dAdvance = 611.0 / 1000.0 * 27;
+	pdfFile->put_FontSize(27);
+	for (int i = 0; i < 8; ++i)
+		pdfFile->CommandDrawTextExCHAR('L', 'L', (36 + i * dAdvance) * dPtToMM, 300 * dPtToMM, 0, 0);
+
+	std::wstring wsPdf = NSFile::GetProcessDirectory() + L"/base14-size.pdf";
+	ASSERT_EQ(0, pdfFile->SaveToFile(wsPdf));
+
+	BYTE* pFileData = NULL;
+	DWORD nFileSize = 0;
+	ASSERT_TRUE(NSFile::CFileBinary::ReadAllBytes(wsPdf, &pFileData, nFileSize));
+	std::string sFile((char*)pFileData, nFileSize);
+	RELEASEARRAYOBJECTS(pFileData);
+
+	// Inflate every stream; the page content is Flate-compressed.
+	std::string sPdf;
+	for (size_t nPos = sFile.find("stream"); nPos != std::string::npos; nPos = sFile.find("stream", nPos + 6))
+	{
+		if (nPos >= 3 && sFile.compare(nPos - 3, 3, "end") == 0)
+			continue;
+		size_t nData = nPos + 6;
+		if (nData < sFile.size() && sFile[nData] == '\r')
+			++nData;
+		if (nData < sFile.size() && sFile[nData] == '\n')
+			++nData;
+		size_t nStop = sFile.find("endstream", nData);
+		if (nStop == std::string::npos)
+			break;
+		std::vector<BYTE> arrOut(1 << 20);
+		ULONG nOut = (ULONG)arrOut.size();
+		if (NSZip::Decompress((const BYTE*)sFile.data() + nData, (ULONG)(nStop - nData), arrOut.data(), nOut))
+			sPdf.append((char*)arrOut.data(), nOut);
+		else
+			sPdf.append(sFile, nData, nStop - nData);
+	}
+
+	// The 27 pt run, up to the end of its text object.
+	size_t nRun = sPdf.find(" 27 Tf");
+	ASSERT_NE(std::string::npos, nRun);
+	size_t nEnd = sPdf.find("ET", nRun);
+	ASSERT_NE(std::string::npos, nEnd);
+	std::string sRun = sPdf.substr(nRun, nEnd - nRun);
+	EXPECT_NE(std::string::npos, sRun.find("<4C")) << sRun;
+
+	// Every TJ adjustment between the L glyphs must be about zero. A single
+	// Tj, with no array, means the writer found no gap at all.
+	size_t nOpen = sRun.find('['), nClose = sRun.find(']');
+	if (nOpen == std::string::npos || nClose == std::string::npos)
+		return;
+	std::string sArray = sRun.substr(nOpen + 1, nClose - nOpen - 1);
+	bool bInHex = false;
+	std::string sNum;
+	for (char c : sArray + " ")
+	{
+		if (c == '<')
+			bInHex = true;
+		else if (c == '>')
+			bInHex = false;
+		else if (!bInHex && (isdigit((unsigned char)c) || c == '-' || c == '.'))
+		{
+			sNum += c;
+			continue;
+		}
+		if (!sNum.empty())
+			EXPECT_LT(std::abs(atof(sNum.c_str())), 2.0) << sRun;
+		sNum.clear();
 	}
 }

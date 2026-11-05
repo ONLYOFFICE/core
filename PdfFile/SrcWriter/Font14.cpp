@@ -62,6 +62,7 @@ namespace PdfWriter
 		Add("BaseFont", c_sStandardFontNames[(int)eType]);
 		if (eType < EStandard14Fonts::standard14fonts_Symbol)
 			Add("Encoding", "WinAnsiEncoding");
+		m_unIndex = 0;
 		m_ushCodesCount = 0;
 	}
 	unsigned int CFont14::GetWidth(unsigned short ushCode)

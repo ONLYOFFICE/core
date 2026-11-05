@@ -474,6 +474,30 @@ GList* tokenize(GString *s)
   }
   return toks;
 }
+
+// ISO 32000-1 8.4.3.6: dash elements shall be nonnegative and not all zero.
+// Acrobat and Poppler paint nothing for an all-zero pattern. A solid stroke of
+// the declared width covers the annotation rectangle.
+static bool dashPatternIsVisible(const std::vector<double>& arrDash)
+{
+	for (size_t nIndex = 0; nIndex < arrDash.size(); ++nIndex)
+	{
+		if (arrDash[nIndex] > 0)
+			return true;
+	}
+	return false;
+}
+static void suppressDegenerateDash(CAnnot::CBorderType* pBorderType)
+{
+	if (!pBorderType || pBorderType->nType != annotBorderDashed)
+		return;
+	if (pBorderType->arrDash.empty() || dashPatternIsVisible(pBorderType->arrDash))
+		return;
+
+	pBorderType->nType = annotBorderSolid;
+	pBorderType->dWidth = 0;
+	pBorderType->arrDash.clear();
+}
 CAnnot::CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
 {
 	// Borders and Dash Pattern - Border/BS
@@ -519,7 +543,8 @@ CAnnot::CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
 		pBorderType->dWidth = ArrGetNum(oBorder, 2);
 
 		Object oObj;
-		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 1)
+		// A one-element pattern is valid. PDF repeats it. [0] is not a solid border.
+		if (oBorder->arrayGetLength() > 3 && oBorder->arrayGet(3, &oObj)->isArray() && oObj.arrayGetLength() > 0)
 		{
 			pBorderType->nType = annotBorderDashed;
 			for (int j = 0; j < oObj.arrayGetLength(); ++j)
@@ -533,6 +558,7 @@ CAnnot::CBorderType* getBorder(Object* oBorder, bool bBSorBorder)
 		oObj.free();
 	}
 
+	suppressDegenerateDash(pBorderType);
 	return pBorderType;
 }
 

@@ -79,7 +79,10 @@ namespace {
 
 int odf_string_to_build_in(const int odf_type_value)
 {
-    return odf2buildin_map[odf_type_value];    
+    // office_value_type also has Scientific/Fraction/DateTime (set from number styles), which the map does not cover
+    if (odf_type_value < 0 || odf_type_value >= (int)(sizeof(odf2buildin_map) / sizeof(odf2buildin_map[0])))
+        return 0;
+    return odf2buildin_map[odf_type_value];
 }
 
 }

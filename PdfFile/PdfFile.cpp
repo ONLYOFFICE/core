@@ -487,6 +487,17 @@ int CPdfFile::GetMaxRefID()
 		return 0;
 	return m_pInternal->pReader->GetMaxRefID();
 }
+std::vector<std::pair<int, std::string>> CPdfFile::GetPageOShapes(int nPageIndex)
+{
+	if (!m_pInternal->pReader)
+		return {};
+	return m_pInternal->pReader->GetPageOShapes(nPageIndex);
+}
+void CPdfFile::SetHiddenOShapes(int nPageIndex, const std::set<int>& arrMCID)
+{
+	if (m_pInternal->pReader)
+		m_pInternal->pReader->SetHiddenOShapes(nPageIndex, arrMCID);
+}
 bool CPdfFile::ValidMetaData()
 {
 	if (!m_pInternal->pReader)
@@ -1487,6 +1498,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::Redact:
 	case IAdvancedCommand::AdvancedCommandType::RedactMeta:
 	case IAdvancedCommand::AdvancedCommandType::Macros:
+	case IAdvancedCommand::AdvancedCommandType::PageOShapesDrop:
 		return S_OK;
 	default:
 		break;
@@ -1592,6 +1604,12 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
 			m_pInternal->pEditor->ClearPage();
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::PageOShapesDrop:
+	{
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+			m_pInternal->pEditor->DropOShapes(((CPageOShapesDrop*)command)->GetMCID());
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:

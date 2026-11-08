@@ -62,6 +62,7 @@
 #include "SrcWriter/Outline.h"
 #include "SrcWriter/GState.h"
 #include "SrcWriter/RedactOutputDev.h"
+#include "SrcWriter/OShapesFilter.h"
 #include "SrcWriter/OverlapOutputDev.h"
 #include "SrcWriter/Image.h"
 #include "SrcWriter/Font14.h"
@@ -2148,6 +2149,18 @@ bool CPdfEditor::IncrementalUpdates()
 	{
 		GetPageTree(xref, pagesRefObj.get());
 
+		// Shapes saved by the editor are valid only while their /OShapes ID equals the trailer ID,
+		// and this update writes a new trailer ID. Carry every valid dict into the update so its ID follows.
+		Catalog* pReaderCatalog = pPDFDocument->getCatalog();
+		for (int nPage = 1, nPages = pReaderCatalog->getNumPages(); nPage <= nPages; ++nPage)
+		{
+			Dict* pRes = pReaderCatalog->getPage(nPage)->getResourceDict();
+			Object oProps, oRef;
+			if (pRes && pRes->lookup("Properties", &oProps)->isDict() && oProps.dictLookupNF("OShapes", &oRef)->isRef())
+				EditOShapes(pPDFDocument, &oRef);
+			oProps.free(); oRef.free();
+		}
+
 		if (pDR && pDRXref)
 			bRes = pDoc->EditResources(pDRXref, pDR);
 	}
@@ -4187,6 +4200,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		}
 	}
 	pPage->Fix();
+	UseEditOShapes(pPDFDocument, nPageIndex, pPage);
 
 	// Apply page editing for writer
 	if (pDoc->EditPage(pXref, pPage, _nPageIndex))
@@ -6561,6 +6575,140 @@ int  CPdfEditor::GetRotate(int nPageIndex)
 bool CPdfEditor::IsEditPage()
 {
 	return m_nEditPage >= 0;
+}
+PdfWriter::CDictObject* CPdfEditor::EditOShapes(PDFDoc* pPDFDocument, Object* pRef)
+{
+	if (m_nMode != Mode::WriteAppend || !pPDFDocument || !pRef || !pRef->isRef() || pPDFDocument != m_pReader->GetPDFDocument(0))
+		return NULL;
+	std::map<int, PdfWriter::CDictObject*>::iterator it = m_mEditOShapes.find(pRef->getRefNum());
+	if (it != m_mEditOShapes.end())
+		return it->second;
+
+	XRef* xref = pPDFDocument->getXRef();
+	Object oDict, oID, oTID, oID2;
+	// Same check as Gfx: a dict whose ID is not the current trailer ID belongs to an older revision.
+	bool bValid = pRef->fetch(xref, &oDict)->isDict("OShapes") && oDict.dictLookup("ID", &oID)->isString() &&
+				  xref->getTrailerDict()->dictLookup("ID", &oTID)->isArray() && oTID.arrayGet(1, &oID2)->isString() &&
+				  oID.getString()->cmp(oID2.getString()) == 0;
+	oID.free(); oTID.free(); oID2.free();
+	if (!bValid)
+	{
+		oDict.free();
+		return NULL;
+	}
+
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
+	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pRef->getRefNum());
+	pXref->Add(pDict, pRef->getRefGen());
+	pDoc->EditXref(pXref);
+
+	SDictConvertContext ctx; // references (images) stay references
+	for (int i = 0; i < oDict.dictGetLength(); ++i)
+	{
+		char* chKey = oDict.dictGetKey(i);
+		Object oVal;
+		oDict.dictGetValNF(i, &oVal);
+		if ((strcmp("IDF", chKey) == 0 || strcmp("ID", chKey) == 0) && oVal.isString())
+		{
+			// Byte exact: the IDF is matched against the blocks in the content stream
+			GString* s = oVal.getString();
+			pDict->Add(chKey, new PdfWriter::CBinaryObject((BYTE*)s->getCString(), s->getLength()));
+		}
+		else
+			pDict->Add(chKey, DictToCDictObjectUnified(&oVal, ctx));
+		oVal.free();
+	}
+	oDict.free();
+
+	pDoc->AddMetaOForm(pDict);
+	m_mEditOShapes[pRef->getRefNum()] = pDict;
+	return pDict;
+}
+void CPdfEditor::UseEditOShapes(PDFDoc* pPDFDocument, int nPageIndex, PdfWriter::CPage* pPage)
+{
+	Dict* pRes = pPDFDocument->getCatalog()->getPage(nPageIndex)->getResourceDict();
+	Object oProps, oRef;
+	PdfWriter::CDictObject* pOShapes = NULL;
+	if (pRes && pRes->lookup("Properties", &oProps)->isDict() && oProps.dictLookupNF("OShapes", &oRef)->isRef())
+		pOShapes = EditOShapes(pPDFDocument, &oRef);
+	oProps.free(); oRef.free();
+	if (!pOShapes)
+		return;
+
+	PdfWriter::CObjectBase* pWRes = pPage->Get("Resources");
+	if (!pWRes || pWRes->GetType() != PdfWriter::object_type_DICT)
+		return;
+	PdfWriter::CObjectBase* pWProps = ((PdfWriter::CDictObject*)pWRes)->Get("Properties");
+	if (pWProps && pWProps->GetType() == PdfWriter::object_type_DICT)
+		((PdfWriter::CDictObject*)pWProps)->Add("OShapes", pOShapes);
+}
+void CPdfEditor::DropOShapes(const std::vector<int>& arrMCID)
+{
+	if (arrMCID.empty())
+		return;
+	PDFDoc* pPDFDocument = NULL;
+	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	if (nPageIndex < 0 || !pPDFDocument || !pDoc || !pDoc->GetCurPage())
+		return;
+
+	XRef* xref = pPDFDocument->getXRef();
+	Page* pOPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
+	Dict* pRes = pOPage->getResourceDict();
+
+	// Only blocks of the page's valid dict are restored by the editor, so only those are removed.
+	std::string sIDF;
+	Object oProps, oOShapes, oIDF, oID, oTID, oID2, oRef;
+	if (pRes && pRes->lookup("Properties", &oProps)->isDict() && oProps.dictLookup("OShapes", &oOShapes)->isDict("OShapes") &&
+		oOShapes.dictLookup("IDF", &oIDF)->isString() && oOShapes.dictLookup("ID", &oID)->isString() &&
+		xref->getTrailerDict()->dictLookup("ID", &oTID)->isArray() && oTID.arrayGet(1, &oID2)->isString() &&
+		oID.getString()->cmp(oID2.getString()) == 0)
+		sIDF.assign(oIDF.getString()->getCString(), oIDF.getString()->getLength());
+	PdfWriter::CDictObject* pEditOShapes = (!sIDF.empty() && oProps.isDict() && oProps.dictLookupNF("OShapes", &oRef)->isRef()) ? EditOShapes(pPDFDocument, &oRef) : NULL;
+	oProps.free(); oOShapes.free(); oIDF.free(); oID.free(); oTID.free(); oID2.free(); oRef.free();
+	if (sIDF.empty())
+		return;
+
+	std::set<int> setMCID(arrMCID.begin(), arrMCID.end());
+
+	// The shapes are written again as new blocks; their old entries stay as empty strings so other MCIDs keep their index.
+	PdfWriter::CObjectBase* pMetadata = pEditOShapes ? pEditOShapes->Get("Metadata") : NULL;
+	if (pMetadata && pMetadata->GetType() == PdfWriter::object_type_ARRAY)
+	{
+		PdfWriter::CArrayObject* pArray = (PdfWriter::CArrayObject*)pMetadata;
+		for (int nMCID : setMCID)
+		{
+			if (nMCID >= 0 && nMCID < (int)pArray->GetCount())
+				pArray->Insert(pArray->Get(nMCID, false), new PdfWriter::CStringObject(""), true);
+		}
+	}
+	Object oContents;
+	pOPage->getContents(&oContents);
+	int nCount = oContents.isArray() ? oContents.arrayGetLength() : (oContents.isStream() ? 1 : 0);
+	for (int i = 0; i < nCount; ++i)
+	{
+		Object oStream;
+		if (oContents.isArray())
+			oContents.arrayGet(i, &oStream);
+		else
+			oContents.copy(&oStream);
+		if (oStream.isStream())
+		{
+			std::string sData, sOut;
+			Stream* pStream = oStream.getStream();
+			pStream->reset();
+			int c;
+			while ((c = pStream->getChar()) != EOF)
+				sData.push_back((char)c);
+			pStream->close();
+			// The writer page keeps the source content streams first, in the same order
+			if (PdfWriter::OShapesFilter::RemoveBlocks(sData, sIDF, setMCID, sOut))
+				pDoc->ReplacePageContent(pDoc->GetCurPage(), i, sOut);
+		}
+		oStream.free();
+	}
+	oContents.free();
 }
 void CPdfEditor::ClearPage()
 {

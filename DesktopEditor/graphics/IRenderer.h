@@ -164,6 +164,7 @@ public:
 		RedactAnnot = 13,
 		RedactMeta  = 14,
 		Macros      = 15,
+		PageOShapesDrop = 16,
 
 		Undefined   = 255
 	};

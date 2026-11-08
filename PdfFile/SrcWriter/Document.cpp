@@ -2381,7 +2381,18 @@ namespace PdfWriter
 			sID = (CBinaryObject*)pID->Get(1)->Copy();
 
 		CDictObject* pMetaOForm = (CDictObject*)pObj;
-		if (!pMetaOForm)
+		if (pMetaOForm)
+		{
+			// Appending to a dict from an earlier save: the new block must carry the dict's IDF,
+			// or the reader will not match it to this dict.
+			CObjectBase* pIDF = pMetaOForm->Get("IDF");
+			if (pIDF && pIDF->GetType() == object_type_BINARY)
+			{
+				RELEASEOBJECT(sID);
+				sID = (CBinaryObject*)pIDF->Copy();
+			}
+		}
+		else
 		{
 			pMetaOForm = new CDictObject();
 			m_pXref->Add(pMetaOForm);
@@ -2408,6 +2419,33 @@ namespace PdfWriter
 		pBDC->Add("IDF", sID);
 		m_pCurPage->BeginMarkedContentDict("OShapes", pBDC);
 		RELEASEOBJECT(pBDC);
+	}
+	void CDocument::AddMetaOForm(CDictObject* pMetaOForm)
+	{
+		// The dict's ID is set to the new trailer ID when the file is written, like a new one.
+		if (pMetaOForm && std::find(m_vMetaOForms.begin(), m_vMetaOForms.end(), pMetaOForm) == m_vMetaOForms.end())
+			m_vMetaOForms.push_back(pMetaOForm);
+	}
+	bool CDocument::ReplacePageContent(CPage* pPage, int nIndex, const std::string& sData)
+	{
+		if (!pPage)
+			return false;
+		CObjectBase* pContents = pPage->Get("Contents");
+		if (!pContents || pContents->GetType() != object_type_ARRAY)
+			return false;
+		CArrayObject* pArray = (CArrayObject*)pContents;
+		if (nIndex < 0 || nIndex >= (int)pArray->GetCount())
+			return false;
+
+		CDictObject* pNew = new CDictObject(m_pXref);
+		pNew->GetStream()->Write((BYTE*)sData.c_str(), (unsigned int)sData.size());
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pNew->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+		CObjectBase* pOld = pArray->Get(nIndex, false);
+		pArray->Insert(pOld, pNew, true);
+		return true;
 	}
 	void CDocument::EndShapeXML()
 	{

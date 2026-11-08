@@ -42,6 +42,7 @@
 #include "SrcReader/RendererOutputDev.h"
 
 #include <map>
+#include <set>
 #include <vector>
 
 class PDFDoc;
@@ -94,6 +95,11 @@ public:
 	int GetMaxRefID();
 	int GetNumPages();
 	bool ValidMetaData();
+	// Shapes the editor saved on the page as /OShapes marked content: MCID and stored shape.
+	// Shapes that carry a picture (/Image entry) are not listed.
+	std::vector<std::pair<int, std::string>> GetPageOShapes(int nPageIndex);
+	// Do not draw these /OShapes blocks of the page. An empty set draws all of them again.
+	void SetHiddenOShapes(int nPageIndex, const std::set<int>& arrMCID);
 
 	// Takes ownership of malloc data memory
 	bool MergePages(BYTE* pData, DWORD nLength, const wchar_t* wsPassword = NULL, int nMaxID = 0, const std::string& sPrefixForm = "");
@@ -152,6 +158,7 @@ private:
 	IOfficeDrawingFilePainter*      m_pPainter;
 	std::vector<CPdfReaderContext*> m_vPDFContext;
 	std::vector<CPdfRedact*>        m_vRedact;
+	std::map<int, std::set<int>>    m_mHiddenOShapes;
 	std::map<std::wstring, std::wstring> m_mFonts;
 };
 

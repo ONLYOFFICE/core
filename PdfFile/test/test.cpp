@@ -42,6 +42,7 @@
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../PdfFile.h"
+#include "../SrcWriter/OShapesFilter.h"
 
 #include <algorithm>
 
@@ -956,4 +957,58 @@ TEST_F(CPdfFileTest, ImgDiff)
 			oFrameAll.SaveFile(sPageDiff, 4);
 		}
 	}
+}
+
+// Shapes inserted in the editor are saved as /OShapes marked content. When the editor restores
+// such a shape as a live object, the save removes the old block from the page content.
+namespace
+{
+	const std::string sOShapesIDF("\x42\xAC\xE9\xAB", 4);
+	std::string OShapesBlock(int nMCID, const std::string& sIDFHex = "42ACE9AB")
+	{
+		return "/OShapes <<\n/IDF <" + sIDFHex + ">\n/MCID " + std::to_string(nMCID) + "\n>> BDC\nq BT /F3 20 Tf [<0001>-0.99<0002>]TJ ET Q\nEMC\n";
+	}
+}
+TEST(OShapesFilterTest, RemovesOnlyRequestedBlocks)
+{
+	const std::string sPre = "BT /F1 12 Tf (Sample Report) Tj ET\n";
+	const std::string sPost = "72 300 468 200 re S\n";
+	const std::string sIn = sPre + OShapesBlock(0) + OShapesBlock(1) + sPost;
+	std::string sOut;
+
+	EXPECT_TRUE(PdfWriter::OShapesFilter::RemoveBlocks(sIn, sOShapesIDF, {0}, sOut));
+	EXPECT_EQ(sOut, sPre + "\n\n" + OShapesBlock(1) + sPost);
+
+	EXPECT_TRUE(PdfWriter::OShapesFilter::RemoveBlocks(sIn, sOShapesIDF, {0, 1}, sOut));
+	EXPECT_EQ(sOut, sPre + "\n\n\n\n" + sPost);
+
+	EXPECT_FALSE(PdfWriter::OShapesFilter::RemoveBlocks(sIn, sOShapesIDF, {2}, sOut));
+}
+TEST(OShapesFilterTest, KeepsBlocksOfAnotherRevision)
+{
+	std::string sOut;
+	EXPECT_FALSE(PdfWriter::OShapesFilter::RemoveBlocks(OShapesBlock(0, "00112233"), sOShapesIDF, {0}, sOut));
+	EXPECT_FALSE(PdfWriter::OShapesFilter::RemoveBlocks("/Span << /MCID 0 >> BDC (x) Tj EMC", sOShapesIDF, {0}, sOut));
+}
+TEST(OShapesFilterTest, LiteralIDFString)
+{
+	std::string sOut;
+	EXPECT_TRUE(PdfWriter::OShapesFilter::RemoveBlocks("/OShapes << /IDF (\\102\\254\\351\\253) /MCID 2 >> BDC (x) Tj EMC", sOShapesIDF, {2}, sOut));
+	EXPECT_EQ(sOut, "\n");
+}
+TEST(OShapesFilterTest, OperatorsInsideStringsCommentsAndImages)
+{
+	std::string sOut;
+	const std::string sNested = "/OShapes << /IDF <42ACE9AB> /MCID 1 >> BDC /Span << /ActualText (a) >> BDC (EMC \\) EMC) Tj EMC %EMC\n EMC tail";
+	EXPECT_TRUE(PdfWriter::OShapesFilter::RemoveBlocks(sNested, sOShapesIDF, {1}, sOut));
+	EXPECT_EQ(sOut, "\n tail");
+
+	const std::string sInline = std::string("/OShapes << /IDF <42ACE9AB> /MCID 3 >> BDC BI /W 2 /H 1 /BPC 8 /CS /G ID \x01") + "EMC" + "\x02 EI EMC after";
+	EXPECT_TRUE(PdfWriter::OShapesFilter::RemoveBlocks(sInline, sOShapesIDF, {3}, sOut));
+	EXPECT_EQ(sOut, "\n after");
+}
+TEST(OShapesFilterTest, UnterminatedBlockIsKept)
+{
+	std::string sOut;
+	EXPECT_FALSE(PdfWriter::OShapesFilter::RemoveBlocks("/OShapes << /IDF <42ACE9AB> /MCID 0 >> BDC (x) Tj", sOShapesIDF, {0}, sOut));
 }

@@ -1060,6 +1060,7 @@ namespace NSOnlineOfficeBinToPdf
 			case ctShapeEnd:
 			case ctPageClear:
 			case ctPageRotate:
+			case ctPageOShapesDrop:
 			case ctHeadings:
 			case ctRedact:
 			case ctRedactMeta:
@@ -1076,6 +1077,7 @@ namespace NSOnlineOfficeBinToPdf
 				case ctShapeEnd:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeEnd;    break;
 				case ctPageClear:        eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageClear;   break;
 				case ctPageRotate:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageRotate;  break;
+				case ctPageOShapesDrop:  eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::PageOShapesDrop; break;
 				case ctHeadings:         eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Headings;    break;
 				case ctRedact:           eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::Redact;      break;
 				case ctRedactMeta:       eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::RedactMeta;  break;
@@ -1418,6 +1420,7 @@ namespace NSOnlineOfficeBinToPdf
 			case ctShapeEnd:
 			case ctPageClear:
 			case ctPageRotate:
+			case ctPageOShapesDrop:
 			case ctHeadings:
 			case ctRedact:
 			case ctRedactMeta:

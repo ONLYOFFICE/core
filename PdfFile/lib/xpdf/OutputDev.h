@@ -188,7 +188,9 @@ public:
 
   //----- additional
   virtual GBool beginMarkedContent(GfxState *state, Object args[], int numArgs) { return gFalse; }
-  virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) { return gFalse; }
+  // ONLYOFFICE shape block (/OShapes BDC). s is the stored shape, nMCID its index in /Metadata.
+  // Return gTrue to skip the block's content.
+  virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref, int nMCID) { return gFalse; }
   virtual void endMarkedContent(GfxState *state) {}
   virtual GBool useNameOp() { return gFalse; }
   virtual void setExtGState(GfxState *state, Object* pExtGState, const char* name) {}

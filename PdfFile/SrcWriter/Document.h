@@ -229,6 +229,8 @@ namespace PdfWriter
 		CStructureTreeRoot* GetStructureTreeRoot();
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
+		void              AddMetaOForm(CDictObject* pMetaOForm);
+		bool              ReplacePageContent(CPage* pPage, int nIndex, const std::string& sData);
 		void              ClearPage();
 		void              ClearPageFull();
 		bool              EditXref(CXref* pXref);

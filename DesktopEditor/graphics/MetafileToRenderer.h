@@ -203,6 +203,7 @@ namespace NSOnlineOfficeBinToPdf
 
 		ctPageClear                     = 207,
 		ctPageRotate                    = 208,
+		ctPageOShapesDrop               = 209, // remove saved editor shapes (MCIDs) from the page content
 
 		// gradients
 

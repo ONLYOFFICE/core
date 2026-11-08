@@ -1585,8 +1585,11 @@ namespace PdfReader
 	{
 		return gFalse;
 	}
-	GBool RendererOutputDev::beginMCOShapes(GfxState* state, GString* s, Object* ref)
+	GBool RendererOutputDev::beginMCOShapes(GfxState* state, GString* s, Object* ref, int nMCID)
 	{
+		if (m_pHiddenOShapes && m_pHiddenOShapes->count(nMCID))
+			return gTrue;
+
 		IAdvancedCommand::AdvancedCommandType eAdvancedCommandType = IAdvancedCommand::AdvancedCommandType::ShapeStart;
 		if (m_pRenderer->IsSupportAdvancedCommand(eAdvancedCommandType) == S_OK)
 		{

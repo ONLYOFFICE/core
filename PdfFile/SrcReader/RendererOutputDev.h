@@ -44,6 +44,7 @@
 
 #include "GfxClip.h"
 #include <stack>
+#include <set>
 
 namespace PdfReader
 {
@@ -189,7 +190,7 @@ namespace PdfReader
 		void endType3Char(GfxState *pGState) override;
 		//----- Additional functions
 		virtual GBool beginMarkedContent(GfxState *state, Object args[], int numArgs) override;
-		virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) override;
+		virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref, int nMCID) override;
 		virtual void endMarkedContent(GfxState *state) override;
 		//----- Image output
 		bool ReadImage(Aggplus::CImage* pImageRes, Object *pRef, Stream *pStream);
@@ -211,6 +212,11 @@ namespace PdfReader
 		void SetBreak(bool* pbBreak)
 		{
 			m_pbBreak = pbBreak;
+		}
+		// Shape blocks (MCID in the page /OShapes) that the editor shows as live objects; they are not drawn.
+		void SetHiddenOShapes(const std::set<int>* pHidden)
+		{
+			m_pHiddenOShapes = pHidden;
 		}
 		void SetDrawOnlyText(bool bDraw)
 		{
@@ -271,6 +277,7 @@ namespace PdfReader
 		bool                          m_bTiling;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
+        const std::set<int>*          m_pHiddenOShapes = NULL;
 		bool                          m_bUseLayer; // Draw page on a black transparent layer
 
 	};

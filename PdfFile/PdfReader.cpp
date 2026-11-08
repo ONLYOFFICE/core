@@ -481,6 +481,45 @@ bool ValidateXRefStream(BaseStream* str, GFileOffset nOffset, GString* pID2)
 	return bRes;
 }
 }
+namespace
+{
+	// Collects the ONLYOFFICE shape blocks of a page without drawing anything.
+	class COShapesCollector : public OutputDev
+	{
+	public:
+		std::vector<std::pair<int, std::string>> m_arrShapes;
+
+		virtual GBool upsideDown() override { return gFalse; }
+		virtual GBool useDrawChar() override { return gFalse; }
+		virtual GBool interpretType3Chars() override { return gFalse; }
+		virtual GBool needNonText() override { return gFalse; }
+		virtual GBool beginMCOShapes(GfxState* state, GString* s, Object* ref, int nMCID) override
+		{
+			// A picture is stored next to the shape in /Image; only plain shapes are listed.
+			if (s && s->getLength() > 0 && !(ref && ref->isRef()))
+				m_arrShapes.push_back(std::make_pair(nMCID, std::string(s->getCString(), s->getLength())));
+			return gTrue;
+		}
+	};
+}
+std::vector<std::pair<int, std::string>> CPdfReader::GetPageOShapes(int _nPageIndex)
+{
+	PDFDoc* pDoc = NULL;
+	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc);
+	if (nPageIndex < 0 || !pDoc)
+		return {};
+
+	COShapesCollector oCollector;
+	pDoc->displayPage(&oCollector, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
+	return oCollector.m_arrShapes;
+}
+void CPdfReader::SetHiddenOShapes(int nPageIndex, const std::set<int>& arrMCID)
+{
+	if (arrMCID.empty())
+		m_mHiddenOShapes.erase(nPageIndex);
+	else
+		m_mHiddenOShapes[nPageIndex] = arrMCID;
+}
 bool CPdfReader::ValidMetaData()
 {
 	if (m_vPDFContext.empty() || m_vPDFContext.size() != 1)
@@ -769,6 +808,9 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 	oRendererOut.SetBreak(pbBreak);
 	oRendererOut.SetDrawOnlyText(bDrawOnlyText);
 	oRendererOut.SetUseLayer(true);
+	std::map<int, std::set<int>>::const_iterator itHidden = m_mHiddenOShapes.find(_nPageIndex);
+	if (itHidden != m_mHiddenOShapes.end())
+		oRendererOut.SetHiddenOShapes(&itHidden->second);
 	int nRotate = 0;
 #ifdef BUILDING_WASM_MODULE
 	nRotate = -pDoc->getPageRotate(nPageIndex);

@@ -162,6 +162,21 @@ public:
 	CEmptyComand(AdvancedCommandType nType);
 };
 
+// MCIDs of /OShapes blocks to remove from the current page's existing content.
+// The editor restored those shapes as objects and writes them again.
+class GRAPHICS_DECL CPageOShapesDrop : public IAdvancedCommand
+{
+public:
+	CPageOShapesDrop();
+
+	const std::vector<int>& GetMCID();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::vector<int> m_arrMCID;
+};
+
 class GRAPHICS_DECL CPageRotate : public IAdvancedCommand
 {
 public:

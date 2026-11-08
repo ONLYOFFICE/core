@@ -156,6 +156,7 @@ public:
 	int  GetRotate(int nPageIndex);
 	bool IsEditPage();
 	void ClearPage();
+	void DropOShapes(const std::vector<int>& arrMCID);
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
@@ -173,6 +174,8 @@ public:
 
 private:
 	bool IncrementalUpdates();
+	PdfWriter::CDictObject* EditOShapes(PDFDoc* pPDFDocument, Object* pRef);
+	void UseEditOShapes(PDFDoc* pPDFDocument, int nPageIndex, PdfWriter::CPage* pPage);
 	void SyncAcroFormFromReader();
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID, bool bIgnoreOO);
@@ -195,6 +198,8 @@ private:
 	CObjectsManager m_mObjManager;
 	// WriteAppend: the fields that lost a kid in this update; the ones left with none leave it at Close
 	std::set<int> m_setLostKidFields;
+	// WriteAppend: /OShapes dicts of the source rewritten in this update (object number -> dict)
+	std::map<int, PdfWriter::CDictObject*> m_mEditOShapes;
 
 	CPdfReader* m_pReader;
 	CPdfWriter* m_pWriter;

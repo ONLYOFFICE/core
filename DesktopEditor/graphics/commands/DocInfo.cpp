@@ -169,6 +169,15 @@ bool CShapeStart::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafile
 
 CEmptyComand::CEmptyComand(AdvancedCommandType nType) : IAdvancedCommand(nType) {}
 
+CPageOShapesDrop::CPageOShapesDrop() : IAdvancedCommand(AdvancedCommandType::PageOShapesDrop) {}
+const std::vector<int>& CPageOShapesDrop::GetMCID() { return m_arrMCID; }
+bool CPageOShapesDrop::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
+{
+	int nCount = pReader->ReadInt();
+	for (int i = 0; i < nCount; ++i)
+		m_arrMCID.push_back(pReader->ReadInt());
+	return true;
+}
 CPageRotate::CPageRotate() : IAdvancedCommand(AdvancedCommandType::PageRotate) {}
 int CPageRotate::GetPageRotate() { return m_nPageRotate; }
 bool CPageRotate::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)

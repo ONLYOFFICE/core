@@ -47,6 +47,9 @@
 #include "../DesktopEditor/graphics/pro/Image.h"
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/xmlsec/src/include/Certificate.h"
+#include <set>
+#include <string>
+#include <vector>
 
 class CPdfFile_Private;
 class CConvertFromBinParams
@@ -146,6 +149,8 @@ public:
 	virtual void SetPainter(IOfficeDrawingFilePainter* pPainter);
 
 	bool ValidMetaData();
+	std::vector<std::pair<int, std::string>> GetPageOShapes(int nPageIndex);
+	void SetHiddenOShapes(int nPageIndex, const std::set<int>& arrMCID);
 	// Takes ownership of malloc data memory
 	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();

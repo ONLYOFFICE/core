@@ -592,10 +592,48 @@ public:
 		return res;
 		// return pFile->GetAllFonts(arrPageIndex, nLength, true);
 	}
+	// mode 0/1: page scan to shapes (xml), 2: page scan to shapes (binary).
+	// mode 3: list the shapes the editor saved on the page (/OShapes): MCID and stored shape, as string pairs.
+	// mode 4: as 3, and stop drawing those shapes on the page (the editor shows them as live objects).
+	// mode 5: draw the page's saved shapes again.
 	BYTE* ScanPage(int nPageIndex, int mode)
 	{
 		if (NULL == m_pFile)
 			return NULL;
+
+		if (mode >= 3 && mode <= 5)
+		{
+			if (m_nType != 0)
+				return NULL;
+			CPdfFile* pPdf = (CPdfFile*)m_pFile;
+
+			std::vector<std::pair<int, std::string>> arrShapes;
+			if (mode != 5)
+				arrShapes = pPdf->GetPageOShapes(nPageIndex);
+
+			std::set<int> arrHidden;
+			if (mode == 4)
+			{
+				for (size_t i = 0; i < arrShapes.size(); ++i)
+					arrHidden.insert(arrShapes[i].first);
+			}
+			if (mode != 3)
+				pPdf->SetHiddenOShapes(nPageIndex, arrHidden);
+
+			NSWasm::CData oRes;
+			oRes.SkipLen();
+			oRes.AddInt((unsigned int)arrShapes.size() * 2);
+			for (size_t i = 0; i < arrShapes.size(); ++i)
+			{
+				oRes.WriteString(std::to_string(arrShapes[i].first));
+				oRes.WriteString(arrShapes[i].second);
+			}
+			oRes.WriteLen();
+
+			BYTE* res = oRes.GetBuffer();
+			oRes.ClearWithoutAttack();
+			return res;
+		}
 
 		if (NULL == m_pImageStorage)
 			m_pImageStorage = NSDocxRenderer::CreateWasmImageStorage();

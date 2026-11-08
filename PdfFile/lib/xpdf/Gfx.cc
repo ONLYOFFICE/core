@@ -5210,8 +5210,9 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
       Object oImRef, oArrImage;
       if (!oMetaOForm.dictLookup("Image", &oArrImage)->isArray() || !oArrImage.arrayGetNF(oMCID.getInt(), &oImRef)->isRef())
         oImRef.free();
+      int nMCID = oMCID.getInt();
       oMCID.free();
-      if (out->beginMCOShapes(state, oMetadataCur.getString(), &oImRef)) {
+      if (out->beginMCOShapes(state, oMetadataCur.getString(), &oImRef, nMCID)) {
         SkipBDC();
         out->endMarkedContent(state);
         oImRef.free(); oArrImage.free();

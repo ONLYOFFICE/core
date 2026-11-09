@@ -972,6 +972,8 @@ namespace PdfWriter
 		if (pFont)
 			return pFont;
 		pFont = new CFont14(m_pXref, this, eType);
+		pFont->SetFontPath(wsFontPath);
+		pFont->SetFontIndex(unIndex);
 		m_vFonts14.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
 	}

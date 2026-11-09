@@ -1302,10 +1302,16 @@ namespace PdfReader
 			}
 		}
 
-		if (oEntry.dStretch != 1.0 && oEntry.bFontSubstitution)
+		if (oEntry.bFontSubstitution)
 		{
-			arrMatrix[0] *= oEntry.dStretch;
-			arrMatrix[1] *= oEntry.dStretch;
+			double dScale = oEntry.dStretch;
+			if (oEntry.pWidthScale && nCode < oEntry.unLenGID)
+				dScale = oEntry.pWidthScale[nCode];
+			if (dScale != 1.0)
+			{
+				arrMatrix[0] *= dScale;
+				arrMatrix[1] *= dScale;
+			}
 		}
 
 		double dShiftX = 0, dShiftY = 0;

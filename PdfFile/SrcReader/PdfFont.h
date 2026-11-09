@@ -61,6 +61,10 @@ struct TFontEntry
 	bool         bFontSubstitution = false;
 	bool         bIsIdentity = false;
 	double       dStretch = 1.0;
+	// Per character code, horizontal scale that makes the substitute glyph's
+	// advance equal the PDF /Widths entry. NULL keeps the single dStretch.
+	// Owned by the font list; GetFont copies the pointer.
+	double*      pWidthScale = NULL;
 
 	std::wstring wsActualFontName;
 	bool bBold   = false;

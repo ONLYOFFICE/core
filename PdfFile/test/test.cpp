@@ -41,9 +41,13 @@
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DjVuFile/DjVu.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../PdfFile.h"
+#include "../../DocxRenderer/DocxRenderer.h"
 
 #include <algorithm>
+#include <string>
+#include <vector>
 
 class CPdfFileTest : public testing::Test
 {
@@ -955,5 +959,340 @@ TEST_F(CPdfFileTest, ImgDiff)
 			oFrameAll.put_Stride(-3 * nRowW);
 			oFrameAll.SaveFile(sPageDiff, 4);
 		}
+	}
+}
+
+// Non-embedded Arial Narrow must resolve to a condensed face, and Arial to
+// Arial. Flags 33 sets FixedPitch on both proportional faces. Glyph positions
+// follow /Widths. The right edge of the run is not enough: each letter has to
+// sit in its own slot. Arial already matches, so it stays at scale 1.
+TEST_F(CPdfFileTest, NonEmbeddedWidthStretch)
+{
+	auto sWidths = [](int nCount, int nWidth)
+	{
+		std::string s;
+		for (int i = 0; i < nCount; ++i)
+		{
+			if (i)
+				s += " ";
+			// Space is narrower than H, so Flags 33 is not a real monospace request.
+			s += std::to_string(i == 0 ? nWidth / 3 : nWidth);
+		}
+		return s;
+	};
+	auto sFont = [](int nObj, int nDesc, const char* sName, const std::string& sWidths)
+	{
+		return std::to_string(nObj) + " 0 obj\n<< /Type /Font /Subtype /TrueType /BaseFont /" + sName +
+			" /Encoding /WinAnsiEncoding /FirstChar 32 /LastChar 72 /Widths [" + sWidths +
+			"] /FontDescriptor " + std::to_string(nDesc) + " 0 R >>\nendobj\n";
+	};
+	auto sDesc = [](int nObj, const char* sName)
+	{
+		return std::to_string(nObj) + " 0 obj\n<< /Type /FontDescriptor /FontName /" + sName +
+			" /Flags 33 /FontBBox [-665 -325 2000 1006] /ItalicAngle 0 /Ascent 905 /Descent -212 /CapHeight 716 /StemV 44 >>\nendobj\n";
+	};
+
+	const std::string sStream =
+		"BT\n"
+		"/F1 72 Tf\n"
+		"1 0 0 1 36 520 Tm\n"
+		"(HHHHHHHH) Tj\n"
+		"/F2 72 Tf\n"
+		"1 0 0 1 36 300 Tm\n"
+		"(HHHHHHHH) Tj\n"
+		"ET\n";
+
+	std::string sBody;
+	sBody += "1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n";
+	sBody += "2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n";
+	sBody += "3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 7 0 R >> >> >>\nendobj\n";
+	sBody += "4 0 obj\n<< /Length " + std::to_string(sStream.size()) + " >>\nstream\n" + sStream + "endstream\nendobj\n";
+	sBody += sFont(5, 6, "ArialNarrow", sWidths(41, 547));
+	sBody += sDesc(6, "ArialNarrow");
+	sBody += sFont(7, 8, "Arial", sWidths(41, 722));
+	sBody += sDesc(8, "Arial");
+
+	std::string sPdf = "%PDF-1.4\n" + sBody;
+	std::vector<int> aOff;
+	for (int nObj = 1; nObj <= 8; ++nObj)
+	{
+		std::string sMark = std::to_string(nObj) + " 0 obj\n";
+		int nFound = (int)sPdf.find(sMark);
+		ASSERT_GE(nFound, 0);
+		aOff.push_back(nFound);
+	}
+	int nXref = (int)sPdf.size();
+	sPdf += "xref\n0 9\n0000000000 65535 f \n";
+	for (int nOff : aOff)
+	{
+		std::string sOff = std::to_string(nOff);
+		sPdf += std::string(10 - sOff.size(), '0') + sOff + " 00000 n \n";
+	}
+	sPdf += "trailer\n<< /Size 9 /Root 1 0 R >>\nstartxref\n" + std::to_string(nXref) + "\n%%EOF\n";
+
+	std::wstring wsPdf = NSFile::GetProcessDirectory() + L"/narrow-width.pdf";
+	std::wstring wsPng = NSFile::GetProcessDirectory() + L"/narrow-width.png";
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.CreateFileW(wsPdf));
+	ASSERT_TRUE(oFile.WriteFile((BYTE*)sPdf.data(), (DWORD)sPdf.size()));
+	oFile.CloseFile();
+
+	LoadFromFile(wsPdf);
+	ASSERT_EQ(1, pdfFile->GetPagesCount());
+	pdfFile->ConvertToRaster(0, wsPng, 4, 612, 792, true, pdfFile->GetFontManager());
+
+	CBgraFrame oFrame;
+	ASSERT_TRUE(oFrame.OpenFile(wsPng));
+	ASSERT_EQ(612, oFrame.get_Width());
+	ASSERT_EQ(792, oFrame.get_Height());
+
+	auto nRightInk = [&](int nTop, int nBottom) -> int
+	{
+		BYTE* pData = oFrame.get_Data();
+		int nW = oFrame.get_Width();
+		int nRight = -1;
+		for (int y = nTop; y < nBottom; ++y)
+		{
+			BYTE* pRow = pData + (size_t)y * nW * 4;
+			for (int x = 0; x < nW; ++x)
+			{
+				BYTE* p = pRow + x * 4;
+				if (p[0] < 200 || p[1] < 200 || p[2] < 200)
+					nRight = std::max(nRight, x);
+			}
+		}
+		return nRight;
+	};
+
+	// PDF y is up. Raster y is down. Baseline 520 -> 792-520 = 272, caps sit above it.
+	int nNarrowRight = nRightInk(200, 280);
+	int nArialRight = nRightInk(420, 500);
+	// Missing a substitute face must fail the test. A skip would hide a run that never drew.
+	ASSERT_GT(nNarrowRight, 0) << "Arial Narrow run drew no ink; the font cache has no Arial-like face";
+	ASSERT_GT(nArialRight, 0) << "Arial run drew no ink; the font cache has no Arial-like face";
+
+	// 8 * 547/1000 * 72 = 314.9, plus the 36pt origin. The unscaled Arial H outline ends past that.
+	EXPECT_LT(nNarrowRight, 354);
+	EXPECT_GT(nNarrowRight, 36 + 315 - 20);
+	// Arial /Widths already match the face, so the run keeps the full 722-unit advance.
+	EXPECT_LT(nArialRight, 36 + 416 + 8);
+	EXPECT_GT(nArialRight, 36 + 416 - 24);
+
+	auto aGlyphRuns = [&](int nTop, int nBottom)
+	{
+		BYTE* pData = oFrame.get_Data();
+		int nW = oFrame.get_Width();
+		std::vector<char> aInk(nW, 0);
+		for (int y = nTop; y < nBottom; ++y)
+		{
+			BYTE* pRow = pData + (size_t)y * nW * 4;
+			for (int x = 0; x < nW; ++x)
+			{
+				BYTE* p = pRow + x * 4;
+				if (p[0] < 200 || p[1] < 200 || p[2] < 200)
+					aInk[x] = 1;
+			}
+		}
+		std::vector<std::pair<int, int>> aRuns;
+		int nStart = -1;
+		for (int x = 0; x <= nW; ++x)
+		{
+			bool bInk = x < nW && aInk[x];
+			if (bInk && nStart < 0)
+				nStart = x;
+			if (!bInk && nStart >= 0)
+			{
+				if (!aRuns.empty() && nStart - aRuns.back().second <= 3)
+					aRuns.back().second = x - 1;
+				else
+					aRuns.push_back(std::make_pair(nStart, x - 1));
+				nStart = -1;
+			}
+		}
+		return aRuns;
+	};
+
+	auto aNarrowRuns = aGlyphRuns(200, 280);
+	auto aArialRuns = aGlyphRuns(420, 500);
+	ASSERT_EQ(8, (int)aNarrowRuns.size());
+	ASSERT_EQ(8, (int)aArialRuns.size());
+	for (int i = 0; i < 7; ++i)
+	{
+		// A hole wider than the sidebearings means the outline is not in its slot.
+		EXPECT_LT(aNarrowRuns[i + 1].first - aNarrowRuns[i].second, 16);
+		EXPECT_LT(aArialRuns[i + 1].first - aArialRuns[i].second, 22);
+	}
+}
+
+// Edit Text writes unchanged text back with the base-14 font of the source
+// PDF. The writer measures each new code once and writes the TJ gaps against
+// that width. The first line here is 8 pt and the second 27 pt with a letter
+// the first line does not use. Measured at the stale 8 pt size and divided by
+// 27 pt, the width is 8/27 of the real advance, so each L is written with a
+// -430 gap and the line spreads apart. Positions are the real advances, so
+// the 27 pt line has to come out with no gaps.
+TEST_F(CPdfFileTest, Base14WidthAfterFontSizeChange)
+{
+	const double dPtToMM = 25.4 / 72.0;
+
+	pdfFile->CreatePdf();
+	pdfFile->NewPage();
+	pdfFile->put_Width(612 * dPtToMM);
+	pdfFile->put_Height(792 * dPtToMM);
+	pdfFile->put_BrushColor1(0);
+	pdfFile->put_FontName(L"Embedded: Helvetica-Bold");
+	pdfFile->put_FontStyle(0);
+
+	pdfFile->put_FontSize(8);
+	pdfFile->CommandDrawTextExCHAR('O', 'O', 36 * dPtToMM, 100 * dPtToMM, 0, 0);
+
+	// Helvetica-Bold L is 611/1000 em.
+	const double dAdvance = 611.0 / 1000.0 * 27;
+	pdfFile->put_FontSize(27);
+	for (int i = 0; i < 8; ++i)
+		pdfFile->CommandDrawTextExCHAR('L', 'L', (36 + i * dAdvance) * dPtToMM, 300 * dPtToMM, 0, 0);
+
+	std::wstring wsPdf = NSFile::GetProcessDirectory() + L"/base14-size.pdf";
+	ASSERT_EQ(0, pdfFile->SaveToFile(wsPdf));
+
+	BYTE* pFileData = NULL;
+	DWORD nFileSize = 0;
+	ASSERT_TRUE(NSFile::CFileBinary::ReadAllBytes(wsPdf, &pFileData, nFileSize));
+	std::string sFile((char*)pFileData, nFileSize);
+	RELEASEARRAYOBJECTS(pFileData);
+
+	// Inflate every stream; the page content is Flate-compressed.
+	std::string sPdf;
+	for (size_t nPos = sFile.find("stream"); nPos != std::string::npos; nPos = sFile.find("stream", nPos + 6))
+	{
+		if (nPos >= 3 && sFile.compare(nPos - 3, 3, "end") == 0)
+			continue;
+		size_t nData = nPos + 6;
+		if (nData < sFile.size() && sFile[nData] == '\r')
+			++nData;
+		if (nData < sFile.size() && sFile[nData] == '\n')
+			++nData;
+		size_t nStop = sFile.find("endstream", nData);
+		if (nStop == std::string::npos)
+			break;
+		std::vector<BYTE> arrOut(1 << 20);
+		ULONG nOut = (ULONG)arrOut.size();
+		if (NSZip::Decompress((const BYTE*)sFile.data() + nData, (ULONG)(nStop - nData), arrOut.data(), nOut))
+			sPdf.append((char*)arrOut.data(), nOut);
+		else
+			sPdf.append(sFile, nData, nStop - nData);
+	}
+
+	// The 27 pt run, up to the end of its text object.
+	size_t nRun = sPdf.find(" 27 Tf");
+	ASSERT_NE(std::string::npos, nRun);
+	size_t nEnd = sPdf.find("ET", nRun);
+	ASSERT_NE(std::string::npos, nEnd);
+	std::string sRun = sPdf.substr(nRun, nEnd - nRun);
+	EXPECT_NE(std::string::npos, sRun.find("<4C")) << sRun;
+
+	// Every TJ adjustment between the L glyphs must be about zero. A single
+	// Tj, with no array, means the writer found no gap at all.
+	size_t nOpen = sRun.find('['), nClose = sRun.find(']');
+	if (nOpen == std::string::npos || nClose == std::string::npos)
+		return;
+	std::string sArray = sRun.substr(nOpen + 1, nClose - nOpen - 1);
+	bool bInHex = false;
+	std::string sNum;
+	for (char c : sArray + " ")
+	{
+		if (c == '<')
+			bInHex = true;
+		else if (c == '>')
+			bInHex = false;
+		else if (!bInHex && (isdigit((unsigned char)c) || c == '-' || c == '.'))
+		{
+			sNum += c;
+			continue;
+		}
+		if (!sNum.empty())
+			EXPECT_LT(std::abs(atof(sNum.c_str())), 2.0) << sRun;
+		sNum.clear();
+	}
+}
+// Edit Text puts each reconstructed paragraph in a shape. The editor lays out an
+// exact line in a shape with the baseline at max(0.75 * height, min(ascent,
+// height - descent)), and every line of a paragraph at the same offset. The shape
+// top and the line height must put each baseline back where the PDF had it.
+TEST_F(CPdfFileTest, EditTextShapeBaselines)
+{
+	// non-embedded Helvetica, two-line blocks with 18 pt between baselines: one size, and 10 pt over 8 pt
+	struct Line { int size; int y; const char* text; };
+	const Line lines[] = { {10, 700, "Leading block one"}, {10, 682, "Leading block two"},
+	                       {10, 600, "Mixed size first"}, {8, 582, "Mixed size second"} };
+	std::string sBody;
+	for (const Line& l : lines)
+		sBody += "BT /F1 " + std::to_string(l.size) + " Tf 1 0 0 1 72 " + std::to_string(l.y) + " Tm (" + l.text + ") Tj ET\n";
+	std::vector<std::string> arObjects = {
+		"<< /Type /Catalog /Pages 2 0 R >>",
+		"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+		"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
+		"<< /Length " + std::to_string(sBody.size()) + " >>\nstream\n" + sBody + "endstream",
+		"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>" };
+	std::string sPdf = "%PDF-1.4\n";
+	std::vector<size_t> arOffsets;
+	for (size_t i = 0; i < arObjects.size(); ++i)
+	{
+		arOffsets.push_back(sPdf.size());
+		sPdf += std::to_string(i + 1) + " 0 obj\n" + arObjects[i] + "\nendobj\n";
+	}
+	size_t nXref = sPdf.size();
+	sPdf += "xref\n0 " + std::to_string(arObjects.size() + 1) + "\n0000000000 65535 f \n";
+	for (size_t nOffset : arOffsets)
+	{
+		char sEntry[24];
+		snprintf(sEntry, sizeof(sEntry), "%010zu 00000 n \n", nOffset);
+		sPdf += sEntry;
+	}
+	sPdf += "trailer\n<< /Size " + std::to_string(arObjects.size() + 1) + " /Root 1 0 R >>\nstartxref\n" + std::to_string(nXref) + "\n%%EOF\n";
+
+	std::wstring wsPdf = NSFile::GetProcessDirectory() + L"/edit-text-baselines.pdf";
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.CreateFileW(wsPdf));
+	oFile.WriteFile((BYTE*)sPdf.data(), (DWORD)sPdf.size());
+	oFile.CloseFile();
+	LoadFromFile(wsPdf);
+
+	CDocxRenderer oRenderer(pApplicationFonts);
+	oRenderer.SetTempFolder(wsTempDir);
+	oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+	std::vector<std::wstring> arShapes = oRenderer.ScanPagePptx(pdfFile, 0);
+
+	auto number = [](const std::wstring& s, const std::wstring& sKey, double& dValue) {
+		size_t nPos = s.find(sKey);
+		if (nPos == std::wstring::npos)
+			return false;
+		dValue = std::stod(s.substr(nPos + sKey.size()));
+		return true;
+	};
+	const struct { const wchar_t* first; const wchar_t* second; int baseline; } blocks[] = {
+		{L"Leading block one", L"Leading block two", 700}, {L"Mixed size first", L"Mixed size second", 600} };
+	for (const auto& block : blocks)
+	{
+		const std::wstring* pShape = NULL;
+		for (const std::wstring& sShape : arShapes)
+			if (sShape.find(block.first) != std::wstring::npos)
+				pShape = &sShape;
+		ASSERT_TRUE(pShape) << U_TO_UTF8(std::wstring(block.first));
+		// both lines are one paragraph in one shape, or there is nothing to lay out
+		ASSERT_NE(std::wstring::npos, pShape->find(block.second)) << U_TO_UTF8((*pShape));
+
+		double dTopEmu = 0, dLineHeight = 0;
+		const size_t nOff = pShape->find(L"<a:off x=\"");
+		ASSERT_NE(std::wstring::npos, nOff);
+		ASSERT_TRUE(number(pShape->substr(nOff), L"\" y=\"", dTopEmu));
+		ASSERT_TRUE(number(*pShape, L"<a:lnSpc><a:spcPts val=\"", dLineHeight));
+		const double dTop = dTopEmu / 12700.0;
+		dLineHeight /= 100.0;
+
+		// the line height is the baseline pitch, also when the sizes differ
+		EXPECT_NEAR(18.0, dLineHeight, 0.05) << U_TO_UTF8((*pShape));
+		// at 18 pt the ascent of a 10 pt face is under 0.75 * height
+		EXPECT_NEAR(792.0 - block.baseline, dTop + 0.75 * dLineHeight, 0.15) << U_TO_UTF8((*pShape));
 	}
 }

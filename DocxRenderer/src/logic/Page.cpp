@@ -1780,10 +1780,15 @@ namespace NSDocxRenderer
 			paragraph->m_dRightBorder = m_dWidth - paragraph->m_dRight;
 			paragraph->m_dLeftBorder = min_left;
 
-			if (paragraph->m_arTextLines.size() == 1)
+			const size_t line_count = paragraph->m_arTextLines.size();
+			if (line_count == 1)
 				paragraph->m_dLineHeight = paragraph->m_dHeight;
+			else if (m_bShapeLineLayout)
+				// a shape line keeps its baseline at the same offset in every line, so the
+				// exact height is the baseline pitch (bottoms differ with each line's descent)
+				paragraph->m_dLineHeight = (paragraph->m_arTextLines.back()->m_dBot - firstLine->m_dBot) / (line_count - 1);
 			else
-				paragraph->m_dLineHeight = (paragraph->m_dBot - firstLine->m_dBotWithMaxDescent) / (paragraph->m_arTextLines.size() - 1);
+				paragraph->m_dLineHeight = (paragraph->m_dBot - firstLine->m_dBotWithMaxDescent) / (line_count - 1);
 
 			paragraph->m_bIsNeedFirstLineIndent = false;
 			paragraph->m_dFirstLine = 0;
@@ -1792,7 +1797,19 @@ namespace NSDocxRenderer
 			paragraph->MergeLines();
 
 			// Correct first line position
-			if (m_bFirstParagraphLineCorrection)
+			if (m_bFirstParagraphLineCorrection && m_bShapeLineLayout)
+			{
+				// put the first baseline where the editor lays it out in a shape
+				const double line_height = paragraph->m_dLineHeight;
+				const double ascent = firstLine->m_dBot - firstLine->m_dTopWithMaxAscent;
+				const double descent = firstLine->m_dBotWithMaxDescent - firstLine->m_dBot;
+				const double baseline_offset = std::max(0.75 * line_height, std::min(ascent, line_height - descent));
+				paragraph->m_dTop = firstLine->m_dBot - baseline_offset;
+				// room for every line, so the text stays inside the shape
+				paragraph->m_dBot = std::max(paragraph->m_dBot, paragraph->m_dTop + line_height * line_count);
+				paragraph->m_dHeight = paragraph->m_dBot - paragraph->m_dTop;
+			}
+			else if (m_bFirstParagraphLineCorrection)
 			{
 				double firstLine_height = firstLine->m_dBotWithMaxDescent - firstLine->m_dTopWithMaxAscent;
 				if (paragraph->m_dLineHeight > firstLine_height)

@@ -137,6 +137,23 @@ public:
 		ar6.push_back(L"Cambria");
 		ar6.push_back(L"Caladea");
 		m_listLikes.push_back(ar6);
+
+		// 7 [Arial Narrow]
+		// Not a like of regular Arial. "Arial" is a prefix of "ArialNarrow", so the
+		// name penalty would pick the regular face over a condensed metric match.
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Arial Narrow", 7));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"ArialNarrow", 7));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Helvetica Narrow", 7));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"HelveticaNarrow", 7));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Nimbus Sans Narrow", 7));
+		m_mapNamesToIndex.insert(std::pair<std::wstring, int>(L"Liberation Sans Narrow", 7));
+
+		std::vector<std::wstring> ar7;
+		ar7.push_back(L"Arial Narrow");
+		ar7.push_back(L"Helvetica Narrow");
+		ar7.push_back(L"Nimbus Sans Narrow");
+		ar7.push_back(L"Liberation Sans Narrow");
+		m_listLikes.push_back(ar7);
 	}
 
 	bool IsLikeFonts(const std::wstring& name, const std::wstring& req)

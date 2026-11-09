@@ -87,6 +87,10 @@ namespace NSDocxRenderer
 		bool m_bIsLuminosityShapesFiled{false};
 		bool m_bFontSubstitution       {false};
 		bool m_bFirstParagraphLineCorrection{false};
+		// Paragraphs go into slide-style shapes (Edit Text, pptx scan). An exact
+		// line there has its baseline at max(0.75 * height, min(ascent, height - descent)),
+		// not at height - descent as in a document.
+		bool m_bShapeLineLayout{false};
 
 		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();

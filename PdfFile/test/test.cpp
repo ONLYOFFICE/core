@@ -43,6 +43,7 @@
 #include "../../DjVuFile/DjVu.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../PdfFile.h"
+#include "../../DocxRenderer/DocxRenderer.h"
 
 #include <algorithm>
 #include <string>
@@ -1212,5 +1213,86 @@ TEST_F(CPdfFileTest, Base14WidthAfterFontSizeChange)
 		if (!sNum.empty())
 			EXPECT_LT(std::abs(atof(sNum.c_str())), 2.0) << sRun;
 		sNum.clear();
+	}
+}
+// Edit Text puts each reconstructed paragraph in a shape. The editor lays out an
+// exact line in a shape with the baseline at max(0.75 * height, min(ascent,
+// height - descent)), and every line of a paragraph at the same offset. The shape
+// top and the line height must put each baseline back where the PDF had it.
+TEST_F(CPdfFileTest, EditTextShapeBaselines)
+{
+	// non-embedded Helvetica, two-line blocks with 18 pt between baselines: one size, and 10 pt over 8 pt
+	struct Line { int size; int y; const char* text; };
+	const Line lines[] = { {10, 700, "Leading block one"}, {10, 682, "Leading block two"},
+	                       {10, 600, "Mixed size first"}, {8, 582, "Mixed size second"} };
+	std::string sBody;
+	for (const Line& l : lines)
+		sBody += "BT /F1 " + std::to_string(l.size) + " Tf 1 0 0 1 72 " + std::to_string(l.y) + " Tm (" + l.text + ") Tj ET\n";
+	std::vector<std::string> arObjects = {
+		"<< /Type /Catalog /Pages 2 0 R >>",
+		"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+		"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
+		"<< /Length " + std::to_string(sBody.size()) + " >>\nstream\n" + sBody + "endstream",
+		"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>" };
+	std::string sPdf = "%PDF-1.4\n";
+	std::vector<size_t> arOffsets;
+	for (size_t i = 0; i < arObjects.size(); ++i)
+	{
+		arOffsets.push_back(sPdf.size());
+		sPdf += std::to_string(i + 1) + " 0 obj\n" + arObjects[i] + "\nendobj\n";
+	}
+	size_t nXref = sPdf.size();
+	sPdf += "xref\n0 " + std::to_string(arObjects.size() + 1) + "\n0000000000 65535 f \n";
+	for (size_t nOffset : arOffsets)
+	{
+		char sEntry[24];
+		snprintf(sEntry, sizeof(sEntry), "%010zu 00000 n \n", nOffset);
+		sPdf += sEntry;
+	}
+	sPdf += "trailer\n<< /Size " + std::to_string(arObjects.size() + 1) + " /Root 1 0 R >>\nstartxref\n" + std::to_string(nXref) + "\n%%EOF\n";
+
+	std::wstring wsPdf = NSFile::GetProcessDirectory() + L"/edit-text-baselines.pdf";
+	NSFile::CFileBinary oFile;
+	ASSERT_TRUE(oFile.CreateFileW(wsPdf));
+	oFile.WriteFile((BYTE*)sPdf.data(), (DWORD)sPdf.size());
+	oFile.CloseFile();
+	LoadFromFile(wsPdf);
+
+	CDocxRenderer oRenderer(pApplicationFonts);
+	oRenderer.SetTempFolder(wsTempDir);
+	oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
+	std::vector<std::wstring> arShapes = oRenderer.ScanPagePptx(pdfFile, 0);
+
+	auto number = [](const std::wstring& s, const std::wstring& sKey, double& dValue) {
+		size_t nPos = s.find(sKey);
+		if (nPos == std::wstring::npos)
+			return false;
+		dValue = std::stod(s.substr(nPos + sKey.size()));
+		return true;
+	};
+	const struct { const wchar_t* first; const wchar_t* second; int baseline; } blocks[] = {
+		{L"Leading block one", L"Leading block two", 700}, {L"Mixed size first", L"Mixed size second", 600} };
+	for (const auto& block : blocks)
+	{
+		const std::wstring* pShape = NULL;
+		for (const std::wstring& sShape : arShapes)
+			if (sShape.find(block.first) != std::wstring::npos)
+				pShape = &sShape;
+		ASSERT_TRUE(pShape) << U_TO_UTF8(std::wstring(block.first));
+		// both lines are one paragraph in one shape, or there is nothing to lay out
+		ASSERT_NE(std::wstring::npos, pShape->find(block.second)) << U_TO_UTF8((*pShape));
+
+		double dTopEmu = 0, dLineHeight = 0;
+		const size_t nOff = pShape->find(L"<a:off x=\"");
+		ASSERT_NE(std::wstring::npos, nOff);
+		ASSERT_TRUE(number(pShape->substr(nOff), L"\" y=\"", dTopEmu));
+		ASSERT_TRUE(number(*pShape, L"<a:lnSpc><a:spcPts val=\"", dLineHeight));
+		const double dTop = dTopEmu / 12700.0;
+		dLineHeight /= 100.0;
+
+		// the line height is the baseline pitch, also when the sizes differ
+		EXPECT_NEAR(18.0, dLineHeight, 0.05) << U_TO_UTF8((*pShape));
+		// at 18 pt the ascent of a 10 pt face is under 0.75 * height
+		EXPECT_NEAR(792.0 - block.baseline, dTop + 0.75 * dLineHeight, 0.15) << U_TO_UTF8((*pShape));
 	}
 }

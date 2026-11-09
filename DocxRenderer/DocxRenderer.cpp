@@ -97,6 +97,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDst, 
 	m_pInternal->m_bIsSupportShapeCommands = false;
 	m_pInternal->m_oDocument.m_bIsRecord = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bShapeLineLayout = false;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bIsBuildInlineTables = true;
 
 	if (bIsOutCompress)
@@ -136,6 +137,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bShapeLineLayout = false;
 	m_pInternal->m_bIsSupportShapeCommands = false;
 	m_pInternal->m_oDocument.m_bIsRecord = false;
 
@@ -154,6 +156,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bShapeLineLayout = true;
 	m_pInternal->m_bIsSupportShapeCommands = true;
 	m_pInternal->m_oDocument.m_bIsRecord = false;
 
@@ -173,6 +176,7 @@ NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bShapeLineLayout = true;
 	m_pInternal->m_oDocument.m_bIsRecord = false;
 	m_pInternal->m_bIsSupportShapeCommands = true;
 	m_pInternal->m_oDocument.m_oFontStyleManager.Clear();
@@ -193,6 +197,7 @@ std::vector<std::wstring> CDocxRenderer::GetFontsFromPage(IOfficeDrawingFile* pF
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bCollectMetaInfo = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bFirstParagraphLineCorrection = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bShapeLineLayout = false;
 	m_pInternal->m_oDocument.m_bIsRecord = false;
 	m_pInternal->m_bIsSupportShapeCommands = false;
 	m_pInternal->m_oDocument.m_oFontStyleManager.Clear();
